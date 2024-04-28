@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/detail_bottom_sheet_flow"
+    app:startDestination="@id/detailBottomSheet">
+    <dialog
+        android:id="@+id/detailBottomSheet"
+        android:name="com.kuro.movie.presenter.detail_bottom_sheet.DetailBottomSheet"
+        android:label="DetailBottomSheet"
+        tools:layout="@layout/fragment_detail_bottom_sheet">
+        <argument
+            android:name="movie"
+            app:argType="com.kuro.movie.data.model.Movie"
+            app:nullable="true" />
+        <argument
+            android:name="tvseries"
+            app:argType="com.kuro.movie.data.model.TvSeries"
+            app:nullable="true" />
+    </dialog>
+</navigation>

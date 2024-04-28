@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="splash_icon_size">100dp</dimen>
+
+
+    <dimen name="small_margin">4dp</dimen>
+    <dimen name="medium_margin">8dp</dimen>
+    <dimen name="large_margin">16dp</dimen>
+    <dimen name="extra_large_margin">32dp</dimen>
+
+    <dimen name="small_padding">4dp</dimen>
+    <dimen name="medium_padding">8dp</dimen>
+    <dimen name="large_padding">16dp</dimen>
+    <dimen name="extra_large_padding">32dp</dimen>
+
+
+    <dimen name="shape_medium">8dp</dimen>
+    <dimen name="shape_large">16dp</dimen>
+
+    <dimen name="small_elevation">4dp</dimen>
+    <dimen name="medium_elevation">8dp</dimen>
+
+    <dimen name="now_playing_row_backdrop_size">320dp</dimen>
+    <dimen name="now_playing_row_poster_size">150dp</dimen>
+
+    <dimen name="movie_row_width">165dp</dimen>
+    <dimen name="movie_row_image_width">165dp</dimen>
+    <dimen name="movie_row_image_min_height">320dp</dimen>
+    <dimen name="movie_row_height">300dp</dimen>
+    <dimen name="movie_row_image_height">200dp</dimen>
+
+    <dimen name="search_person_row_width">165dp</dimen>
+
+
+    <dimen name="kuro_button_height">60dp</dimen>
+
+    <dimen name="home_fragment_recycler_height">320dp</dimen>
+
+    <dimen name="movie_detail_poster_image_size">550dp</dimen>
+
+    <dimen name="action_row_image_size">50dp</dimen>
+    <dimen name="cast_image_size">80dp</dimen>
+
+    <dimen name="edit_text_height">60dp</dimen>
+    <dimen name="filter_button_size">60dp</dimen>
+
+    <dimen name="iconSizeExtraLarge">70dp</dimen>
+    <dimen name="iconSizeLarge">48dp</dimen>
+    <dimen name="iconSizeMedium">30dp</dimen>
+    <dimen name="iconSizeSmall">16dp</dimen>
+    <dimen name="iconSizeExtraSmall">8dp</dimen>
+    <dimen name="iconSizeAverage">24dp</dimen>
+
+    <dimen name="watchProvidersImageSize">35dp</dimen>
+
+    <dimen name="youtube_player_height">200dp</dimen>
+
+
+    <dimen name="person_detail_person_image_height">350dp</dimen>
+</resources>
