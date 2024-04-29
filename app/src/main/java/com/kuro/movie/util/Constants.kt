@@ -7,4 +7,23 @@ object Constants {
     const val SPLASH_SCREEN_DELAY = 2000L
 
     const val MESSAGE_SEND_EMAIL_SUCCESSFUL = "Check your email"
+
+    const val FAVORITE_MOVIE_TABLE_NAME = "favoriteMovieTable"
+    const val FAVORITE_TV_SERIES_TABLE_NAME = "favoriteTvSeriesTable"
+
+    const val MOVIE_WATCH_LIST_ITEM_TABLE_NAME = "movieWatchListTable"
+    const val TV_SERIES_WATCH_LIST_ITEM_TABLE_NAME = "tvSeriesWatchListTable"
+
+    const val UPCOMING_REMIND_TABLE_NAME = "upcoming_remind"
+
+    const val QUERY_APPEND_TO_RESPONSE = "credits,watch/providers"
+
+    const val FIREBASE_FAVORITE_MOVIE_DOCUMENT_NAME = "FavoriteMovies"
+    const val FIREBASE_FAVORITE_TV_DOCUMENT_NAME = "FavoriteTvSeries"
+    const val FIREBASE_MOVIE_WATCH_DOCUMENT_NAME = "MovieWatchList"
+    const val FIREBASE_TV_WATCH_DOCUMENT_NAME = "TvSeriesWatchList"
+
+
+    const val FIREBASE_MOVIES_FIELD_NAME = "movies"
+    const val FIREBASE_TV_SERIES_FIELD_NAME = "tvSeries"
 }

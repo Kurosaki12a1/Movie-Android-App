@@ -6,6 +6,8 @@ import com.kuro.movie.data.model.TvSeries
 sealed interface NavigateFlow {
     data object HomeFlow : NavigateFlow
     data object AuthFlow : NavigateFlow
+    data object SignUpFlow : NavigateFlow
+    data class ForgetPasswordFlow(val email : String) : NavigateFlow
 
     data class BottomSheetDetailFlow(val movie: Movie?, val tvSeries: TvSeries?) : NavigateFlow
 

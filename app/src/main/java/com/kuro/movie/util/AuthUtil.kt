@@ -1,11 +1,26 @@
 package com.kuro.movie.util
 
-data class StandardTextFieldState(
-    val text: String = "",
-    val error: AuthError? = null
-)
+import android.content.Context
+import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.firestore.FirebaseFirestoreException
 
-sealed class AuthError {
-    data object FieldEmpty : AuthError()
+inline fun <T> safeCallWithForFirebase(
+    context: Context,
+    setFirebaseAuthErrorMessage: (exception: FirebaseAuthException) -> Resource<T> = {
+        Resource.failure(Exception("Firebase Auth Error"))
+    },
+    call: () -> Resource<T>,
+): Resource<T> {
+    return try {
+        call()
+    } catch (e: FirebaseFirestoreException) {
+        e.printStackTrace()
+        Resource.failure(e, e.localizedMessage)
+        FirebaseFireStoreErrorMessage.setExceptionToFirebaseMessage(context, e)
+    } catch (exception: FirebaseAuthException) {
+        setFirebaseAuthErrorMessage(exception)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        Resource.failure(e, e.localizedMessage)
+    }
 }
-

@@ -16,6 +16,10 @@ class Navigator {
     fun navigateToFlow(navigateFlow: NavigateFlow) = when (navigateFlow) {
         is NavigateFlow.HomeFlow -> navController.navigateWithAnimation(MainNavGraphDirections.actionGlobalHomeFlow())
         is NavigateFlow.AuthFlow -> navController.navigateWithAnimation(MainNavGraphDirections.actionGlobalAuthFlow())
+        is NavigateFlow.SignUpFlow -> navController.navigateWithAnimation(LoginFragmentDirections.actionLoginFragmentToSignUpFragment())
+        is NavigateFlow.ForgetPasswordFlow -> navController.navigateWithAnimation(
+            LoginFragmentDirections.actionLoginFragmentToForgetPasswordFragment(navigateFlow.email)
+        )
 
         else -> {
             // TODO

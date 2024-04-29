@@ -7,6 +7,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.kuro.movie.core.BaseViewModel
+import com.kuro.movie.domain.usecase.FirebaseUseCases
 import com.kuro.movie.domain.usecase.auth.login.SignInWithCredentialUseCase
 import com.kuro.movie.domain.usecase.auth.login.SignInWithEmailAndPasswordUseCase
 import com.kuro.movie.util.Resource
@@ -20,7 +21,8 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val signInWithEmailAndPasswordUseCase: SignInWithEmailAndPasswordUseCase,
     private val signInWithCredentialUseCase: SignInWithCredentialUseCase,
-    private val auth : FirebaseAuth
+    private val firebaseUseCases: FirebaseUseCases,
+    private val auth: FirebaseAuth
 ) : BaseViewModel() {
 
     private val mutableState = MutableLiveData<Resource<Unit>>()
@@ -31,9 +33,8 @@ class LoginViewModel @Inject constructor(
         checkUserSignIn()
     }
 
-    private fun checkUserSignIn(){
-        if (auth.currentUser != null){
-            mutableState.value = Resource.success(Unit)
+    private fun checkUserSignIn() {
+        if (auth.currentUser != null) {
             onLoginSuccess()
         }
     }
@@ -44,10 +45,7 @@ class LoginViewModel @Inject constructor(
             signInWithEmailAndPasswordUseCase(email, password)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    mutableState.value = Resource.success(Unit)
-                    onLoginSuccess()
-                }, { error ->
+                .subscribe({ onLoginSuccess() }, { error ->
                     mutableState.value = Resource.Failure(error)
                     handleError(error)
                 }
@@ -62,10 +60,8 @@ class LoginViewModel @Inject constructor(
                 signInWithCredentialUseCase(task)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ result ->
-                        mutableState.value = result
-                        onLoginSuccess()
-                    }, { error ->
+                    .subscribe({ onLoginSuccess() },
+                        { error ->
                         mutableState.value = Resource.failure(error)
                         handleError(error)
                     }).let { addDisposable(it) }
@@ -75,8 +71,14 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    // Handle Firestore Firebase database add movie
+    // Handle FireStore Firebase database add movie
     private fun onLoginSuccess() {
-
+        viewModelScope.launch {
+            firebaseUseCases.getFavoriteMovieFromFirebaseThenUpdateLocalDatabaseUseCase()
+            firebaseUseCases.getMovieWatchListFromFirebaseThenUpdateLocalDatabaseUseCase()
+            firebaseUseCases.getFavoriteTvSeriesFromFirebaseThenUpdateLocalDatabaseUseCase()
+            firebaseUseCases.getTvSeriesWatchListFromFirebaseThenUpdateLocalDatabaseUseCase()
+            mutableState.postValue(Resource.success(Unit))
+        }
     }
 }

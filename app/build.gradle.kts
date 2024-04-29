@@ -154,4 +154,5 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.firebase.auth.ktx)
 
+    implementation(libs.firebase.firestore)
 }
