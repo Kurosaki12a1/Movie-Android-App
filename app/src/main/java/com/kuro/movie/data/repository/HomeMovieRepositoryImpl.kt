@@ -1,44 +1,49 @@
 package com.kuro.movie.data.repository
 
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
-import com.kuro.movie.data.data_source.remote.HomeAPI
-import com.kuro.movie.data.mapper.toMovie
+import androidx.paging.PagingData
 import com.kuro.movie.data.model.Movie
 import com.kuro.movie.domain.repository.HomeMovieRepository
+import com.kuro.movie.domain.repository.data_source.remote.HomeMovieRemoteRepository
+import com.kuro.movie.util.getPagingMovies
+import io.reactivex.Observable
 import javax.inject.Inject
 
 class HomeMovieRepositoryImpl @Inject constructor(
-    private val homeAPI: HomeAPI
+    private val dataSource: HomeMovieRemoteRepository
 ) : HomeMovieRepository {
-
-    override suspend fun getNowPlayingMovies(
+    override fun getNowPlayingMovies(
         language: String,
-        region: String,
-        page: Int
-    ): Observable<Movie> {
-        return homeAPI.getNowPlayingMovie(page, region, language).map { response ->
-            response.toMovie()
+        region: String
+    ): Observable<PagingData<Movie>> {
+        return getPagingMovies { page ->
+            dataSource.getNowPlayingMovies(
+                page = page,
+                language = language,
+                region = region
+            )
         }
     }
 
-    override suspend fun getPopularMovies(
-        language: String,
-        region: String,
-        page: Int
-    ): Single<Movie> {
-        return homeAPI.getPopularMovies(page, region, language).map { response ->
-            response.toMovie()
+    override fun getPopularMovies(language: String, region: String): Observable<PagingData<Movie>> {
+        return getPagingMovies { page ->
+            dataSource.getPopularMovies(
+                page = page,
+                language = language,
+                region = region
+            )
         }
     }
 
-    override suspend fun getTopRatedMovies(
+    override fun getTopRatedMovies(
         language: String,
-        region: String,
-        page: Int
-    ): Single<Movie> {
-        return homeAPI.getTopRatedMovies(page, region, language).map { response ->
-            response.toMovie()
+        region: String
+    ): Observable<PagingData<Movie>> {
+        return getPagingMovies { page ->
+            dataSource.getTopRatedMovies(
+                page = page,
+                language = language,
+                region = region
+            )
         }
     }
 }

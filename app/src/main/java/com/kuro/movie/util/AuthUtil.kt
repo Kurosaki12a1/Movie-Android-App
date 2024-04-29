@@ -7,7 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 inline fun <T> safeCallWithForFirebase(
     context: Context,
     setFirebaseAuthErrorMessage: (exception: FirebaseAuthException) -> Resource<T> = {
-        Resource.failure(Exception("Firebase Auth Error"))
+        Resource.failure(it, it.localizedMessage)
     },
     call: () -> Resource<T>,
 ): Resource<T> {

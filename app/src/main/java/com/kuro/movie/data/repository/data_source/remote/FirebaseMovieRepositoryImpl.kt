@@ -29,7 +29,7 @@ class FirebaseMovieRepositoryImpl @Inject constructor(
             val movies = documentToListMovie(document = result)
 
             if (movies.isNotEmpty()) {
-                Resource.Success(movies)
+                Resource.success(movies)
             } else {
                 Resource.failure(Exception("No data found"))
             }

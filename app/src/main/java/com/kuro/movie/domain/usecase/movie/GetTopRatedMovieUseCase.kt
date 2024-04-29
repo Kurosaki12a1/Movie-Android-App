@@ -1,9 +1,9 @@
 package com.kuro.movie.domain.usecase.movie
 
-import com.kuro.movie.domain.repository.HomeMovieRepository
+import com.kuro.movie.domain.repository.data_source.remote.HomeMovieRemoteRepository
 import javax.inject.Inject
 
-class GetTopRatedMovieUseCase @Inject constructor(private val repository: HomeMovieRepository) {
+class GetTopRatedMovieUseCase @Inject constructor(private val repository: HomeMovieRemoteRepository) {
 
     suspend fun invoke(
         language: String,

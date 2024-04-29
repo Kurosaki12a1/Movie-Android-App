@@ -1,13 +1,14 @@
 package com.kuro.movie.di
 
 import android.content.Context
+import com.kuro.movie.BuildConfig
+import com.kuro.movie.data.data_source.remote.GenreAPI
+import com.kuro.movie.data.data_source.remote.HomeAPI
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import com.kuro.movie.BuildConfig
-import com.kuro.movie.data.data_source.remote.HomeAPI
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -81,4 +82,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideHomeAPI(retrofit: Retrofit): HomeAPI = retrofit.create(HomeAPI::class.java)
+
+    @Provides
+    @Singleton
+    fun provideGenreAPI(retrofit: Retrofit): GenreAPI = retrofit.create(GenreAPI::class.java)
 }

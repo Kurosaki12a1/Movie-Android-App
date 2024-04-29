@@ -1,26 +1,23 @@
 package com.kuro.movie.domain.repository
 
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
+import androidx.paging.PagingData
 import com.kuro.movie.data.model.Movie
+import com.kuro.movie.util.Constants.DEFAULT_REGION
+import io.reactivex.Observable
 
 interface HomeMovieRepository {
-
-    suspend fun getNowPlayingMovies(
+    fun getNowPlayingMovies(
         language: String,
-        region: String,
-        page: Int
-    ): Observable<Movie>
+        region: String = DEFAULT_REGION
+    ): Observable<PagingData<Movie>>
 
-    suspend fun getPopularMovies(
+    fun getPopularMovies(
         language: String,
-        region: String,
-        page: Int
-    ): Single<Movie>
+        region: String
+    ): Observable<PagingData<Movie>>
 
-    suspend fun getTopRatedMovies(
+    fun getTopRatedMovies(
         language: String,
-        region: String,
-        page: Int
-    ): Single<Movie>
+        region: String
+    ): Observable<PagingData<Movie>>
 }
