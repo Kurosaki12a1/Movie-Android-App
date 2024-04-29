@@ -5,6 +5,7 @@ import androidx.navigation.fragment.findNavController
 import com.kuro.movie.MainNavGraphDirections
 import com.kuro.movie.core.BaseFragment
 import com.kuro.movie.databinding.FragmentSplashBinding
+import com.kuro.movie.extension.navigateWithAnimation
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 
@@ -15,7 +16,8 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(
 
     override fun onInitialize() {
         viewModel.navigateToHome.observe(viewLifecycleOwner) {
-            findNavController().navigate(MainNavGraphDirections.actionGlobalAuthFlow())
+            if (it)
+            findNavController().navigateWithAnimation(MainNavGraphDirections.actionGlobalAuthFlow())
         }
 
         viewModel.startTimer()

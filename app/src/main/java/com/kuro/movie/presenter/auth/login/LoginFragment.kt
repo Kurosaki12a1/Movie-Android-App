@@ -1,7 +1,10 @@
 package com.kuro.movie.presenter.auth.login
 
+import android.app.Activity
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -9,6 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.kuro.movie.R
 import com.kuro.movie.core.BaseFragment
 import com.kuro.movie.databinding.FragmentLoginBinding
+import com.kuro.movie.extension.navigateWithAnimation
 import com.kuro.movie.navigation.NavigateFlow
 import com.kuro.movie.navigation.NavigationFlow
 import com.kuro.movie.util.Resource
@@ -20,6 +24,14 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(
 ) {
     private lateinit var googleSignInClient: GoogleSignInClient
     private val loginViewModel: LoginViewModel by viewModels()
+
+    private val launcher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                loginViewModel.signInWithGoogle(task)
+            }
+        }
 
     override fun onInitialize() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -39,6 +51,22 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(
                 binding.edtEmail.text.toString(),
                 binding.edtPassword.text.toString()
             )
+        }
+
+        binding.txtForgotPassword.setOnClickListener {
+            findNavController().navigateWithAnimation(
+                LoginFragmentDirections.actionLoginFragmentToForgetPasswordFragment(
+                    binding.edtEmail.text.toString()
+                )
+            )
+        }
+
+        binding.btnSignIn.setOnClickListener {
+            findNavController().navigateWithAnimation(LoginFragmentDirections.actionLoginFragmentToSignUpFragment())
+        }
+
+        binding.btnSignInGoogle.setOnClickListener {
+            signInWithGoogle()
         }
     }
 
@@ -65,5 +93,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(
                 }
             }
         }
+    }
+
+    private fun signInWithGoogle() {
+        val signInIntent = googleSignInClient.signInIntent
+        launcher.launch(signInIntent)
     }
 }

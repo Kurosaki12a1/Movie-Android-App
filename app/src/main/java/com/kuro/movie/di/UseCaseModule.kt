@@ -2,7 +2,9 @@ package com.kuro.movie.di
 
 import com.kuro.movie.domain.repository.AuthRepository
 import com.kuro.movie.domain.repository.HomeMovieRepository
+import com.kuro.movie.domain.usecase.auth.login.SignInWithCredentialUseCase
 import com.kuro.movie.domain.usecase.auth.login.SignInWithEmailAndPasswordUseCase
+import com.kuro.movie.domain.usecase.auth.signup.CreateUserWithEmailAndPasswordUseCase
 import com.kuro.movie.domain.usecase.movie.GetNowPlayingMovieUseCase
 import com.kuro.movie.domain.usecase.movie.GetPopularMovieUseCase
 import com.kuro.movie.domain.usecase.movie.GetTopRatedMovieUseCase
@@ -36,5 +38,17 @@ object UseCaseModule {
     @Singleton
     fun provideSignInWithEmailAndPasswordUseCase(repository: AuthRepository): SignInWithEmailAndPasswordUseCase =
         SignInWithEmailAndPasswordUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideSignInWithCredentialUseCase(repository: AuthRepository) : SignInWithCredentialUseCase {
+        return SignInWithCredentialUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCreateUserWithEmailAndPasswordUseCase(repository: AuthRepository) : CreateUserWithEmailAndPasswordUseCase {
+        return CreateUserWithEmailAndPasswordUseCase(repository)
+    }
 
 }
