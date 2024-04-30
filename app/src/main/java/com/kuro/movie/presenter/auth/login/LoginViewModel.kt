@@ -7,7 +7,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.kuro.movie.core.BaseViewModel
-import com.kuro.movie.domain.usecase.FirebaseUseCases
+import com.kuro.movie.domain.usecase.firebase.FirebaseUseCases
 import com.kuro.movie.domain.usecase.auth.login.SignInWithCredentialUseCase
 import com.kuro.movie.domain.usecase.auth.login.SignInWithEmailAndPasswordUseCase
 import com.kuro.movie.util.Resource

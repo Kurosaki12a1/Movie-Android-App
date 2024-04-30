@@ -163,4 +163,8 @@ dependencies {
     // Coil
     implementation(libs.coil)
     implementation(libs.coil.svg)
+
+    // Leak Canary
+    debugImplementation(libs.leakcanary.android)
+
 }

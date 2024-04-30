@@ -26,15 +26,15 @@ interface MovieDao {
     suspend fun deleteMovieFromWatchListItem(movieWatchListItem: MovieWatchListItem)
 
     @Query("SELECT movieId FROM $FAVORITE_MOVIE_TABLE_NAME")
-    fun getFavoriteMovieIds(): Flowable<List<Int>>
+    fun getFavoriteMovieIds(): List<Int>
 
     @Query("SELECT movieId FROM $MOVIE_WATCH_LIST_ITEM_TABLE_NAME")
-    fun getMovieWatchListItemIds(): Flowable<List<Int>>
+    fun getMovieWatchListItemIds(): List<Int>
 
     @Query("SELECT * FROM $FAVORITE_MOVIE_TABLE_NAME")
-    fun getFavoriteMovies(): Flowable<List<FavoriteMovie>>
+    fun getFavoriteMovies(): List<FavoriteMovie>
 
     @Query("SELECT * FROM $MOVIE_WATCH_LIST_ITEM_TABLE_NAME")
-    fun getMovieWatchList(): Flowable<List<MovieWatchListItem>>
+    fun getMovieWatchList(): List<MovieWatchListItem>
 
 }

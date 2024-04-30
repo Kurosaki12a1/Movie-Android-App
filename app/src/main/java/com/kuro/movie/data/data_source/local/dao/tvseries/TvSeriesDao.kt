@@ -26,15 +26,15 @@ interface TvSeriesDao {
     suspend fun deleteTvSeriesFromWatchListItem(tvSeriesWatchListItem: TvSeriesWatchListItem)
 
     @Query("SELECT tvSeriesId FROM $FAVORITE_TV_SERIES_TABLE_NAME")
-    fun getFavoriteTvSeriesIds(): Flowable<List<Int>>
+    fun getFavoriteTvSeriesIds(): List<Int>
 
     @Query("SELECT tvSeriesId FROM $TV_SERIES_WATCH_LIST_ITEM_TABLE_NAME")
-    fun getTvSeriesWatchListItemIds(): Flowable<List<Int>>
+    fun getTvSeriesWatchListItemIds(): List<Int>
 
     @Query("SELECT * FROM $FAVORITE_TV_SERIES_TABLE_NAME")
-    fun getFavoriteTvSeries(): Flowable<List<FavoriteTvSeries>>
+    fun getFavoriteTvSeries(): List<FavoriteTvSeries>
 
     @Query("SELECT * FROM $TV_SERIES_WATCH_LIST_ITEM_TABLE_NAME")
-    fun getTvSeriesWatchList(): Flowable<List<TvSeriesWatchListItem>>
+    fun getTvSeriesWatchList(): List<TvSeriesWatchListItem>
 
 }

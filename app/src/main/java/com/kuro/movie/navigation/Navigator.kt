@@ -2,6 +2,7 @@ package com.kuro.movie.navigation
 
 import androidx.navigation.NavController
 import com.kuro.movie.MainNavGraphDirections
+import com.kuro.movie.R
 import com.kuro.movie.extension.navigateWithAnimation
 import com.kuro.movie.presenter.auth.login.LoginFragmentDirections
 

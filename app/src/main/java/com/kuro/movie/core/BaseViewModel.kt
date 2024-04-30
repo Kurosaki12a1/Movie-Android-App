@@ -13,11 +13,11 @@ abstract class BaseViewModel : ViewModel() {
         this.disposable.add(disposable)
     }
 
-    fun sendMessage(message : String) {
+    fun sendMessage(message: String) {
         snackBarMessage.postValue(message)
     }
 
-    fun handleError(error : Throwable) {
+    fun handleError(error: Throwable) {
         snackBarMessage.postValue(error.localizedMessage ?: "An unexpected error occurred")
     }
 

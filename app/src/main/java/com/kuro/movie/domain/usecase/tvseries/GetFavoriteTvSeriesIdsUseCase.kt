@@ -7,7 +7,7 @@ import javax.inject.Inject
 class GetFavoriteTvSeriesIdsUseCase @Inject constructor(
     private val repository: TvSeriesLocalRepository
 ) {
-    operator fun invoke(): Flowable<List<Int>> {
+    suspend operator fun invoke(): List<Int> {
         return repository.getFavoriteTvSeriesIds()
     }
 }

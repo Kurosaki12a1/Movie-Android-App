@@ -9,7 +9,7 @@ class GetMoviesInWatchListUseCase @Inject constructor(
     private val repository: MovieLocalRepository
 ) {
 
-    operator fun invoke(): Flowable<List<Movie>> {
+    suspend operator fun invoke(): List<Movie> {
         return repository.getMoviesInWatchList()
     }
 }

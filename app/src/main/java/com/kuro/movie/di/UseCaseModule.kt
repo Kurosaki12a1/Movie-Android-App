@@ -5,18 +5,30 @@ import com.kuro.movie.domain.repository.AuthRepository
 import com.kuro.movie.domain.repository.GenreRepository
 import com.kuro.movie.domain.repository.HomeMovieRepository
 import com.kuro.movie.domain.repository.HomeTvRepository
+import com.kuro.movie.domain.repository.SharedPreferenceRepository
 import com.kuro.movie.domain.repository.data_source.local.LocalDatabaseRepository
 import com.kuro.movie.domain.repository.data_source.local.MovieLocalRepository
 import com.kuro.movie.domain.repository.data_source.local.TvSeriesLocalRepository
+import com.kuro.movie.domain.repository.data_source.remote.FirebaseCoreMovieRepository
+import com.kuro.movie.domain.repository.data_source.remote.FirebaseCoreTvSeriesRepository
 import com.kuro.movie.domain.repository.data_source.remote.FirebaseMovieRepository
 import com.kuro.movie.domain.repository.data_source.remote.FirebaseTvSeriesRepository
 import com.kuro.movie.domain.repository.data_source.remote.HomeMovieRemoteRepository
-import com.kuro.movie.domain.usecase.FirebaseUseCases
 import com.kuro.movie.domain.usecase.auth.login.SignInWithCredentialUseCase
 import com.kuro.movie.domain.usecase.auth.login.SignInWithEmailAndPasswordUseCase
 import com.kuro.movie.domain.usecase.auth.signup.CreateUserWithEmailAndPasswordUseCase
 import com.kuro.movie.domain.usecase.database.ClearAllDatabaseUseCase
 import com.kuro.movie.domain.usecase.database.LocalDatabaseUseCases
+import com.kuro.movie.domain.usecase.firebase.AddMovieToFavoriteListInFirebaseUseCase
+import com.kuro.movie.domain.usecase.firebase.AddMovieToWatchListInFirebaseUseCase
+import com.kuro.movie.domain.usecase.firebase.AddTvSeriesToFavoriteListInFirebaseUseCase
+import com.kuro.movie.domain.usecase.firebase.AddTvSeriesToWatchListInFirebaseUseCase
+import com.kuro.movie.domain.usecase.firebase.FirebaseCoreUseCases
+import com.kuro.movie.domain.usecase.firebase.FirebaseUseCases
+import com.kuro.movie.domain.usecase.firebase.GetFavoriteMoviesFromLocalDatabaseThenUpdateToFirebaseUseCase
+import com.kuro.movie.domain.usecase.firebase.GetFavoriteTvSeriesFromLocalDatabaseThenUpdateToFirebase
+import com.kuro.movie.domain.usecase.firebase.GetMovieWatchListFromLocalDatabaseThenUpdateToFirebase
+import com.kuro.movie.domain.usecase.firebase.GetTvSeriesWatchFromLocalDatabaseThenUpdateToFirebase
 import com.kuro.movie.domain.usecase.movie.GetFavoriteMovieFromFirebaseThenUpdateLocalDatabaseUseCase
 import com.kuro.movie.domain.usecase.movie.GetFavoriteMovieIdsUseCase
 import com.kuro.movie.domain.usecase.movie.GetFavoriteMoviesUseCase
@@ -32,6 +44,7 @@ import com.kuro.movie.domain.usecase.movie.GetTopRatedMovieUseCase
 import com.kuro.movie.domain.usecase.movie.GetTopRatedMoviesUseCase
 import com.kuro.movie.domain.usecase.movie.ToggleMovieForFavoriteListUseCase
 import com.kuro.movie.domain.usecase.movie.ToggleMovieForWatchListUseCase
+import com.kuro.movie.domain.usecase.settings.SettingsUseCase
 import com.kuro.movie.domain.usecase.tvseries.GetFavoriteTvSeriesFromFirebaseThenUpdateLocalDatabaseUseCase
 import com.kuro.movie.domain.usecase.tvseries.GetFavoriteTvSeriesIdsUseCase
 import com.kuro.movie.domain.usecase.tvseries.GetFavoriteTvSeriesUseCase
@@ -43,6 +56,8 @@ import com.kuro.movie.domain.usecase.tvseries.GetTvSeriesWatchListFromFirebaseTh
 import com.kuro.movie.domain.usecase.tvseries.GetTvSeriesWatchListItemIdsUseCase
 import com.kuro.movie.domain.usecase.tvseries.ToggleTvSeriesForFavoriteListUseCase
 import com.kuro.movie.domain.usecase.tvseries.ToggleTvSeriesForWatchListItemUseCase
+import com.kuro.movie.domain.usecase.ui_mode.GetUIModeUseCase
+import com.kuro.movie.domain.usecase.ui_mode.UpdateUIModeUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -313,4 +328,100 @@ object UseCaseModule {
         getMoviesInWatchListUseCase,
         getTvSeriesInWatchListUseCase
     )
+
+    @Provides
+    @Singleton
+    fun provideSettingsUseCase(
+        repo: SharedPreferenceRepository
+    ): SettingsUseCase = SettingsUseCase(GetUIModeUseCase(repo), UpdateUIModeUseCase(repo))
+
+    @Provides
+    @Singleton
+    fun provideAddTvSeriesToWatchListInFirebaseUseCase(
+        auth: FirebaseAuth,
+        repository: FirebaseCoreTvSeriesRepository
+    ): AddTvSeriesToWatchListInFirebaseUseCase = AddTvSeriesToWatchListInFirebaseUseCase(
+        auth, repository
+    )
+
+    @Provides
+    @Singleton
+    fun provideAddTvSeriesToFavoriteListInFirebaseUseCase(
+        auth: FirebaseAuth,
+        repository: FirebaseCoreTvSeriesRepository
+    ): AddTvSeriesToFavoriteListInFirebaseUseCase = AddTvSeriesToFavoriteListInFirebaseUseCase(
+        auth, repository
+    )
+
+    @Provides
+    @Singleton
+    fun provideAddMovieToFavoriteListInFirebaseUseCase(
+        auth: FirebaseAuth,
+        repository: FirebaseCoreMovieRepository
+    ): AddMovieToFavoriteListInFirebaseUseCase = AddMovieToFavoriteListInFirebaseUseCase(
+        auth, repository
+    )
+
+    @Provides
+    @Singleton
+    fun provideAddMovieToWatchListInFirebaseUseCase(
+        auth: FirebaseAuth,
+        repository: FirebaseCoreMovieRepository
+    ): AddMovieToWatchListInFirebaseUseCase = AddMovieToWatchListInFirebaseUseCase(
+        auth, repository
+    )
+
+    @Provides
+    @Singleton
+    fun provideFirebaseCoreUseCase(
+        addMovieToFavoriteListInFirebaseUseCase: AddMovieToFavoriteListInFirebaseUseCase,
+        addMovieToWatchListInFirebaseUseCase: AddMovieToWatchListInFirebaseUseCase,
+        addTvSeriesToFavoriteListInFirebaseUseCase: AddTvSeriesToFavoriteListInFirebaseUseCase,
+        addTvSeriesToWatchListInFirebaseUseCase: AddTvSeriesToWatchListInFirebaseUseCase
+    ): FirebaseCoreUseCases = FirebaseCoreUseCases(
+        addMovieToFavoriteListInFirebaseUseCase,
+        addMovieToWatchListInFirebaseUseCase,
+        addTvSeriesToFavoriteListInFirebaseUseCase,
+        addTvSeriesToWatchListInFirebaseUseCase
+    )
+
+    @Provides
+    @Singleton
+    fun provideGetMovieWatchListFromLocalDatabaseThenUpdateToFirebase(
+        localDatabaseUseCases: LocalDatabaseUseCases,
+        firebaseCoreUseCases: FirebaseCoreUseCases
+    ): GetMovieWatchListFromLocalDatabaseThenUpdateToFirebase =
+        GetMovieWatchListFromLocalDatabaseThenUpdateToFirebase(
+            localDatabaseUseCases, firebaseCoreUseCases
+        )
+
+    @Provides
+    @Singleton
+    fun provideGetFavoriteMoviesFromLocalDatabaseThenUpdateToFirebaseUseCase(
+        localDatabaseUseCases: LocalDatabaseUseCases,
+        firebaseCoreUseCases: FirebaseCoreUseCases
+    ): GetFavoriteMoviesFromLocalDatabaseThenUpdateToFirebaseUseCase =
+        GetFavoriteMoviesFromLocalDatabaseThenUpdateToFirebaseUseCase(
+            localDatabaseUseCases, firebaseCoreUseCases
+        )
+
+    @Provides
+    @Singleton
+    fun provideGetFavoriteTvSeriesFromLocalDatabaseThenUpdateToFirebase(
+        localDatabaseUseCases: LocalDatabaseUseCases,
+        firebaseCoreUseCases: FirebaseCoreUseCases
+    ): GetFavoriteTvSeriesFromLocalDatabaseThenUpdateToFirebase =
+        GetFavoriteTvSeriesFromLocalDatabaseThenUpdateToFirebase(
+            localDatabaseUseCases, firebaseCoreUseCases
+        )
+
+    @Provides
+    @Singleton
+    fun provideGetTvSeriesWatchFromLocalDatabaseThenUpdateToFirebase(
+        localDatabaseUseCases: LocalDatabaseUseCases,
+        firebaseCoreUseCases: FirebaseCoreUseCases
+    ): GetTvSeriesWatchFromLocalDatabaseThenUpdateToFirebase =
+        GetTvSeriesWatchFromLocalDatabaseThenUpdateToFirebase(
+            localDatabaseUseCases, firebaseCoreUseCases
+        )
 }

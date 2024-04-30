@@ -5,9 +5,8 @@ import com.kuro.movie.data.mapper.toFavoriteMovie
 import com.kuro.movie.data.mapper.toMovieWatchListItem
 import com.kuro.movie.data.model.Movie
 import com.kuro.movie.domain.repository.data_source.local.MovieLocalRepository
-import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MovieLocalRepositoryImpl @Inject constructor(
@@ -34,25 +33,27 @@ class MovieLocalRepositoryImpl @Inject constructor(
         movieDao.deleteMovieFromWatchListItem(movieWatchListItem = movie.toMovieWatchListItem())
     }
 
-    override fun getFavoriteMovieIds(): Flowable<List<Int>> {
-        return movieDao.getFavoriteMovieIds().subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+    override suspend fun getFavoriteMovieIds(): List<Int> {
+        return withContext(Dispatchers.IO) {
+            movieDao.getFavoriteMovieIds()
+        }
     }
 
-    override fun getMovieWatchListItemIds(): Flowable<List<Int>> {
-        return movieDao.getMovieWatchListItemIds().subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+    override suspend fun getMovieWatchListItemIds(): List<Int> {
+        return withContext(Dispatchers.IO) {
+            movieDao.getMovieWatchListItemIds()
+        }
     }
 
-    override fun getFavoriteMovies(): Flowable<List<Movie>> {
-        return movieDao.getFavoriteMovies().map {
-            it.map { it.movie }
-        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+    override suspend fun getFavoriteMovies(): List<Movie> {
+        return withContext(Dispatchers.IO) {
+            movieDao.getFavoriteMovies().map { it.movie }
+        }
     }
 
-    override fun getMoviesInWatchList(): Flowable<List<Movie>> {
-        return movieDao.getMovieWatchList().map {
-            it.map { it.movie }
-        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+    override suspend fun getMoviesInWatchList(): List<Movie> {
+        return withContext(Dispatchers.IO) {
+            movieDao.getMovieWatchList().map { it.movie }
+        }
     }
 }

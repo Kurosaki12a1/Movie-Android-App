@@ -14,12 +14,12 @@ interface MovieLocalRepository {
 
     suspend fun deleteMovieFromWatchListItem(movie: Movie)
 
-    fun getFavoriteMovieIds(): Flowable<List<Int>>
+    suspend fun getFavoriteMovieIds(): List<Int>
 
-    fun getMovieWatchListItemIds(): Flowable<List<Int>>
+    suspend fun getMovieWatchListItemIds(): List<Int>
 
-    fun getFavoriteMovies(): Flowable<List<Movie>>
+    suspend fun getFavoriteMovies(): List<Movie>
 
-    fun getMoviesInWatchList(): Flowable<List<Movie>>
+    suspend fun getMoviesInWatchList(): List<Movie>
 
 }

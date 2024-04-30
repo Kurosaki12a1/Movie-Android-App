@@ -7,7 +7,7 @@ import javax.inject.Inject
 class GetMovieWatchListItemIdsUseCase @Inject constructor(
     private val repository: MovieLocalRepository
 ) {
-    operator fun invoke(): Flowable<List<Int>> {
+    suspend operator fun invoke(): List<Int> {
         return repository.getMovieWatchListItemIds()
     }
 }

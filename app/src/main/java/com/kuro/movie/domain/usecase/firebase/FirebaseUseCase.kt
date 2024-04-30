@@ -1,4 +1,4 @@
-package com.kuro.movie.domain.usecase
+package com.kuro.movie.domain.usecase.firebase
 
 import com.kuro.movie.domain.usecase.movie.GetFavoriteMovieFromFirebaseThenUpdateLocalDatabaseUseCase
 import com.kuro.movie.domain.usecase.movie.GetMovieWatchListFromFirebaseThenUpdateLocalDatabaseUseCase

@@ -20,5 +20,5 @@ interface UpComingDao {
     suspend fun deleteUpcomingRemind(upcomingRemindEntity: UpcomingRemindEntity)
 
     @Query("SELECT * FROM $UPCOMING_REMIND_TABLE_NAME")
-    fun getUpcomingRemindList(): Flowable<List<UpcomingRemindEntity>>
+    fun getUpcomingRemindList(): List<UpcomingRemindEntity>
 }

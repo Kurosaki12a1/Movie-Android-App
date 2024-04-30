@@ -10,9 +10,6 @@ import com.kuro.movie.data.model.TvSeries
 import com.kuro.movie.domain.usecase.database.LocalDatabaseUseCases
 import com.kuro.movie.navigation.NavigateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,14 +38,12 @@ class DetailBottomSheetViewModel @Inject constructor(
     }
 
     private fun combineUseCases() {
-        Flowable.combineLatest(
-            localDatabaseUseCases.getFavoriteMovieIdsUseCase(),
-            localDatabaseUseCases.getMovieWatchListItemIdsUseCase(),
-            localDatabaseUseCases.getFavoriteTvSeriesIdsUseCase(),
-            localDatabaseUseCases.getTvSeriesWatchListItemIdsUseCase()
-        ) { favoriteMovieIds, movieWatchListIds, favoriteTvIds, tvWatchListIds ->
-            // Create a new instance of DetailBottomSheetState
-            DetailBottomSheetState(
+        viewModelScope.launch {
+            val favoriteMovieIds = localDatabaseUseCases.getFavoriteMovieIdsUseCase()
+            val movieWatchListIds = localDatabaseUseCases.getMovieWatchListItemIdsUseCase()
+            val favoriteTvIds = localDatabaseUseCases.getFavoriteTvSeriesIdsUseCase()
+            val tvWatchListIds = localDatabaseUseCases.getTvSeriesWatchListItemIdsUseCase()
+            val newState = DetailBottomSheetState(
                 doesAddFavorite = _state.value?.movie?.let { movie ->
                     favoriteMovieIds.contains(movie.id)
                 } ?: favoriteTvIds.contains(_state.value?.tvSeries?.id ?: 0),
@@ -56,18 +51,14 @@ class DetailBottomSheetViewModel @Inject constructor(
                     movieWatchListIds.contains(movie.id)
                 } ?: tvWatchListIds.contains(_state.value?.tvSeries?.id ?: 0)
             )
-        }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ newState -> _state.postValue(newState) }, { error -> handleError(error) })
-            .let { addDisposable(it) }
+            _state.postValue(newState)
+        }
     }
 
-    private fun getMovie(): Movie? {
-        return state.value?.movie
-    }
+    private fun getMovie(): Movie? = state.value?.movie
 
-    private fun getTvSeries(): TvSeries? {
-        return state.value?.tvSeries
-    }
+
+    private fun getTvSeries(): TvSeries? = state.value?.tvSeries
 
 
     fun onEvent(event: DetailBottomSheetEvent) {

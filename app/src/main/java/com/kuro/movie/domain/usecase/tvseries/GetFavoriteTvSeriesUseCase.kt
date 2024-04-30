@@ -9,7 +9,7 @@ class GetFavoriteTvSeriesUseCase @Inject constructor(
     private val repository: TvSeriesLocalRepository
 ) {
 
-    operator fun invoke(): Flowable<List<TvSeries>> {
+    suspend operator fun invoke(): List<TvSeries> {
         return repository.getFavoriteTvSeries()
     }
 }

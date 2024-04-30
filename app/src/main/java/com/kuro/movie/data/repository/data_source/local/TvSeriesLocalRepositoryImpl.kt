@@ -5,9 +5,8 @@ import com.kuro.movie.data.mapper.toFavoriteTvSeries
 import com.kuro.movie.data.mapper.toTvSeriesWatchListItem
 import com.kuro.movie.data.model.TvSeries
 import com.kuro.movie.domain.repository.data_source.local.TvSeriesLocalRepository
-import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TvSeriesLocalRepositoryImpl @Inject constructor(
@@ -38,29 +37,27 @@ class TvSeriesLocalRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun getFavoriteTvSeriesIds(): Flowable<List<Int>> {
-        return tvSeriesDao.getFavoriteTvSeriesIds()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+    override suspend fun getFavoriteTvSeriesIds(): List<Int> {
+        return withContext(Dispatchers.IO) {
+            tvSeriesDao.getFavoriteTvSeriesIds()
+        }
     }
 
-    override fun getTvSeriesWatchListItemIds(): Flowable<List<Int>> {
-        return tvSeriesDao.getTvSeriesWatchListItemIds()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+    override suspend fun getTvSeriesWatchListItemIds(): List<Int> {
+        return withContext(Dispatchers.IO) {
+            tvSeriesDao.getTvSeriesWatchListItemIds()
+        }
     }
 
-    override fun getFavoriteTvSeries(): Flowable<List<TvSeries>> {
-        return tvSeriesDao.getFavoriteTvSeries()
-            .map { it.map { it.tvSeries } }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+    override suspend fun getFavoriteTvSeries(): List<TvSeries> {
+        return withContext(Dispatchers.IO) {
+            tvSeriesDao.getFavoriteTvSeries().map { it.tvSeries }
+        }
     }
 
-    override fun getTvSeriesInWatchList(): Flowable<List<TvSeries>> {
-        return tvSeriesDao.getTvSeriesWatchList()
-            .map { it.map { it.tvSeries } }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+    override suspend fun getTvSeriesInWatchList(): List<TvSeries> {
+        return withContext(Dispatchers.IO) {
+            tvSeriesDao.getTvSeriesWatchList().map { it.tvSeries }
+        }
     }
 }

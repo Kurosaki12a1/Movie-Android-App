@@ -14,11 +14,11 @@ interface TvSeriesLocalRepository {
 
     suspend fun deleteTvSeriesFromWatchListItem(tvSeries: TvSeries)
 
-    fun getFavoriteTvSeriesIds(): Flowable<List<Int>>
+    suspend fun getFavoriteTvSeriesIds(): List<Int>
 
-    fun getTvSeriesWatchListItemIds(): Flowable<List<Int>>
+    suspend fun getTvSeriesWatchListItemIds(): List<Int>
 
-    fun getFavoriteTvSeries(): Flowable<List<TvSeries>>
+    suspend fun getFavoriteTvSeries(): List<TvSeries>
 
-    fun getTvSeriesInWatchList(): Flowable<List<TvSeries>>
+    suspend fun getTvSeriesInWatchList(): List<TvSeries>
 }

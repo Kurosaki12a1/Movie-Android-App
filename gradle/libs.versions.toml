@@ -23,6 +23,7 @@ coreKtx = "1.13.0"
 junitVersion = "1.1.5"
 appcompat = "1.6.1"
 kotlinxCoroutinesAndroid = "1.8.0"
+leakcanaryAndroid = "2.14"
 legacySupportV4 = "1.0.0"
 lifecycleExtensions = "2.2.0"
 lifecycleViewmodelSavedstate = "2.7.0"
@@ -123,6 +124,7 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
+leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "play_services_auth_version" }
 firebase-appcheck-playintegrity = { group = "com.google.firebase", name = "firebase-appcheck-playintegrity" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebase-crashlytics" }

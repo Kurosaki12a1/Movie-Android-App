@@ -1,4 +1,4 @@
-package com.kuro.movie.data.repository.data_source.remote
+package com.kuro.movie.data.repository.firebase
 
 import android.content.Context
 import com.google.firebase.firestore.DocumentSnapshot
