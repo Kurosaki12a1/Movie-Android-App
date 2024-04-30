@@ -4,7 +4,6 @@ import com.kuro.movie.core.BasePagingSource
 import com.kuro.movie.data.mapper.toMovie
 import com.kuro.movie.data.model.Movie
 import com.kuro.movie.domain.response.MovieResponse
-import io.reactivex.Single
 import javax.inject.Inject
 
 class MoviesPagingSource @Inject constructor(

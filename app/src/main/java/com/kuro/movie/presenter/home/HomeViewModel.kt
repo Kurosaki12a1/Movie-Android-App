@@ -14,6 +14,7 @@ import com.kuro.movie.domain.usecase.tvseries.GetPopularTvSeriesUseCase
 import com.kuro.movie.domain.usecase.tvseries.GetTopRatedTvSeriesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,76 +31,124 @@ class HomeViewModel @Inject constructor(
     val homeState: LiveData<HomeState>
         get() = _homeState
 
-    private val _moviePagingData = MutableLiveData<PagingData<Movie>>()
-    val moviePagingData: LiveData<PagingData<Movie>>
-        get() = _moviePagingData
+    private val _nowPlayingMovie = MutableLiveData<PagingData<Movie>>()
+    val nowPlayingMovie: LiveData<PagingData<Movie>>
+        get() = _nowPlayingMovie
 
-    private val _tvSeriesPagingData = MutableLiveData<PagingData<TvSeries>>()
-    val tvSeriesPagingData: LiveData<PagingData<TvSeries>>
-        get() = _tvSeriesPagingData
+    private val _popularMovie = MutableLiveData<PagingData<Movie>>()
+    val popularMovie: LiveData<PagingData<Movie>>
+        get() = _popularMovie
 
-    fun getNowPlayingMovies() {
+    private val _topRatedMovie = MutableLiveData<PagingData<Movie>>()
+    val topRatedMovie: LiveData<PagingData<Movie>>
+        get() = _topRatedMovie
+
+    private val _popularTvSeries = MutableLiveData<PagingData<TvSeries>>()
+    val popularTvSeries: LiveData<PagingData<TvSeries>>
+        get() = _popularTvSeries
+
+    private val _topRatedTvSeries = MutableLiveData<PagingData<TvSeries>>()
+    val topRatedTvSeries: LiveData<PagingData<TvSeries>>
+        get() = _topRatedTvSeries
+
+    private var nowPlayingDisposable: Disposable? = null
+    private var popularMovieDisposable: Disposable? = null
+    private var topRatedMovieDisposable: Disposable? = null
+    private var popularTvSeriesDisposable: Disposable? = null
+    private var topRatedTvSeriesDisposable: Disposable? = null
+
+    init {
+        fetchData()
+    }
+
+    fun clickSeeAllText(text: String) {
+        val newState = _homeState.value?.copy(
+            isShowsSeeAllPage = true,
+            seeAllPageToolBarText = text
+        )
+        _homeState.postValue(newState)
+    }
+
+    fun fetchData() {
+        getNowPlayingMovies()
+        getPopularMovies()
+        getTopRatedMovies()
+        getPopularTvSeries()
+        getTopRatedTvSeries()
+    }
+
+    private fun getNowPlayingMovies() {
         viewModelScope.launch {
-            getNowPlayingMoviesUseCase()
+            nowPlayingDisposable?.dispose()
+
+            nowPlayingDisposable = getNowPlayingMoviesUseCase()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    _moviePagingData.postValue(it)
+                    _nowPlayingMovie.postValue(it)
                 }, { error ->
                     handleError(error)
-                })
+                }).also { addDisposable(it) }
         }
     }
 
-    fun getPopularMovies() {
+    private fun getPopularMovies() {
         viewModelScope.launch {
-            getPopularMoviesUseCase()
+            popularMovieDisposable?.dispose()
+
+            popularMovieDisposable = getPopularMoviesUseCase()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    _moviePagingData.postValue(it)
+                    _popularMovie.postValue(it)
                 }, { error ->
                     handleError(error)
-                })
+                }).also { addDisposable(it) }
         }
     }
 
-    fun getTopRatedMovies() {
+    private fun getTopRatedMovies() {
         viewModelScope.launch {
-            getTopRatedMoviesUseCase()
+            topRatedMovieDisposable?.dispose()
+
+            topRatedMovieDisposable = getTopRatedMoviesUseCase()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    _moviePagingData.postValue(it)
+                    _topRatedMovie.postValue(it)
                 }, { error ->
                     handleError(error)
-                })
+                }).also { addDisposable(it) }
         }
     }
 
-    fun getPopularTvSeries() {
+    private fun getPopularTvSeries() {
         viewModelScope.launch {
-            getPopularTvSeriesUseCase()
+            popularTvSeriesDisposable?.dispose()
+
+            popularTvSeriesDisposable = getPopularTvSeriesUseCase()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    _tvSeriesPagingData.postValue(it)
+                    _popularTvSeries.postValue(it)
                 }, { error ->
                     handleError(error)
-                })
+                }).also { addDisposable(it) }
         }
     }
 
-    fun getTopRatedTvSeries() {
+    private fun getTopRatedTvSeries() {
         viewModelScope.launch {
-            getTopRatedTvSeriesUseCase()
+            topRatedTvSeriesDisposable?.dispose()
+
+            topRatedTvSeriesDisposable = getTopRatedTvSeriesUseCase()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    _tvSeriesPagingData.postValue(it)
+                    _topRatedTvSeries.postValue(it)
                 }, { error ->
                     handleError(error)
-                })
+                }).also { addDisposable(it) }
         }
     }
 }

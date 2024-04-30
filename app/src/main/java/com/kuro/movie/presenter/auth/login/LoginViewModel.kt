@@ -35,6 +35,7 @@ class LoginViewModel @Inject constructor(
 
     private fun checkUserSignIn() {
         if (auth.currentUser != null) {
+            mutableState.value = Resource.Loading
             onLoginSuccess()
         }
     }

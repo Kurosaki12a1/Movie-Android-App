@@ -34,4 +34,18 @@
         android:id="@+id/action_global_authFlow"
         app:destination="@id/auth_flow" />
 
+    <action
+        android:id="@+id/action_global_detailBottomSheetFlow"
+        app:destination="@id/detail_bottom_sheet_flow">
+        <argument
+            android:name="movie"
+            app:argType="com.kuro.movie.data.model.Movie"
+            app:nullable="true" />
+        <argument
+            android:name="tvseries"
+            app:argType="com.kuro.movie.data.model.TvSeries"
+            app:nullable="true" />
+    </action>
+
+
 </navigation>

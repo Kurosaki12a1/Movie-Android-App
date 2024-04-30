@@ -103,7 +103,7 @@ dependencies {
     implementation(libs.converter.gson)
 
     // RxJava Adapter
-    implementation(libs.retrofit.adapter.rxjava3)
+    implementation(libs.retrofit.adapter.rxjava2)
 
     // Gson
     implementation(libs.gson)
@@ -122,6 +122,8 @@ dependencies {
 
     //Recyclerview
     implementation(libs.androidx.recyclerview)
+    implementation(libs.sparrow007.carouselrecyclerview)
+
     implementation(libs.androidx.cardview)
 
     // coroutine
@@ -157,4 +159,8 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
 
     implementation(libs.firebase.firestore)
+
+    // Coil
+    implementation(libs.coil)
+    implementation(libs.coil.svg)
 }

@@ -8,12 +8,12 @@ import retrofit2.http.Query
 interface GenreAPI {
 
     @GET("genre/movie/list")
-    suspend fun getMovieGenreList(
+    fun getMovieGenreList(
         @Query("language") language: String
     ): Observable<GenreListResponse>
 
     @GET("genre/tv/list")
-    suspend fun getTvGenreList(
+    fun getTvGenreList(
         @Query("language") language: String
     ): Observable<GenreListResponse>
 }
