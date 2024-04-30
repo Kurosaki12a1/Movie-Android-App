@@ -1,6 +1,6 @@
 package com.kuro.movie.presenter.auth.forget_password
 
-import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -32,6 +32,12 @@ class ForgetPasswordFragment : BaseFragment<FragmentForgetPasswordBinding>(
         }
     }
 
+    private fun onLoading(isLoading: Boolean) {
+        binding.progressBar.isVisible = isLoading
+        binding.edtEmail.isEnabled = !isLoading
+        binding.btnForgetPassword.isEnabled = !isLoading
+    }
+
     private fun setUpObservers() {
         viewModel.snackBarMessage.observe(viewLifecycleOwner) { message ->
             if (!message.isNullOrEmpty()) {
@@ -46,14 +52,16 @@ class ForgetPasswordFragment : BaseFragment<FragmentForgetPasswordBinding>(
         viewModel.uiState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is Resource.Success -> {
-                    binding.progressBar.visibility = View.GONE
+                    onLoading(false)
                     findNavController().popBackStack()
                 }
+
                 is Resource.Failure -> {
-                    binding.progressBar.visibility = View.GONE
+                    onLoading(false)
                 }
+
                 is Resource.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
+                    onLoading(true)
                 }
             }
         }

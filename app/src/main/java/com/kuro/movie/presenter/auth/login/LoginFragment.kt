@@ -1,8 +1,8 @@
 package com.kuro.movie.presenter.auth.login
 
 import android.app.Activity
-import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -68,6 +68,14 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(
         }
     }
 
+    private fun onLoading(isLoading: Boolean) {
+        binding.progressBar.isVisible = isLoading
+        binding.edtEmail.isEnabled = !isLoading
+        binding.edtPassword.isEnabled = !isLoading
+        binding.btnSignIn.isEnabled = !isLoading
+        binding.btnSignInGoogle.isEnabled = !isLoading
+    }
+
     private fun setUpObservers() {
         loginViewModel.snackBarMessage.observe(viewLifecycleOwner) { message ->
             if (message != null) {
@@ -78,16 +86,16 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(
         loginViewModel.uiState.observe(viewLifecycleOwner) { resource ->
             when (resource) {
                 is Resource.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
+                    onLoading(true)
                 }
 
                 is Resource.Success -> {
-                    binding.progressBar.visibility = View.GONE
+                    onLoading(false)
                     (requireActivity() as NavigationFlow).navigateToFlow(NavigateFlow.HomeFlow)
                 }
 
                 is Resource.Failure -> {
-                    binding.progressBar.visibility = View.GONE
+                    onLoading(false)
                 }
             }
         }

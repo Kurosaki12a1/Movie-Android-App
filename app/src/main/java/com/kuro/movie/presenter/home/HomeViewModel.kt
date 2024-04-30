@@ -61,10 +61,10 @@ class HomeViewModel @Inject constructor(
         fetchData()
     }
 
-    fun clickSeeAllText(text: String) {
+    fun clickSeeAllText(text: String?) {
         val newState = _homeState.value?.copy(
-            isShowsSeeAllPage = true,
-            seeAllPageToolBarText = text
+            isShowsSeeAllPage = text != null,
+            seeAllPageToolBarText = text?: ""
         )
         _homeState.postValue(newState)
     }

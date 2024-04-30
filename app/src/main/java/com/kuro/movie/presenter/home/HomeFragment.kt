@@ -32,9 +32,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     private val topRatedMoviesAdapter: TopRatedMoviesAdapter by lazy { TopRatedMoviesAdapter() }
     private val topRatedTvSeriesAdapter: TopRatedTvSeriesAdapter by lazy { TopRatedTvSeriesAdapter() }
 
+
     override fun onInitialize() {
         handlePagingLoadStates()
-        addOnBackPressedCallBack(behavior = this::hideSeeAllPage)
+        addOnBackPressedCallBack { homeViewModel.clickSeeAllText(null) }
         setupRecyclerAdapters()
         setUpView()
         setUpObservers()
@@ -42,7 +43,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
 
     private fun setUpView() {
         binding.btnNavigateUp.setOnClickListener {
-            hideSeeAllPage()
+            homeViewModel.clickSeeAllText(null)
         }
 
         binding.errorScreen.btnError.setOnClickListener {
@@ -53,6 +54,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
             topRatedMoviesAdapter.retry()
             topRatedTvSeriesAdapter.retry()
         }
+
         setAdaptersClickListener()
         setupListenerSeeAllClickEvents()
     }
@@ -236,6 +238,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     }
 
     private fun hideSeeAllPage() {
+        //   homeViewModel.clickSeeAllText(null)
         binding.apply {
             scrollView.animation =
                 AnimationUtils.loadAnimation(requireContext(), R.anim.slide_in_left)
@@ -271,6 +274,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
             seeAllPage.animation =
                 AnimationUtils.loadAnimation(requireContext(), R.anim.slide_in_left)
             text?.let { toolbarText.text = it }
+            seeAllPage.makeVisible()
+            scrollView.makeGone()
         }
     }
 

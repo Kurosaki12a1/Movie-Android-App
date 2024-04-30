@@ -20,6 +20,7 @@ class Navigator {
         is NavigateFlow.ForgetPasswordFlow -> navController.navigateWithAnimation(
             LoginFragmentDirections.actionLoginFragmentToForgetPasswordFragment(navigateFlow.email)
         )
+        // This does not need animation
         is NavigateFlow.BottomSheetDetailFlow -> navController.navigate(
             MainNavGraphDirections.actionGlobalDetailBottomSheetFlow(
                 navigateFlow.movie,

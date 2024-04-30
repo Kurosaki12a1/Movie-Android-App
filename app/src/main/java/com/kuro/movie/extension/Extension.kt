@@ -1,6 +1,7 @@
 package com.kuro.movie.extension
 
 import android.view.View
+import android.widget.ImageButton
 import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
@@ -28,14 +29,6 @@ fun NavController.navigateWithAnimation(id: Int) {
 
 fun NavController.navigateWithAnimation(directions: NavDirections) {
     this.navigate(directions, defaultNavOptions)
-}
-
-fun View.makeVisible() {
-    this.isVisible = true
-}
-
-fun View.makeGone() {
-    this.isVisible = false
 }
 
 fun CombinedLoadStates.isLoading(): Boolean {
