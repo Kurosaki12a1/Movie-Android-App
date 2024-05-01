@@ -79,6 +79,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":imagepicker"))
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -86,7 +87,6 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui)
-    implementation(libs.androidx.lifecycle.extensions)
     implementation(libs.androidx.navigation.ui.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

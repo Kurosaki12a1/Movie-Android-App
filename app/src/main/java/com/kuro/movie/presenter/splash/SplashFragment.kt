@@ -7,19 +7,21 @@ import com.kuro.movie.core.BaseFragment
 import com.kuro.movie.databinding.FragmentSplashBinding
 import com.kuro.movie.extension.navigateWithAnimation
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
 
+@AndroidEntryPoint
 class SplashFragment : BaseFragment<FragmentSplashBinding>(
     inflater = FragmentSplashBinding::inflate
 ) {
     private val viewModel: SplashViewModel by viewModels()
 
     override fun onInitialize() {
-        viewModel.navigateToHome.observe(viewLifecycleOwner) {
-            if (it)
-            findNavController().navigateWithAnimation(MainNavGraphDirections.actionGlobalAuthFlow())
+        viewModel.navigateRoute.observe(viewLifecycleOwner) {
+            if (it == SplashRoute.AUTH) {
+                findNavController().navigateWithAnimation(MainNavGraphDirections.actionGlobalAuthFlow())
+            } else if (it == SplashRoute.HOME) {
+                findNavController().navigateWithAnimation(MainNavGraphDirections.actionGlobalHomeFlow())
+            }
         }
-
         viewModel.startTimer()
     }
 }

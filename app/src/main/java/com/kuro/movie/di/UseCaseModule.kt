@@ -16,6 +16,7 @@ import com.kuro.movie.domain.repository.data_source.remote.FirebaseTvSeriesRepos
 import com.kuro.movie.domain.repository.data_source.remote.HomeMovieRemoteRepository
 import com.kuro.movie.domain.usecase.auth.ChangePasswordUseCase
 import com.kuro.movie.domain.usecase.auth.DeleteAccountUseCase
+import com.kuro.movie.domain.usecase.auth.UpdateProfileUseCase
 import com.kuro.movie.domain.usecase.auth.login.SignInWithCredentialUseCase
 import com.kuro.movie.domain.usecase.auth.login.SignInWithEmailAndPasswordUseCase
 import com.kuro.movie.domain.usecase.auth.signup.CreateUserWithEmailAndPasswordUseCase
@@ -439,4 +440,10 @@ object UseCaseModule {
     fun provideDeleteAccountUseCase(
         repository: AuthRepository
     ): DeleteAccountUseCase = DeleteAccountUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideUpdateProfileUseCase(
+        repository: AuthRepository
+    ) : UpdateProfileUseCase = UpdateProfileUseCase(repository)
 }

@@ -3,13 +3,23 @@ package com.kuro.movie.presenter.settings
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseUser
 import com.kuro.movie.R
 import com.kuro.movie.core.BaseFragment
 import com.kuro.movie.databinding.FragmentSettingsBinding
+import com.kuro.movie.extension.toPx
 import com.kuro.movie.navigation.NavigateFlow
 import com.kuro.movie.navigation.NavigationFlow
 import com.kuro.movie.util.AlertDialogUtil
+import com.kuro.movie.util.Constants.AVATAR_SIZE
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,6 +31,10 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(
     override fun onInitialize() {
         setUpView()
         setUpObservers()
+        addOnBackPressedCallBack {
+            findNavController().popBackStack()
+            Unit
+        }
     }
 
     private fun setUpView() {
@@ -52,6 +66,23 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(
         }
     }
 
+    private fun bindUser(user: FirebaseUser?) {
+        if (user == null) return
+        binding.tvEmail.text = user.email
+        binding.tvUserName.text = user.displayName
+
+        val requestOptions = RequestOptions()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .placeholder(R.drawable.avatar_place_holder)
+            .transform(CenterCrop(), CircleCrop())
+            .override(AVATAR_SIZE.toPx(requireContext()))
+
+        Glide.with(this)
+            .load(user.photoUrl)
+            .apply(requestOptions)
+            .into(binding.avatarUser)
+    }
+
     private fun updateUIMode(uiMode: Int) {
         viewModel.updateUIMode(uiMode)
         AppCompatDelegate.setDefaultNightMode(uiMode)
@@ -62,6 +93,7 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(
             binding.progressBar.isVisible = state.isLoading
             binding.txtLogOut.isVisible = state.isSignedIn
 
+            bindUser(state.userProfile)
             val isDarkTheme = state.uiMode == AppCompatDelegate.MODE_NIGHT_YES
             binding.switchDarkTheme.isChecked = isDarkTheme
         }

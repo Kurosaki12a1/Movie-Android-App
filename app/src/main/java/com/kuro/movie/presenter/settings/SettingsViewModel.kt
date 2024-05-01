@@ -39,12 +39,17 @@ class SettingsViewModel @Inject constructor(
         get() = _mutableState
 
     init {
-        isUserSignIn()
+        initState()
     }
 
-    private fun isUserSignIn() {
+    private fun initState() {
         val isUserSignIn = auth.currentUser != null
-        _mutableState.postValue(_mutableState.value?.copy(isSignedIn = isUserSignIn))
+        _mutableState.postValue(
+            _mutableState.value?.copy(
+                isSignedIn = isUserSignIn,
+                userProfile = auth.currentUser
+            )
+        )
     }
 
     fun updateUIMode(uiMode: Int) {

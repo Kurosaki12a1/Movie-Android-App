@@ -1,5 +1,5 @@
 [versions]
-accompanistPagerIndicators = "0.30.0"
+activityKtx = "1.9.0"
 adapterRxjava2Version = "2.11.0"
 agp = "8.5.0-alpha06"
 accompanist = "0.34.0"
@@ -96,6 +96,7 @@ firebase-crashlytics = "18.6.4"
 room_version = "2.6.1"
 
 [libraries]
+androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidxAppcompat" }
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayoutVersion" }

@@ -5,6 +5,7 @@ import com.kuro.movie.MainNavGraphDirections
 import com.kuro.movie.extension.navigateWithAnimation
 import com.kuro.movie.presenter.auth.login.LoginFragmentDirections
 import com.kuro.movie.presenter.settings.SettingsFragmentDirections
+import com.kuro.movie.presenter.settings.profile.ProfileFragmentDirections
 
 class Navigator {
     private lateinit var navController: NavController
@@ -31,6 +32,14 @@ class Navigator {
 
         is NavigateFlow.ProfileFlow -> navController.navigateWithAnimation(
             SettingsFragmentDirections.actionSettingsFragmentToProfileFragment()
+        )
+
+        is NavigateFlow.ChangeProfileFlow -> navController.navigateWithAnimation(
+            ProfileFragmentDirections.actionProfileFragmentToChangeProfile()
+        )
+
+        is NavigateFlow.ChangePasswordFlow -> navController.navigateWithAnimation(
+            ProfileFragmentDirections.actionProfileFragmentToChangePassword()
         )
 
         else -> {

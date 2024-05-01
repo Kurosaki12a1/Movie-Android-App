@@ -1,8 +1,10 @@
 package com.kuro.movie.data.repository
 
+import android.net.Uri
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.kuro.movie.domain.repository.AuthRepository
 import com.kuro.movie.util.Resource
 import io.reactivex.Single
@@ -93,6 +95,27 @@ class AuthRepositoryImpl @Inject constructor(
                     }
                 } else {
                     emitter.onError(authTask.exception ?: Exception("Authentication failed"))
+                }
+            }
+        }
+    }
+
+    override suspend fun updateProfile(
+        displayName: String?,
+        photoUri: Uri?
+    ): Single<Resource<Unit>> {
+        val user = auth.currentUser ?: return Single.error(Exception("No user logged in"))
+        return Single.create { emitter ->
+            val profileUpdate = UserProfileChangeRequest.Builder()
+                .setDisplayName(displayName)
+                .setPhotoUri(photoUri)
+                .build()
+
+            user.updateProfile(profileUpdate).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    emitter.onSuccess(Resource.success(Unit))
+                } else {
+                    emitter.onError(task.exception ?: Exception("Failed to update profile"))
                 }
             }
         }

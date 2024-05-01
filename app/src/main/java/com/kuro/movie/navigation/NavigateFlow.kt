@@ -7,7 +7,7 @@ sealed interface NavigateFlow {
     // Auth Flow
     data object AuthFlow : NavigateFlow
     data object SignUpFlow : NavigateFlow
-    data class ForgetPasswordFlow(val email : String) : NavigateFlow
+    data class ForgetPasswordFlow(val email: String) : NavigateFlow
 
     // Bottom Navigation Flow
     data object HomeFlow : NavigateFlow
@@ -20,4 +20,7 @@ sealed interface NavigateFlow {
         NavigateFlow
 
     data class PersonDetailFlow(val personId: Int) : NavigateFlow
+
+    data object ChangeProfileFlow : NavigateFlow
+    data object ChangePasswordFlow : NavigateFlow
 }

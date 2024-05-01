@@ -48,7 +48,9 @@ class ProfileViewModel @Inject constructor(
         )
     }
 
-    fun getLoadingState() : Boolean = state.value?.isLoading ?: false
+    fun deleteAccount() {
+
+    }
 
     fun logOut() {
         viewModelScope.launch {
