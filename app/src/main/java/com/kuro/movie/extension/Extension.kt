@@ -1,5 +1,6 @@
 package com.kuro.movie.extension
 
+import android.content.Context
 import android.view.View
 import android.widget.ImageButton
 import androidx.core.view.isVisible
@@ -13,6 +14,10 @@ import com.kuro.movie.R
 fun Int?.orZero(): Int = this ?: 0
 
 fun Double?.orZero(): Double = this ?: 0.0
+
+fun Float.toPx(context : Context) : Int {
+    return (this * context.resources.displayMetrics.density).toInt()
+}
 
 val defaultNavOptions = navOptions {
     anim {

@@ -1,18 +1,16 @@
-package com.kuro.movie.presenter.settings
+package com.kuro.movie.presenter.settings.profile
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.kuro.movie.core.BaseViewModel
-import com.kuro.movie.domain.usecase.auth.ChangePasswordUseCase
-import com.kuro.movie.domain.usecase.auth.DeleteAccountUseCase
 import com.kuro.movie.domain.usecase.database.LocalDatabaseUseCases
 import com.kuro.movie.domain.usecase.firebase.GetFavoriteMoviesFromLocalDatabaseThenUpdateToFirebaseUseCase
 import com.kuro.movie.domain.usecase.firebase.GetFavoriteTvSeriesFromLocalDatabaseThenUpdateToFirebase
 import com.kuro.movie.domain.usecase.firebase.GetMovieWatchListFromLocalDatabaseThenUpdateToFirebase
 import com.kuro.movie.domain.usecase.firebase.GetTvSeriesWatchFromLocalDatabaseThenUpdateToFirebase
-import com.kuro.movie.domain.usecase.settings.SettingsUseCase
+import com.kuro.movie.util.Constants
 import com.kuro.movie.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,11 +20,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor(
+class ProfileViewModel @Inject constructor(
     private val auth: FirebaseAuth,
-    private val settingsUseCase: SettingsUseCase,
-    private val changePasswordUseCase: ChangePasswordUseCase,
-    private val deleteAccountUseCase: DeleteAccountUseCase,
     private val localDatabaseUseCases: LocalDatabaseUseCases,
     private val getFavoriteMoviesFromLocalDatabaseThenUpdateToFirebaseUseCase: GetFavoriteMoviesFromLocalDatabaseThenUpdateToFirebaseUseCase,
     private val getMovieWatchListFromLocalDatabaseThenUpdateToFirebase: GetMovieWatchListFromLocalDatabaseThenUpdateToFirebase,
@@ -34,23 +29,26 @@ class SettingsViewModel @Inject constructor(
     private val getTvSeriesWatchFromLocalDatabaseThenUpdateToFirebase: GetTvSeriesWatchFromLocalDatabaseThenUpdateToFirebase
 ) : BaseViewModel() {
 
-    private val _mutableState = MutableLiveData(SettingsUiState())
-    val state: LiveData<SettingsUiState>
+    private val _mutableState = MutableLiveData(ProfileUIState())
+    val state: LiveData<ProfileUIState>
         get() = _mutableState
 
     init {
-        isUserSignIn()
+        initState()
     }
 
-    private fun isUserSignIn() {
+    private fun initState() {
         val isUserSignIn = auth.currentUser != null
-        _mutableState.postValue(_mutableState.value?.copy(isSignedIn = isUserSignIn))
+        _mutableState.postValue(
+            _mutableState.value?.copy(
+                isSignedIn = isUserSignIn,
+                userProfile = auth.currentUser,
+                isFirebaseAccount = auth.currentUser?.providerId == Constants.PROVIDER_FIREBASE_ACCOUNT
+            )
+        )
     }
 
-    fun updateUIMode(uiMode: Int) {
-        settingsUseCase.updateUIModeUseCase(uiMode)
-        _mutableState.postValue(_mutableState.value?.copy(uiMode = uiMode))
-    }
+    fun getLoadingState() : Boolean = state.value?.isLoading ?: false
 
     fun logOut() {
         viewModelScope.launch {
@@ -109,5 +107,4 @@ class SettingsViewModel @Inject constructor(
             }
         }
     }
-
 }

@@ -12,7 +12,7 @@ sealed interface NavigateFlow {
     // Bottom Navigation Flow
     data object HomeFlow : NavigateFlow
 
-    data object SettingsFlow : NavigateFlow
+    data object ProfileFlow : NavigateFlow
 
     data class BottomSheetDetailFlow(val movie: Movie?, val tvSeries: TvSeries?) : NavigateFlow
 

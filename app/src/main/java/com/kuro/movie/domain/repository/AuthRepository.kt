@@ -22,4 +22,11 @@ interface AuthRepository {
     suspend fun signInWithCredential(
         credential: AuthCredential
     ): Single<Resource<Unit>>
+
+    suspend fun changePassword(
+        oldPassword: String,
+        newPassword: String
+    ) : Single<Resource<Unit>>
+
+    suspend fun deleteAccount() : Single<Resource<Unit>>
 }

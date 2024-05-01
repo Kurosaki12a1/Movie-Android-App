@@ -7,6 +7,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.kuro.movie.R
 import com.kuro.movie.core.BaseFragment
 import com.kuro.movie.databinding.FragmentSettingsBinding
+import com.kuro.movie.navigation.NavigateFlow
+import com.kuro.movie.navigation.NavigationFlow
 import com.kuro.movie.util.AlertDialogUtil
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,6 +35,10 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(
                     viewModel.logOut()
                 }
             )
+        }
+
+        binding.profileContainer.setOnClickListener {
+            (requireActivity() as NavigationFlow).navigateToFlow(NavigateFlow.ProfileFlow)
         }
 
         binding.switchDarkTheme.setOnCheckedChangeListener { _, isChecked ->

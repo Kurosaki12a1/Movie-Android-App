@@ -38,11 +38,13 @@ abstract class BaseFragment<VB : ViewBinding>(
         onInitialize()
     }
 
+    open fun shouldEnableBackPressed(): Boolean = true
+
     protected fun addOnBackPressedCallBack(
         behavior: (() -> Unit?)? = null
     ) {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
+            object : OnBackPressedCallback(shouldEnableBackPressed()) {
                 override fun handleOnBackPressed() {
                     if (behavior != null) {
                         behavior()
@@ -50,7 +52,7 @@ abstract class BaseFragment<VB : ViewBinding>(
                     }
 
                     // Checks if there are any fragments in the back stack. If yes, pops the top fragment.
-                    if (requireActivity().supportFragmentManager.backStackEntryCount > 0) {
+                    if (parentFragment != null && parentFragment!!.childFragmentManager.backStackEntryCount > 0) {
                         findNavController().popBackStack()
                         return
                     }

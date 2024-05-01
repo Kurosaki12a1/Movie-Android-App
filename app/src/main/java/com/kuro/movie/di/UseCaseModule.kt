@@ -14,6 +14,8 @@ import com.kuro.movie.domain.repository.data_source.remote.FirebaseCoreTvSeriesR
 import com.kuro.movie.domain.repository.data_source.remote.FirebaseMovieRepository
 import com.kuro.movie.domain.repository.data_source.remote.FirebaseTvSeriesRepository
 import com.kuro.movie.domain.repository.data_source.remote.HomeMovieRemoteRepository
+import com.kuro.movie.domain.usecase.auth.ChangePasswordUseCase
+import com.kuro.movie.domain.usecase.auth.DeleteAccountUseCase
 import com.kuro.movie.domain.usecase.auth.login.SignInWithCredentialUseCase
 import com.kuro.movie.domain.usecase.auth.login.SignInWithEmailAndPasswordUseCase
 import com.kuro.movie.domain.usecase.auth.signup.CreateUserWithEmailAndPasswordUseCase
@@ -424,4 +426,17 @@ object UseCaseModule {
         GetTvSeriesWatchFromLocalDatabaseThenUpdateToFirebase(
             localDatabaseUseCases, firebaseCoreUseCases
         )
+
+    @Provides
+    @Singleton
+    fun provideChangePasswordUseCase(
+        repository: AuthRepository
+    ): ChangePasswordUseCase = ChangePasswordUseCase(repository)
+
+
+    @Provides
+    @Singleton
+    fun provideDeleteAccountUseCase(
+        repository: AuthRepository
+    ): DeleteAccountUseCase = DeleteAccountUseCase(repository)
 }

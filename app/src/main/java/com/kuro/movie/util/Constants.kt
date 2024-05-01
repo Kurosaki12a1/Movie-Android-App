@@ -31,4 +31,5 @@ object Constants {
     const val DEFAULT_REGION = "US"
 
     const val TIMEOUT_BACK_PRESS = 2000L
+    const val PROVIDER_FIREBASE_ACCOUNT = "password"
 }

@@ -79,4 +79,11 @@
 
     <string name="dark_theme">Dark Theme</string>
     <string name="languages">Languages</string>
+    <string name="user_profile">User Profile</string>
+    <string name="placeholder_user_name">User</string>
+
+    <!-- User Profile -->
+    <string name="change_password">Change password</string>
+    <string name="delete_account">Delete account</string>
+    <string name="change_profile">Change Profile</string>
 </resources>
