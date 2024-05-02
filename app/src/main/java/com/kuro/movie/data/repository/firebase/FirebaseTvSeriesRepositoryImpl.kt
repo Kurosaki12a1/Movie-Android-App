@@ -4,7 +4,7 @@ import android.content.Context
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kuro.movie.data.model.TvSeries
-import com.kuro.movie.domain.repository.data_source.remote.FirebaseTvSeriesRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseTvSeriesRepository
 import com.kuro.movie.util.Constants.FIREBASE_FAVORITE_TV_DOCUMENT_NAME
 import com.kuro.movie.util.Constants.FIREBASE_TV_SERIES_FIELD_NAME
 import com.kuro.movie.util.Constants.FIREBASE_TV_WATCH_DOCUMENT_NAME

@@ -46,12 +46,12 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(
         binding.txtDeleteAccount.setOnClickListener {
             AlertDialogUtil.showAlertDialog(
                 context = requireContext(),
-                title = R.string.are_you_sure_log_out,
-                message = R.string.log_out_message,
-                positiveBtnMessage = R.string.log_out,
+                title = R.string.are_you_sure_delete,
+                message = R.string.delete_account_message,
+                positiveBtnMessage = R.string.delete_this_account,
                 negativeBtnMessage = R.string.cancel,
                 onClickPositiveButton = {
-                    viewModel.logOut()
+                    viewModel.deleteAccount()
                 }
             )
         }
@@ -102,6 +102,16 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(
             binding.materialDivider2.isVisible = state.isFirebaseAccount
             bindProfile(state.userProfile)
             onLoading(state.isLoading)
+            
+            if (!state.isSignedIn) {
+                (requireActivity() as NavigationFlow).navigateToFlow(NavigateFlow.AuthFlowFromProfile)
+            }
+        }
+
+        viewModel.deleteAccountState.observe(viewLifecycleOwner) { deleteState ->
+            if (deleteState) {
+                (requireActivity() as NavigationFlow).navigateToFlow(NavigateFlow.AuthFlowFromProfile)
+            }
         }
 
         viewModel.snackBarMessage.observe(viewLifecycleOwner) {

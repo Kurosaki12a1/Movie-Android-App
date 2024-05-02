@@ -4,7 +4,7 @@ import android.content.Context
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.kuro.movie.data.model.Movie
-import com.kuro.movie.domain.repository.data_source.remote.FirebaseMovieRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseMovieRepository
 import com.kuro.movie.extension.orZero
 import com.kuro.movie.util.Constants.FIREBASE_FAVORITE_MOVIE_DOCUMENT_NAME
 import com.kuro.movie.util.Constants.FIREBASE_MOVIES_FIELD_NAME

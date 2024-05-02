@@ -2,7 +2,7 @@ package com.kuro.movie.domain.usecase.firebase
 
 import com.google.firebase.auth.FirebaseAuth
 import com.kuro.movie.data.model.TvSeries
-import com.kuro.movie.domain.repository.data_source.remote.FirebaseCoreTvSeriesRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseCoreTvSeriesRepository
 import com.kuro.movie.util.Resource
 import javax.inject.Inject
 

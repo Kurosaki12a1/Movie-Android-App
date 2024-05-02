@@ -4,8 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import com.kuro.movie.core.BaseViewModel
+import com.kuro.movie.domain.usecase.auth.DeleteAccountUseCase
 import com.kuro.movie.domain.usecase.database.LocalDatabaseUseCases
+import com.kuro.movie.domain.usecase.firebase.DeleteFirebaseCollectionUseCase
 import com.kuro.movie.domain.usecase.firebase.GetFavoriteMoviesFromLocalDatabaseThenUpdateToFirebaseUseCase
 import com.kuro.movie.domain.usecase.firebase.GetFavoriteTvSeriesFromLocalDatabaseThenUpdateToFirebase
 import com.kuro.movie.domain.usecase.firebase.GetMovieWatchListFromLocalDatabaseThenUpdateToFirebase
@@ -13,6 +16,8 @@ import com.kuro.movie.domain.usecase.firebase.GetTvSeriesWatchFromLocalDatabaseT
 import com.kuro.movie.util.Constants
 import com.kuro.movie.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -23,11 +28,17 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val auth: FirebaseAuth,
     private val localDatabaseUseCases: LocalDatabaseUseCases,
+    private val deleteAccountUseCase: DeleteAccountUseCase,
+    private val deleteFirebaseCollectionUseCase: DeleteFirebaseCollectionUseCase,
     private val getFavoriteMoviesFromLocalDatabaseThenUpdateToFirebaseUseCase: GetFavoriteMoviesFromLocalDatabaseThenUpdateToFirebaseUseCase,
     private val getMovieWatchListFromLocalDatabaseThenUpdateToFirebase: GetMovieWatchListFromLocalDatabaseThenUpdateToFirebase,
     private val getFavoriteTvSeriesFromLocalDatabaseThenUpdateToFirebase: GetFavoriteTvSeriesFromLocalDatabaseThenUpdateToFirebase,
     private val getTvSeriesWatchFromLocalDatabaseThenUpdateToFirebase: GetTvSeriesWatchFromLocalDatabaseThenUpdateToFirebase
 ) : BaseViewModel() {
+
+    private val _deleteAccountState = MutableLiveData(false)
+    val deleteAccountState: LiveData<Boolean>
+        get() = _deleteAccountState
 
     private val _mutableState = MutableLiveData(ProfileUIState())
     val state: LiveData<ProfileUIState>
@@ -49,7 +60,29 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun deleteAccount() {
-
+        viewModelScope.launch {
+            _mutableState.postValue(_mutableState.value?.copy(isLoading = true))
+            withContext(Dispatchers.IO) {
+                localDatabaseUseCases.clearAllDatabaseUseCase()
+                deleteFirebaseCollectionUseCase(auth.currentUser!!.uid, Constants.BATCH_SIZE) {
+                    // Delete successful
+                }
+            }
+            deleteAccountUseCase()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    _mutableState.postValue(_mutableState.value?.copy(isLoading = false))
+                    _deleteAccountState.postValue(true)
+                    sendMessage("Delete account successful")
+                }, {
+                    _mutableState.postValue(_mutableState.value?.copy(isLoading = false))
+                    handleError(it)
+                    if (it is FirebaseAuthRecentLoginRequiredException) {
+                        logOut()
+                    }
+                }).let { addDisposable(it) }
+        }
     }
 
     fun logOut() {

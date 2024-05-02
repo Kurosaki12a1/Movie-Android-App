@@ -1,4 +1,4 @@
-package com.kuro.movie.domain.repository.data_source.remote
+package com.kuro.movie.domain.repository.firebase
 
 import com.kuro.movie.data.model.TvSeries
 import com.kuro.movie.util.Resource

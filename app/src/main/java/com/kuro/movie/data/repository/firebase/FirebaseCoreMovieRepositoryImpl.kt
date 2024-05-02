@@ -8,7 +8,7 @@ import com.kuro.movie.data.mapper.toMovieWatchListItem
 import com.kuro.movie.data.model.Movie
 import com.kuro.movie.data.model.entity.movie.FavoriteMovie
 import com.kuro.movie.data.model.entity.movie.MovieWatchListItem
-import com.kuro.movie.domain.repository.data_source.remote.FirebaseCoreMovieRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseCoreMovieRepository
 import com.kuro.movie.util.Constants
 import com.kuro.movie.util.Constants.FIREBASE_FAVORITE_MOVIE_DOCUMENT_NAME
 import com.kuro.movie.util.Constants.FIREBASE_MOVIES_FIELD_NAME

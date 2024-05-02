@@ -34,4 +34,5 @@ object Constants {
     const val PROVIDER_FIREBASE_ACCOUNT = "password"
 
     const val AVATAR_SIZE = 100f
+    const val BATCH_SIZE = 10
 }

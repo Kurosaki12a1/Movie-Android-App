@@ -56,6 +56,7 @@ class ChangeProfileViewModel @Inject constructor(
                 .subscribe({
                     _mutableState.postValue(_mutableState.value?.copy(isLoading = false))
                     _updateProfileStatus.postValue(true)
+                    sendMessage("Update profile successful")
                 }, {
                     _mutableState.postValue(_mutableState.value?.copy(isLoading = false))
                     handleError(it)

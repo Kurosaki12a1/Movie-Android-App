@@ -20,6 +20,7 @@ import com.kuro.movie.data.repository.data_source.local.TvSeriesLocalRepositoryI
 import com.kuro.movie.data.repository.data_source.remote.HomeMovieRemoteRepositoryImpl
 import com.kuro.movie.data.repository.data_source.remote.HomeTvSeriesRemoteRepositoryImpl
 import com.kuro.movie.data.repository.firebase.FirebaseCoreMovieRepositoryImpl
+import com.kuro.movie.data.repository.firebase.FirebaseCoreRepositoryImpl
 import com.kuro.movie.data.repository.firebase.FirebaseCoreTvSeriesRepositoryImpl
 import com.kuro.movie.data.repository.firebase.FirebaseMovieRepositoryImpl
 import com.kuro.movie.data.repository.firebase.FirebaseTvSeriesRepositoryImpl
@@ -31,12 +32,13 @@ import com.kuro.movie.domain.repository.SharedPreferenceRepository
 import com.kuro.movie.domain.repository.data_source.local.LocalDatabaseRepository
 import com.kuro.movie.domain.repository.data_source.local.MovieLocalRepository
 import com.kuro.movie.domain.repository.data_source.local.TvSeriesLocalRepository
-import com.kuro.movie.domain.repository.data_source.remote.FirebaseCoreMovieRepository
-import com.kuro.movie.domain.repository.data_source.remote.FirebaseCoreTvSeriesRepository
-import com.kuro.movie.domain.repository.data_source.remote.FirebaseMovieRepository
-import com.kuro.movie.domain.repository.data_source.remote.FirebaseTvSeriesRepository
 import com.kuro.movie.domain.repository.data_source.remote.HomeMovieRemoteRepository
 import com.kuro.movie.domain.repository.data_source.remote.HomeTvSeriesRemoteRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseCoreMovieRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseCoreRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseCoreTvSeriesRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseMovieRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseTvSeriesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -131,5 +133,11 @@ object RepositoryModule {
         fireStore: FirebaseFirestore
     ): FirebaseCoreTvSeriesRepository =
         FirebaseCoreTvSeriesRepositoryImpl(context, fireStore)
+
+    @Singleton
+    @Provides
+    fun provideFirebaseCoreRepository(
+        fireStore: FirebaseFirestore
+    ): FirebaseCoreRepository = FirebaseCoreRepositoryImpl(fireStore)
 
 }

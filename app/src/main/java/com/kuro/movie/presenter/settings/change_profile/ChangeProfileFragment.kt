@@ -78,6 +78,12 @@ class ChangeProfileFragment : BaseFragment<FragmentChangeProfileBinding>(
             }
         }
 
+        viewModel.updateProfileStatus.observe(viewLifecycleOwner) { isSuccess ->
+            if (isSuccess) {
+                findNavController().popBackStack()
+            }
+        }
+
         viewModel.state.observe(viewLifecycleOwner) { state ->
             binding.progressBar.isVisible = state.isLoading
             binding.btnConfirm.isEnabled = !state.isLoading

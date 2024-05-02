@@ -8,7 +8,7 @@ import com.kuro.movie.data.mapper.toTvSeriesWatchListItem
 import com.kuro.movie.data.model.TvSeries
 import com.kuro.movie.data.model.entity.tvseries.FavoriteTvSeries
 import com.kuro.movie.data.model.entity.tvseries.TvSeriesWatchListItem
-import com.kuro.movie.domain.repository.data_source.remote.FirebaseCoreTvSeriesRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseCoreTvSeriesRepository
 import com.kuro.movie.util.Constants
 import com.kuro.movie.util.Constants.FIREBASE_TV_SERIES_FIELD_NAME
 import com.kuro.movie.util.Resource

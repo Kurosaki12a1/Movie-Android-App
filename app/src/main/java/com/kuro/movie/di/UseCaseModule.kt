@@ -9,11 +9,12 @@ import com.kuro.movie.domain.repository.SharedPreferenceRepository
 import com.kuro.movie.domain.repository.data_source.local.LocalDatabaseRepository
 import com.kuro.movie.domain.repository.data_source.local.MovieLocalRepository
 import com.kuro.movie.domain.repository.data_source.local.TvSeriesLocalRepository
-import com.kuro.movie.domain.repository.data_source.remote.FirebaseCoreMovieRepository
-import com.kuro.movie.domain.repository.data_source.remote.FirebaseCoreTvSeriesRepository
-import com.kuro.movie.domain.repository.data_source.remote.FirebaseMovieRepository
-import com.kuro.movie.domain.repository.data_source.remote.FirebaseTvSeriesRepository
 import com.kuro.movie.domain.repository.data_source.remote.HomeMovieRemoteRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseCoreMovieRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseCoreRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseCoreTvSeriesRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseMovieRepository
+import com.kuro.movie.domain.repository.firebase.FirebaseTvSeriesRepository
 import com.kuro.movie.domain.usecase.auth.ChangePasswordUseCase
 import com.kuro.movie.domain.usecase.auth.DeleteAccountUseCase
 import com.kuro.movie.domain.usecase.auth.UpdateProfileUseCase
@@ -26,6 +27,7 @@ import com.kuro.movie.domain.usecase.firebase.AddMovieToFavoriteListInFirebaseUs
 import com.kuro.movie.domain.usecase.firebase.AddMovieToWatchListInFirebaseUseCase
 import com.kuro.movie.domain.usecase.firebase.AddTvSeriesToFavoriteListInFirebaseUseCase
 import com.kuro.movie.domain.usecase.firebase.AddTvSeriesToWatchListInFirebaseUseCase
+import com.kuro.movie.domain.usecase.firebase.DeleteFirebaseCollectionUseCase
 import com.kuro.movie.domain.usecase.firebase.FirebaseCoreUseCases
 import com.kuro.movie.domain.usecase.firebase.FirebaseUseCases
 import com.kuro.movie.domain.usecase.firebase.GetFavoriteMoviesFromLocalDatabaseThenUpdateToFirebaseUseCase
@@ -445,5 +447,11 @@ object UseCaseModule {
     @Singleton
     fun provideUpdateProfileUseCase(
         repository: AuthRepository
-    ) : UpdateProfileUseCase = UpdateProfileUseCase(repository)
+    ): UpdateProfileUseCase = UpdateProfileUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideDeleteFirebaseCollectionUseCase(
+        repository: FirebaseCoreRepository
+    ): DeleteFirebaseCollectionUseCase = DeleteFirebaseCollectionUseCase(repository)
 }
