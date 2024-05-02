@@ -102,7 +102,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(
             binding.materialDivider2.isVisible = state.isFirebaseAccount
             bindProfile(state.userProfile)
             onLoading(state.isLoading)
-            
+
             if (!state.isSignedIn) {
                 (requireActivity() as NavigationFlow).navigateToFlow(NavigateFlow.AuthFlowFromProfile)
             }
