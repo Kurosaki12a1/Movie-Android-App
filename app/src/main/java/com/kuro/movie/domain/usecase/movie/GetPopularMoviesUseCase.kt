@@ -18,7 +18,7 @@ class GetPopularMoviesUseCase @Inject constructor(
         region: String = DEFAULT_REGION
     ): Observable<PagingData<Movie>> {
         return combineMovieAndGenreMapOneGenre(
-            movieGenreResourceObservable = getMovieGenreListUseCase(language = language),
+            listGenre = getMovieGenreListUseCase(language = language),
             moviePagingDataObservable = homeMovieRepository.getPopularMovies(
                 language = language,
                 region = region

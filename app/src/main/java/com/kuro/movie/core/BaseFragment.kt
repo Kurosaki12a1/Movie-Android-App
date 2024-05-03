@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
+import com.kuro.movie.navigation.NavigateFlow
+import com.kuro.movie.navigation.NavigationFlow
 
 abstract class BaseFragment<VB : ViewBinding>(
     private val inflater: (LayoutInflater, ViewGroup?, Boolean) -> VB
@@ -41,6 +43,10 @@ abstract class BaseFragment<VB : ViewBinding>(
                     if (behavior != null) { behavior() }
                 }
             })
+    }
+
+    fun navigateToFlow(navigationFlow: NavigateFlow) {
+        (requireActivity() as? NavigationFlow)?.navigateToFlow(navigationFlow)
     }
 
     override fun onDestroyView() {

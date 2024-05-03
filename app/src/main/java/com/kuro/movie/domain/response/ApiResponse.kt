@@ -1,4 +1,4 @@
-package com.kuro.movie.data.model
+package com.kuro.movie.domain.response
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,7 +1,7 @@
 package com.kuro.movie.data.data_source.remote
 
 
-import com.kuro.movie.data.model.ApiResponse
+import com.kuro.movie.domain.response.ApiResponse
 import com.kuro.movie.domain.response.MovieResponse
 import com.kuro.movie.domain.response.TvSeriesResponse
 import com.kuro.movie.util.Constants

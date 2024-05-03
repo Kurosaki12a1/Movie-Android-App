@@ -280,6 +280,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     }
 
     private fun navigateToDetailBottomSheet(navigateFlow: NavigateFlow.BottomSheetDetailFlow) {
-        (requireActivity() as NavigationFlow).navigateToFlow(navigateFlow)
+        navigateToFlow(navigateFlow)
     }
 }

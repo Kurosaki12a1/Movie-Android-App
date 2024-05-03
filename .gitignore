@@ -16,3 +16,6 @@ local.properties
 app/google-services.json
 .idea/gradle.xml
 .idea/deploymentTargetSelector.xml
+.idea/vcs.xml
+.idea/gradle.xml
+.idea/.name

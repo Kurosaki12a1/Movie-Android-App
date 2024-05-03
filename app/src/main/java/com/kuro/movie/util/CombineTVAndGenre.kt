@@ -7,17 +7,14 @@ import com.kuro.movie.data.model.TvSeries
 import io.reactivex.Observable
 
 fun combineTvAndGenreMapOneGenre(
-    tvGenreResourceObservable: Observable<List<Genre>>,
+    listTvGenre: List<Genre>,
     tvPagingDataObservable: Observable<PagingData<TvSeries>>
 ): Observable<PagingData<TvSeries>> {
-    return Observable.combineLatest(
-        tvPagingDataObservable,
-        tvGenreResourceObservable
-    ) { tvPagingData, tvGenreList ->
+    return tvPagingDataObservable.map { tvPagingData ->
         tvPagingData.map { tv ->
             tv.copy(
                 genreByOne = GenreDomainUtils.handleConvertingGenreListToOneGenreString(
-                    genreList = tvGenreList,
+                    genreList = listTvGenre,
                     genreIds = tv.genreIds
                 )
             )

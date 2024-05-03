@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Pratice MVVM"
+rootProject.name = "Kuro Movie App"
 include(":app")
 include(":imagepicker")

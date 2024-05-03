@@ -6,17 +6,23 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.kuro.movie.data.data_source.local.AppDatabase
 import com.kuro.movie.data.data_source.local.dao.movie.MovieDao
 import com.kuro.movie.data.data_source.local.dao.tvseries.TvSeriesDao
+import com.kuro.movie.data.data_source.remote.ExploreAPI
 import com.kuro.movie.data.data_source.remote.GenreAPI
 import com.kuro.movie.data.data_source.remote.HomeAPI
 import com.kuro.movie.data.preferences.AppPreferences
 import com.kuro.movie.data.repository.AuthRepositoryImpl
+import com.kuro.movie.data.repository.ExploreRepositoryImpl
 import com.kuro.movie.data.repository.GenreRepositoryImpl
 import com.kuro.movie.data.repository.HomeMovieRepositoryImpl
 import com.kuro.movie.data.repository.HomeTvRepositoryImpl
+import com.kuro.movie.data.repository.NetworkConnectivityObserver
 import com.kuro.movie.data.repository.SharedPreferencesRepositoryImpl
 import com.kuro.movie.data.repository.data_source.local.LocalDatabaseRepositoryImpl
 import com.kuro.movie.data.repository.data_source.local.MovieLocalRepositoryImpl
 import com.kuro.movie.data.repository.data_source.local.TvSeriesLocalRepositoryImpl
+import com.kuro.movie.data.repository.data_source.remote.ExploreMovieRemoteRepositoryImpl
+import com.kuro.movie.data.repository.data_source.remote.ExploreMultiSearchRepositoryImpl
+import com.kuro.movie.data.repository.data_source.remote.ExploreTvRemoteRepositoryImpl
 import com.kuro.movie.data.repository.data_source.remote.HomeMovieRemoteRepositoryImpl
 import com.kuro.movie.data.repository.data_source.remote.HomeTvSeriesRemoteRepositoryImpl
 import com.kuro.movie.data.repository.firebase.FirebaseCoreMovieRepositoryImpl
@@ -25,6 +31,8 @@ import com.kuro.movie.data.repository.firebase.FirebaseCoreTvSeriesRepositoryImp
 import com.kuro.movie.data.repository.firebase.FirebaseMovieRepositoryImpl
 import com.kuro.movie.data.repository.firebase.FirebaseTvSeriesRepositoryImpl
 import com.kuro.movie.domain.repository.AuthRepository
+import com.kuro.movie.domain.repository.ConnectivityObserver
+import com.kuro.movie.domain.repository.ExploreRepository
 import com.kuro.movie.domain.repository.GenreRepository
 import com.kuro.movie.domain.repository.HomeMovieRepository
 import com.kuro.movie.domain.repository.HomeTvRepository
@@ -32,6 +40,9 @@ import com.kuro.movie.domain.repository.SharedPreferenceRepository
 import com.kuro.movie.domain.repository.data_source.local.LocalDatabaseRepository
 import com.kuro.movie.domain.repository.data_source.local.MovieLocalRepository
 import com.kuro.movie.domain.repository.data_source.local.TvSeriesLocalRepository
+import com.kuro.movie.domain.repository.data_source.remote.ExploreMovieRemoteRepository
+import com.kuro.movie.domain.repository.data_source.remote.ExploreMultiSearchRemoteRepository
+import com.kuro.movie.domain.repository.data_source.remote.ExploreTvRemoteRepository
 import com.kuro.movie.domain.repository.data_source.remote.HomeMovieRemoteRepository
 import com.kuro.movie.domain.repository.data_source.remote.HomeTvSeriesRemoteRepository
 import com.kuro.movie.domain.repository.firebase.FirebaseCoreMovieRepository
@@ -140,4 +151,38 @@ object RepositoryModule {
         fireStore: FirebaseFirestore
     ): FirebaseCoreRepository = FirebaseCoreRepositoryImpl(fireStore)
 
+    @Singleton
+    @Provides
+    fun provideExploreMovieRemoteRepository(
+        exploreAPI: ExploreAPI
+    ): ExploreMovieRemoteRepository = ExploreMovieRemoteRepositoryImpl(exploreAPI)
+
+    @Singleton
+    @Provides
+    fun provideExploreTvRemoteRepository(
+        exploreAPI: ExploreAPI
+    ): ExploreTvRemoteRepository = ExploreTvRemoteRepositoryImpl(exploreAPI)
+
+    @Singleton
+    @Provides
+    fun provideExploreMultiSearchRepository(
+        exploreAPI: ExploreAPI
+    ): ExploreMultiSearchRemoteRepository = ExploreMultiSearchRepositoryImpl(exploreAPI)
+
+    @Singleton
+    @Provides
+    fun provideExploreRepository(
+        exploreMovieRemoteRepository: ExploreMovieRemoteRepository,
+        exploreTvRemoteRepository: ExploreTvRemoteRepository,
+        exploreMultiSearchRemoteRepository: ExploreMultiSearchRemoteRepository
+    ): ExploreRepository = ExploreRepositoryImpl(
+        exploreMovieRemoteRepository,
+        exploreTvRemoteRepository,
+        exploreMultiSearchRemoteRepository
+    )
+
+    @Provides
+    @Singleton
+    fun provideConnectivityObserver(context: Context): ConnectivityObserver =
+        NetworkConnectivityObserver(context)
 }

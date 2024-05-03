@@ -7,18 +7,15 @@ import com.kuro.movie.data.model.Movie
 import io.reactivex.Observable
 
 fun combineMovieAndGenreReturnObservable(
-    movieGenreResourceObservable: Observable<List<Genre>>,
+    listGenre: List<Genre>,
     moviePagingDataObservable: Observable<PagingData<Movie>>
 ): Observable<PagingData<Movie>> {
-    return Observable.combineLatest(
-        moviePagingDataObservable,
-        movieGenreResourceObservable
-    ) { moviePagingData, movieGenreList ->
+    return moviePagingDataObservable.map { moviePagingData ->
         moviePagingData.map { movie ->
             movie.copy(
                 genresBySeparatedByComma = GenreDomainUtils.getGenresBySeparatedByComma(
                     movie.genreIds,
-                    movieGenreList
+                    listGenre
                 )
             )
         }
@@ -26,17 +23,14 @@ fun combineMovieAndGenreReturnObservable(
 }
 
 fun combineMovieAndGenreMapOneGenre(
-    movieGenreResourceObservable: Observable<List<Genre>>,
+    listGenre: List<Genre>,
     moviePagingDataObservable: Observable<PagingData<Movie>>
 ): Observable<PagingData<Movie>> {
-    return Observable.combineLatest(
-        moviePagingDataObservable,
-        movieGenreResourceObservable
-    ) { moviePagingData, movieGenreList ->
+    return moviePagingDataObservable.map { moviePagingData ->
         moviePagingData.map { movie ->
             movie.copy(
                 genreByOne = GenreDomainUtils.handleConvertingGenreListToOneGenreString(
-                    genreList = movieGenreList,
+                    genreList = listGenre,
                     genreIds = movie.genreIds
                 )
             )

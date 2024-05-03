@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity(), NavigationFlow {
         if (destination == null) return false
         return when (destination.id) {
             R.id.homeFragment -> true
+            R.id.exploreFragment -> true
             R.id.settingsFragment -> true
             /*  R.id.exploreFragment -> true
               R.id.upComingFragment -> true

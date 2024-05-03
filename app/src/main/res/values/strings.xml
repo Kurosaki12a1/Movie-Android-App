@@ -97,4 +97,21 @@
     <string name="old_password">Old password:</string>
     <string name="new_password">New password:</string>
     <string name="re_enter_password">Re-enter password:</string>
+
+    <!-- Explore -->
+    <string name="search">Search</string>
+    <string name="filter">filter</string>
+    <string name="sort_amp_filter"><![CDATA[Sort & Filter]]></string>
+    <string name="categories">Categories</string>
+    <string name="genre">Genre</string>
+    <string name="sort">Sort</string>
+    <string name="popularity">Popularity</string>
+    <string name="latest_release">Latest Release</string>
+    <string name="reset">Reset</string>
+    <string name="apply">Apply</string>
+    <string name="person">Person</string>
+
+    <!-- Bottom Sheet -->
+    <color name="reset_button_background">@color/light_red</color>
+    <color name="reset_button_text">@color/red</color>
 </resources>

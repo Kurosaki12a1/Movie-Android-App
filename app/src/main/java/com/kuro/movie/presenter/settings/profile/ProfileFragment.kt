@@ -36,11 +36,11 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(
         }
 
         binding.txtChangeProfile.setOnClickListener {
-            (requireActivity() as NavigationFlow).navigateToFlow(NavigateFlow.ChangeProfileFlow)
+            navigateToFlow(NavigateFlow.ChangeProfileFlow)
         }
 
         binding.txtChangePassword.setOnClickListener {
-            (requireActivity() as NavigationFlow).navigateToFlow(NavigateFlow.ChangePasswordFlow)
+            navigateToFlow(NavigateFlow.ChangePasswordFlow)
         }
 
         binding.txtDeleteAccount.setOnClickListener {
@@ -104,13 +104,13 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(
             onLoading(state.isLoading)
 
             if (!state.isSignedIn) {
-                (requireActivity() as NavigationFlow).navigateToFlow(NavigateFlow.AuthFlowFromProfile)
+                navigateToFlow(NavigateFlow.AuthFlowFromProfile)
             }
         }
 
         viewModel.deleteAccountState.observe(viewLifecycleOwner) { deleteState ->
             if (deleteState) {
-                (requireActivity() as NavigationFlow).navigateToFlow(NavigateFlow.AuthFlowFromProfile)
+                navigateToFlow(NavigateFlow.AuthFlowFromProfile)
             }
         }
 

@@ -18,7 +18,7 @@ class GetNowPlayingMoviesUseCase @Inject constructor(
         region: String = DEFAULT_REGION
     ): Observable<PagingData<Movie>> {
         return combineMovieAndGenreReturnObservable(
-            movieGenreResourceObservable = getMovieGenreListUseCase(language = language),
+            listGenre = getMovieGenreListUseCase(language = language),
             moviePagingDataObservable = homeMovieRepository.getNowPlayingMovies(
                 language = language,
                 region = region

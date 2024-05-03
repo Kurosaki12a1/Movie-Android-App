@@ -2,6 +2,7 @@ package com.kuro.movie.di
 
 import android.content.Context
 import com.kuro.movie.BuildConfig
+import com.kuro.movie.data.data_source.remote.ExploreAPI
 import com.kuro.movie.data.data_source.remote.GenreAPI
 import com.kuro.movie.data.data_source.remote.HomeAPI
 import dagger.Module
@@ -86,4 +87,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideGenreAPI(retrofit: Retrofit): GenreAPI = retrofit.create(GenreAPI::class.java)
+
+    @Provides
+    @Singleton
+    fun provideExploreAPI(retrofit: Retrofit): ExploreAPI = retrofit.create(ExploreAPI::class.java)
 }

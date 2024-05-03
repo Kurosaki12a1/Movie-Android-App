@@ -119,6 +119,7 @@ dependencies {
     // ViewModel and LiveData
     implementation(libs.androidx.lifecycle.extensions)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+    implementation(libs.androidx.lifecycle.reactivestreams.ktx)
 
     //Recyclerview
     implementation(libs.androidx.recyclerview)

@@ -14,7 +14,7 @@ class GetTopRatedTvSeriesUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(language: String = DEFAULT_LANGUAGE): Observable<PagingData<TvSeries>> {
         return combineTvAndGenreMapOneGenre(
-            tvGenreResourceObservable = getTvGenreListUseCase(language = language),
+            listTvGenre = getTvGenreListUseCase(language = language),
             tvPagingDataObservable = homeTvRepository.getTopRatedTvs(language = language)
         )
     }

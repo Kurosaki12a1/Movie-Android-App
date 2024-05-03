@@ -45,6 +45,7 @@ ksp = "1.9.22-1.0.17"
 kotlinxMetadataJvm = "0.4.2"
 okhttp = "4.12.0"
 pagingRuntimeKtx = "3.2.1"
+reactivestreams = "1.1.1"
 recyclerview = "1.3.2"
 retrofitVersion = "2.9.0"
 rhino = "1.7.13"
@@ -103,6 +104,7 @@ androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayo
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
 androidx-legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref = "legacySupportV4" }
 androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensions", version.ref = "lifecycleExtensions" }
+androidx-lifecycle-reactivestreams-ktx = { module = "androidx.lifecycle:lifecycle-reactivestreams-ktx", version.ref = "lifecycleViewmodelSavedstate" }
 androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycleViewmodelSavedstate" }
 androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtxVersion" }
 androidx-navigation-ui = { module = "androidx.navigation:navigation-ui", version.ref = "navigationFragmentKtxVersion" }
@@ -132,6 +134,7 @@ firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics", ve
 firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebase_crashlytics_gradle_version" }
 
 # Test
+reactivestreams = { module = "android.arch.lifecycle:reactivestreams", version.ref = "reactivestreams" }
 sparrow007-carouselrecyclerview = { module = "com.github.sparrow007:carouselrecyclerview", version.ref = "carouselrecyclerviewVersion" }
 test-core = { group = "androidx.test", name = "core", version.ref = "test_core_version" }
 hamcrest = { group = "org.hamcrest", name = "hamcrest-all", version.ref = "hamcrest_version" }

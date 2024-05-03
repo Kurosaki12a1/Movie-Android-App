@@ -35,4 +35,7 @@ object Constants {
 
     const val AVATAR_SIZE = 100f
     const val BATCH_SIZE = 10
+
+    const val DISCOVER_DATE_QUERY_FOR_TV = "first_air_date"
+
 }

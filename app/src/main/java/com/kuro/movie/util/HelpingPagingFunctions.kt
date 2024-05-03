@@ -4,7 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.rxjava2.observable
-import com.kuro.movie.data.model.ApiResponse
+import com.kuro.movie.domain.response.ApiResponse
 import com.kuro.movie.data.model.Movie
 import com.kuro.movie.data.model.TvSeries
 import com.kuro.movie.data.paging_source.MoviesPagingSource

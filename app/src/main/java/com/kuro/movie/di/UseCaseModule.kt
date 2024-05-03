@@ -2,6 +2,7 @@ package com.kuro.movie.di
 
 import com.google.firebase.auth.FirebaseAuth
 import com.kuro.movie.domain.repository.AuthRepository
+import com.kuro.movie.domain.repository.ExploreRepository
 import com.kuro.movie.domain.repository.GenreRepository
 import com.kuro.movie.domain.repository.HomeMovieRepository
 import com.kuro.movie.domain.repository.HomeTvRepository
@@ -15,6 +16,8 @@ import com.kuro.movie.domain.repository.firebase.FirebaseCoreRepository
 import com.kuro.movie.domain.repository.firebase.FirebaseCoreTvSeriesRepository
 import com.kuro.movie.domain.repository.firebase.FirebaseMovieRepository
 import com.kuro.movie.domain.repository.firebase.FirebaseTvSeriesRepository
+import com.kuro.movie.domain.usecase.ExploreUseCases
+import com.kuro.movie.domain.usecase.MultiSearchUseCase
 import com.kuro.movie.domain.usecase.auth.ChangePasswordUseCase
 import com.kuro.movie.domain.usecase.auth.DeleteAccountUseCase
 import com.kuro.movie.domain.usecase.auth.UpdateProfileUseCase
@@ -34,6 +37,7 @@ import com.kuro.movie.domain.usecase.firebase.GetFavoriteMoviesFromLocalDatabase
 import com.kuro.movie.domain.usecase.firebase.GetFavoriteTvSeriesFromLocalDatabaseThenUpdateToFirebase
 import com.kuro.movie.domain.usecase.firebase.GetMovieWatchListFromLocalDatabaseThenUpdateToFirebase
 import com.kuro.movie.domain.usecase.firebase.GetTvSeriesWatchFromLocalDatabaseThenUpdateToFirebase
+import com.kuro.movie.domain.usecase.movie.DiscoverMovieUseCase
 import com.kuro.movie.domain.usecase.movie.GetFavoriteMovieFromFirebaseThenUpdateLocalDatabaseUseCase
 import com.kuro.movie.domain.usecase.movie.GetFavoriteMovieIdsUseCase
 import com.kuro.movie.domain.usecase.movie.GetFavoriteMoviesUseCase
@@ -50,6 +54,7 @@ import com.kuro.movie.domain.usecase.movie.GetTopRatedMoviesUseCase
 import com.kuro.movie.domain.usecase.movie.ToggleMovieForFavoriteListUseCase
 import com.kuro.movie.domain.usecase.movie.ToggleMovieForWatchListUseCase
 import com.kuro.movie.domain.usecase.settings.SettingsUseCase
+import com.kuro.movie.domain.usecase.tvseries.DiscoverTvUseCase
 import com.kuro.movie.domain.usecase.tvseries.GetFavoriteTvSeriesFromFirebaseThenUpdateLocalDatabaseUseCase
 import com.kuro.movie.domain.usecase.tvseries.GetFavoriteTvSeriesIdsUseCase
 import com.kuro.movie.domain.usecase.tvseries.GetFavoriteTvSeriesUseCase
@@ -454,4 +459,39 @@ object UseCaseModule {
     fun provideDeleteFirebaseCollectionUseCase(
         repository: FirebaseCoreRepository
     ): DeleteFirebaseCollectionUseCase = DeleteFirebaseCollectionUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideDiscoverTvUseCase(
+        repository: ExploreRepository,
+        getTvGenreListUseCase: GetTvGenreListUseCase
+    ): DiscoverTvUseCase = DiscoverTvUseCase(repository, getTvGenreListUseCase)
+
+    @Provides
+    @Singleton
+    fun provideDiscoverMovieUseCase(
+        repository: ExploreRepository,
+        getMovieGenreListUseCase: GetMovieGenreListUseCase
+    ): DiscoverMovieUseCase = DiscoverMovieUseCase(repository, getMovieGenreListUseCase)
+
+    @Provides
+    @Singleton
+    fun provideMultiSearchUseCase(
+        repository: ExploreRepository
+    ): MultiSearchUseCase = MultiSearchUseCase(repository)
+
+    @Provides
+    fun provideExploreUseCase(
+        tvGenreListUseCase: GetTvGenreListUseCase,
+        movieGenreListUseCase: GetMovieGenreListUseCase,
+        discoverTvUseCase: DiscoverTvUseCase,
+        discoverMovieUseCase: DiscoverMovieUseCase,
+        multiSearchUseCase: MultiSearchUseCase
+    ): ExploreUseCases = ExploreUseCases(
+        tvGenreListUseCase,
+        movieGenreListUseCase,
+        discoverTvUseCase,
+        discoverMovieUseCase,
+        multiSearchUseCase
+    )
 }

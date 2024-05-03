@@ -60,7 +60,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(
         }
 
         binding.txtSignUp.setOnClickListener {
-            (requireActivity() as NavigationFlow).navigateToFlow(NavigateFlow.SignUpFlow)
+            navigateToFlow(NavigateFlow.SignUpFlow)
         }
 
         binding.btnSignInGoogle.setOnClickListener {
@@ -91,7 +91,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(
 
                 is Resource.Success -> {
                     onLoading(false)
-                    (requireActivity() as NavigationFlow).navigateToFlow(NavigateFlow.HomeFlow)
+                    navigateToFlow(NavigateFlow.HomeFlow)
                 }
 
                 is Resource.Failure -> {

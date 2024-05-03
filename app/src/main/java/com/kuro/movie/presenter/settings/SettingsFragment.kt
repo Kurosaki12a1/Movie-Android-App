@@ -52,7 +52,7 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>(
         }
 
         binding.profileContainer.setOnClickListener {
-            (requireActivity() as NavigationFlow).navigateToFlow(NavigateFlow.ProfileFlow)
+            navigateToFlow(NavigateFlow.ProfileFlow)
         }
 
         binding.switchDarkTheme.setOnCheckedChangeListener { _, isChecked ->
