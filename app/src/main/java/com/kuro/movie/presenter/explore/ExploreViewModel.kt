@@ -18,7 +18,8 @@ import com.kuro.movie.domain.repository.GenreRepository
 import com.kuro.movie.domain.repository.isAvailable
 import com.kuro.movie.domain.usecase.ExploreUseCases
 import com.kuro.movie.util.Constants
-import com.kuro.movie.util.asLiveData
+import com.kuro.movie.util.postUpdate
+import com.kuro.movie.util.update
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -43,21 +44,39 @@ class ExploreViewModel @Inject constructor(
     val genreList: LiveData<List<Genre>>
         get() = _genreList
 
+    private val _discoverMovie = MutableLiveData<PagingData<Movie>>()
+    val discoverMovie: LiveData<PagingData<Movie>>
+        get() = _discoverMovie
+
+    private val _discoverTv = MutableLiveData<PagingData<TvSeries>>()
+    val discoverTv: LiveData<PagingData<TvSeries>>
+        get() = _discoverTv
+
+    private val _multiSearch = MutableLiveData<PagingData<MultiSearch>>()
+    val multiSearch: LiveData<PagingData<MultiSearch>>
+        get() = _multiSearch
+
     private val _networkState = MutableLiveData(ConnectivityObserver.Status.UNAVAILABLE)
     val networkState: LiveData<ConnectivityObserver.Status>
         get() = _networkState
 
     private val _filterBottomSheetState = MutableLiveData(FilterBottomState())
-    val filterBottomState: MutableLiveData<FilterBottomState>
+    val filterBottomSheetState: MutableLiveData<FilterBottomState>
         get() = _filterBottomSheetState
 
-    private var movieGenre = emptyList<Genre>()
+    private var movieGenreList = emptyList<Genre>()
     private var tvGenreList = emptyList<Genre>()
 
-    private var observeQuery: Disposable? = null
+    private var discoverMovieDisposable: Disposable? = null
+    private var discoverTvDisposable: Disposable? = null
+    private var multiSearchDisposable: Disposable? = null
+
+    private var previousCategory = Category.MOVIE
 
     init {
         initValue()
+        observerDiscoverMovie()
+        observerDiscoverTv()
     }
 
     private fun initValue() {
@@ -65,6 +84,7 @@ class ExploreViewModel @Inject constructor(
             collectNetworkState()
             getMovieGenreList()
             getTvGenreList()
+            getGenreListByCategoriesState()
         }
     }
 
@@ -79,37 +99,65 @@ class ExploreViewModel @Inject constructor(
             }).also { addDisposable(it) }
     }
 
-    private fun getMovieGenreList() {
-        viewModelScope.launch {
-            movieGenre = genreRepository.getMovieGenreList().genres
-        }
+    private suspend fun getMovieGenreList() {
+        movieGenreList = genreRepository.getMovieGenreList().genres
     }
 
     fun isNetworkAvailable(): Boolean {
         return networkState.value?.isAvailable() == true
     }
 
-    fun multiSearch(query: String): LiveData<PagingData<MultiSearch>> {
-        return if (query.isNotEmpty()) {
+    fun multiSearch(query: String) {
+        multiSearchDisposable?.dispose()
+        multiSearchDisposable =
             exploreUseCases.multiSearchUseCase(query, Constants.DEFAULT_LANGUAGE)
-                .cachedIn(viewModelScope).asLiveData()
-        } else {
-            MutableLiveData(PagingData.empty())
+                .cachedIn(viewModelScope)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    if (query.isNotEmpty()) {
+                        _multiSearch.postValue(it)
+                    } else {
+                        _multiSearch.postValue(PagingData.empty())
+                    }
+                }, {
+                    handleError(it)
+                }).also { addDisposable(it) }
+    }
+
+    private fun observerDiscoverMovie() {
+        viewModelScope.launch {
+            discoverMovieDisposable?.dispose()
+            discoverMovieDisposable = exploreUseCases.discoverMovieUseCase(
+                language = Constants.DEFAULT_LANGUAGE,
+                filterBottomState = _filterBottomSheetState.value!!
+            ).cachedIn(viewModelScope)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    _discoverMovie.postValue(it)
+                }, {
+                    handleError(it)
+                }).also { addDisposable(it) }
         }
     }
 
-    suspend fun discoverMovie(): LiveData<PagingData<Movie>> {
-        return exploreUseCases.discoverMovieUseCase(
-            language = Constants.DEFAULT_LANGUAGE,
-            filterBottomState = filterBottomState.value!!
-        ).cachedIn(viewModelScope).asLiveData()
-    }
+    private fun observerDiscoverTv() {
+        viewModelScope.launch {
+            discoverTvDisposable?.dispose()
 
-    suspend fun discoverTv(): LiveData<PagingData<TvSeries>> {
-        return exploreUseCases.discoverTvUseCase(
-            language = Constants.DEFAULT_LANGUAGE,
-            filterBottomState = filterBottomState.value!!
-        ).cachedIn(viewModelScope).asLiveData()
+            discoverTvDisposable = exploreUseCases.discoverTvUseCase(
+                language = Constants.DEFAULT_LANGUAGE,
+                filterBottomState = _filterBottomSheetState.value!!
+            ).cachedIn(viewModelScope)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    _discoverTv.postValue(it)
+                }, {
+                    handleError(it)
+                }).also { addDisposable(it) }
+        }
     }
 
     fun onEventExploreFragment(event: ExploreFragmentEvent) {
@@ -117,22 +165,20 @@ class ExploreViewModel @Inject constructor(
             is ExploreFragmentEvent.MultiSearch -> {
                 // if current query search same with previous query, do nothing
                 if (event.query == _query.value) return
+                if (_filterBottomSheetState.value?.categoryState != Category.SEARCH) {
+                    // Get previous category selected before go search
+                    previousCategory =
+                        _filterBottomSheetState.value?.categoryState ?: Category.MOVIE
+                }
                 _query.postValue(event.query)
                 if (event.query.isNotEmpty()) {
-                    _filterBottomSheetState.value?.copy(
-                        categoryState = Category.SEARCH
-                    )?.let {
-                        _filterBottomSheetState.postValue(
-                            it
-                        )
+                    _filterBottomSheetState.postUpdate {
+                        it.copy(categoryState = Category.SEARCH)
                     }
                 } else {
-                    _filterBottomSheetState.value?.copy(
-                        categoryState = Category.MOVIE
-                    )?.let {
-                        _filterBottomSheetState.postValue(
-                            it
-                        )
+                    _filterBottomSheetState.postUpdate {
+                        // If search query is blank then return to previous category
+                        it.copy(categoryState = previousCategory)
                     }
                 }
             }
@@ -146,74 +192,83 @@ class ExploreViewModel @Inject constructor(
     fun onEventBottomSheet(event: ExploreBottomSheetEvent) {
         when (event) {
             is ExploreBottomSheetEvent.UpdateCategory -> {
-                _filterBottomSheetState.value?.copy(
-                    categoryState = event.checkedCategory
-                )?.let {
-                    _filterBottomSheetState.postValue(
-                        it
-                    )
+                // When user switch category, reset selected genre list
+                resetSelectedGenreIdsState()
+                _filterBottomSheetState.update { currentState ->
+                    currentState.copy(categoryState = event.checkedCategory)
                 }
                 getGenreListByCategoriesState()
             }
 
             is ExploreBottomSheetEvent.UpdateGenreList -> {
-                resetSelectedGenreIdsState()
-                _filterBottomSheetState.value?.copy(
-                    checkedGenreIdsState = event.checkedList
-                )?.let {
-                    _filterBottomSheetState.postValue(
-                        it
-                    )
+                _filterBottomSheetState.update { currentState ->
+                    currentState.copy(checkedGenreIdsState = event.checkedList)
                 }
+                fetchData()
             }
 
             is ExploreBottomSheetEvent.UpdateSort -> {
-                _filterBottomSheetState.value?.copy(
-                    checkedSortState = event.checkedSort
-                )?.let {
-                    _filterBottomSheetState.postValue(
-                        it
-                    )
+                _filterBottomSheetState.postUpdate {
+                    it.copy(checkedSortState = event.checkedSort)
+                }
+                fetchData()
+            }
+
+            is ExploreBottomSheetEvent.OpenFilter -> {
+                _filterBottomSheetState.postUpdate {
+                    it.copy(isExpanded = true)
                 }
             }
 
             is ExploreBottomSheetEvent.ResetFilterBottomState -> {
-                _filterBottomSheetState.postValue(FilterBottomState())
+                _filterBottomSheetState.postValue(FilterBottomState(isExpanded = true))
+                fetchData()
             }
 
             is ExploreBottomSheetEvent.Apply -> {
-                // TODO POP BAC STACK EXPLORE BOTTOM SHEET
+                _filterBottomSheetState.value?.copy(
+                    isExpanded = false
+                )?.let { _filterBottomSheetState.postValue(it) }
+            }
+        }
+    }
+
+    private fun fetchData() {
+        when (filterBottomSheetState.value?.categoryState) {
+            null -> {
+                observerDiscoverMovie()
+            }
+
+            Category.MOVIE -> {
+                observerDiscoverMovie()
+            }
+
+            Category.TV -> {
+                observerDiscoverTv()
+            }
+
+            else -> {
+                // TODO
+                // Do nothing
             }
         }
     }
 
     private fun resetSelectedGenreIdsState() {
-        _filterBottomSheetState.value?.copy(
-            checkedGenreIdsState = emptyList()
-        )?.let {
-            _filterBottomSheetState.postValue(
-                it
-            )
+        _filterBottomSheetState.update {
+            it.copy(checkedGenreIdsState = emptyList())
         }
     }
 
     private fun getGenreListByCategoriesState() {
-        viewModelScope.launch {
-            try {
-                if (_filterBottomSheetState.value?.categoryState?.isTv() == true) {
-                    _genreList.postValue(tvGenreList)
-                } else {
-                    _genreList.postValue(movieGenre)
-                }
-            } catch (e: Exception) {
-                handleError(e)
-            }
+        if (_filterBottomSheetState.value?.categoryState?.isTv() == true) {
+            _genreList.postValue(tvGenreList)
+        } else {
+            _genreList.postValue(movieGenreList)
         }
     }
 
-    private fun getTvGenreList() {
-        viewModelScope.launch {
-            tvGenreList = genreRepository.getTvGenreList().genres
-        }
+    private suspend fun getTvGenreList() {
+        tvGenreList = genreRepository.getTvGenreList().genres
     }
 }

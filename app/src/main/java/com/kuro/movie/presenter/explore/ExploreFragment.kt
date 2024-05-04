@@ -7,11 +7,15 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagingData
 import com.kuro.movie.R
 import com.kuro.movie.core.BaseFragment
 import com.kuro.movie.core.isEmpty
+import com.kuro.movie.data.model.Movie
+import com.kuro.movie.data.model.TvSeries
 import com.kuro.movie.databinding.FragmentExploreBinding
 import com.kuro.movie.domain.model.Category
+import com.kuro.movie.domain.model.MultiSearch
 import com.kuro.movie.domain.repository.isAvailable
 import com.kuro.movie.extension.makeGone
 import com.kuro.movie.extension.makeVisible
@@ -21,7 +25,6 @@ import com.kuro.movie.presenter.explore.adapter.FilterTvSeriesAdapter
 import com.kuro.movie.presenter.explore.adapter.SearchRecyclerAdapter
 import com.kuro.movie.presenter.explore.adapter.paging_state.HandlePagingStateSearchAdapter
 import com.kuro.movie.presenter.home.adapter.paging_state.HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter
-import com.kuro.movie.util.observerLiveData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -33,13 +36,39 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
     private val searchRecyclerAdapter: SearchRecyclerAdapter by lazy { SearchRecyclerAdapter() }
     private val movieFilterAdapter: FilterMoviesAdapter by lazy { FilterMoviesAdapter() }
     private val tvFilterAdapter: FilterTvSeriesAdapter by lazy { FilterTvSeriesAdapter() }
-    private var movieDiscoverJob: Job? = null
-    private var tvDiscoverJob: Job? = null
     private var searchJob: Job? = null
 
     private val queryObserver = Observer<String> { query ->
         binding.edtQuery.setSelection(query.length)
-        observeSearchResults(query)
+        viewModel.multiSearch(query)
+        viewModel.multiSearch.observe(viewLifecycleOwner, searchObserver)
+    }
+
+    private val movieDiscoverObserver = Observer<PagingData<Movie>> { movieData ->
+        viewLifecycleOwner.lifecycleScope.launch {
+            hideTvAndSearchAdapters()
+            cancelTvAndSearchJobs()
+            binding.recyclerDiscoverMovie.makeVisible()
+            movieFilterAdapter.submitData(movieData)
+        }
+    }
+
+    private val tvDiscoverObserver = Observer<PagingData<TvSeries>> { tvData ->
+        viewLifecycleOwner.lifecycleScope.launch {
+            cancelMovieAndSearchJobs()
+            hideMoviesAndSearchAdapter()
+            binding.recyclerDiscoverTv.makeVisible()
+            tvFilterAdapter.submitData(tvData)
+        }
+    }
+
+    private val searchObserver = Observer<PagingData<MultiSearch>> { searchData ->
+        viewLifecycleOwner.lifecycleScope.launch {
+            cancelTvAndMovieJobs()
+            hideTvAndMovieAdapters()
+            binding.recyclerSearch.makeVisible()
+            searchRecyclerAdapter.submitData(searchData)
+        }
     }
 
     override fun onInitialize() {
@@ -55,64 +84,21 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
     }
 
     private fun onObservers() {
-        viewModel.filterBottomState.observe(viewLifecycleOwner) { filterBottomState ->
+        viewModel.filterBottomSheetState.observe(viewLifecycleOwner) { filterBottomState ->
             when (filterBottomState.categoryState) {
                 Category.MOVIE -> {
                     viewModel.onEventExploreFragment(ExploreFragmentEvent.RemoveQuery)
-                    observeMovieData()
+                    viewModel.discoverMovie.observe(viewLifecycleOwner, movieDiscoverObserver)
                 }
 
                 Category.TV -> {
                     viewModel.onEventExploreFragment(ExploreFragmentEvent.RemoveQuery)
-                    observeTvData()
+                    viewModel.discoverTv.observe(viewLifecycleOwner, tvDiscoverObserver)
                 }
 
                 Category.SEARCH -> {
                     viewModel.query.observe(viewLifecycleOwner, queryObserver)
                 }
-            }
-        }
-    }
-
-    private fun observeMovieData() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.discoverMovie().observe(viewLifecycleOwner) { movieData ->
-                movieDiscoverJob?.cancel()
-
-                movieDiscoverJob = viewLifecycleOwner.lifecycleScope.launch {
-                    hideTvAndSearchAdapters()
-                    cancelTvAndSearchJobs()
-                    binding.recyclerDiscoverMovie.makeVisible()
-                    movieFilterAdapter.submitData(movieData)
-                }
-            }
-        }
-
-    }
-
-    private fun observeTvData() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.discoverTv().observe(viewLifecycleOwner) { tvData ->
-                tvDiscoverJob?.cancel()
-
-                tvDiscoverJob = viewLifecycleOwner.lifecycleScope.launch {
-                    cancelMovieAndSearchJobs()
-                    hideMoviesAndSearchAdapter()
-                    binding.recyclerDiscoverTv.makeVisible()
-                    tvFilterAdapter.submitData(tvData)
-                }
-            }
-        }
-    }
-
-    private fun observeSearchResults(query: String) {
-        observerLiveData(viewModel.multiSearch(query)) { searchData ->
-            searchJob?.cancel()
-            searchJob = viewLifecycleOwner.lifecycleScope.launch {
-                cancelTvAndMovieJobs()
-                hideTvAndMovieAdapters()
-                binding.recyclerSearch.makeVisible()
-                searchRecyclerAdapter.submitData(searchData)
             }
         }
     }
@@ -146,6 +132,7 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
 
     private fun setClickListeners() {
         binding.filter.setOnClickListener {
+            viewModel.onEventBottomSheet(ExploreBottomSheetEvent.OpenFilter)
             findNavController().navigate(
                 ExploreFragmentDirections.actionExploreFragmentToFilterBottomSheetFragment()
             )
@@ -277,18 +264,18 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
     }
 
     private fun cancelMovieAndSearchJobs() {
-        searchJob?.cancel()
-        movieDiscoverJob?.cancel()
+        viewModel.multiSearch.removeObserver(searchObserver)
+        viewModel.discoverMovie.removeObserver(movieDiscoverObserver)
     }
 
     private fun cancelTvAndSearchJobs() {
-        searchJob?.cancel()
-        tvDiscoverJob?.cancel()
+        viewModel.multiSearch.removeObserver(searchObserver)
+        viewModel.discoverTv.removeObserver(tvDiscoverObserver)
     }
 
     private fun cancelTvAndMovieJobs() {
-        tvDiscoverJob?.cancel()
-        movieDiscoverJob?.cancel()
+        viewModel.discoverMovie.removeObserver(movieDiscoverObserver)
+        viewModel.discoverTv.removeObserver(tvDiscoverObserver)
     }
 
     private fun hideMoviesAndSearchAdapter() {

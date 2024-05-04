@@ -15,7 +15,8 @@ abstract class BasePagingSource<Value : Any> : PagingSource<Int, Value>() {
             LoadResult.Page(
                 data = response,
                 prevKey = if (currentPage == 1) null else currentPage - 1,
-                nextKey = currentPage + 1
+                // If the response is empty, set the next page to null
+                nextKey = if (response.isEmpty()) null else currentPage + 1
             )
         } catch (e: Exception) {
             e.printStackTrace()

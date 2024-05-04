@@ -6,5 +6,6 @@ data class FilterBottomState(
     val categoryState: Category = Category.MOVIE,
     val checkedGenreIdsState: List<Int> = emptyList(),
     val checkedSortState: Sort = Sort.Popularity,
-    val genreList: List<Genre> = listOf()
+    val genreList: List<Genre> = listOf(),
+    val isExpanded : Boolean = false
 )

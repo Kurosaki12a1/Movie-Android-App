@@ -7,6 +7,7 @@ sealed class ExploreBottomSheetEvent {
     data class UpdateCategory(val checkedCategory: Category) : ExploreBottomSheetEvent()
     data class UpdateGenreList(val checkedList: List<Int>) : ExploreBottomSheetEvent()
     data class UpdateSort(val checkedSort: Sort) : ExploreBottomSheetEvent()
+    data object OpenFilter : ExploreBottomSheetEvent()
     data object ResetFilterBottomState : ExploreBottomSheetEvent()
     data object Apply : ExploreBottomSheetEvent()
 }

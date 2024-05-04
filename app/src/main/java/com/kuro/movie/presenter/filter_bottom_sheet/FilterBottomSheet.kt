@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.kuro.movie.databinding.FragmentBottomSheetBinding
 import com.kuro.movie.domain.model.Category
@@ -34,13 +35,17 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        genreChipInflater = GenreChipInflater(
+            context = requireContext(),
+            genreListChipGroup = binding.genreListGroup
+        )
         onInitialize()
     }
 
     override fun onResume() {
         super.onResume()
         genreChipInflater?.updateCheckedGenreFilters(
-            viewModel.filterBottomState.value?.checkedGenreIdsState ?: emptyList()
+            viewModel.filterBottomSheetState.value?.checkedGenreIdsState ?: emptyList()
         )
     }
 
@@ -79,16 +84,22 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun setUpObservers() {
-        viewModel.filterBottomState.observe(viewLifecycleOwner) { filterBottomSheet ->
-            updateCheckCategoryFilter(filterBottomSheet.categoryState)
-            genreChipInflater?.updateCheckedGenreFilters(filterBottomSheet.checkedGenreIdsState)
-            updateCheckedSortFilter(filterBottomSheet.checkedSortState)
+        viewModel.filterBottomSheetState.observe(viewLifecycleOwner) { filterBottomSheet ->
+            if (!filterBottomSheet.isExpanded) {
+                findNavController().popBackStack()
+            } else {
+                // Expand then start do these things.
+                updateCheckCategoryFilter(filterBottomSheet.categoryState)
+                genreChipInflater?.updateCheckedGenreFilters(filterBottomSheet.checkedGenreIdsState)
+                updateCheckedSortFilter(filterBottomSheet.checkedSortState)
+            }
         }
 
         viewModel.genreList.observe(viewLifecycleOwner) { genre ->
-            genreChipInflater?.createGenreChips(
-                genreList = genre
-            )
+            genreChipInflater?.createGenreChips(genreList = genre)
+            if (viewModel.filterBottomSheetState.value?.checkedGenreIdsState != null) {
+                genreChipInflater?.updateCheckedGenreFilters(viewModel.filterBottomSheetState.value!!.checkedGenreIdsState)
+            }
         }
     }
 
