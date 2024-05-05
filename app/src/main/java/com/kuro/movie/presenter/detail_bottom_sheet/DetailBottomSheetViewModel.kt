@@ -9,6 +9,7 @@ import com.kuro.movie.data.model.Movie
 import com.kuro.movie.data.model.TvSeries
 import com.kuro.movie.domain.usecase.database.LocalDatabaseUseCases
 import com.kuro.movie.navigation.NavigateFlow
+import com.kuro.movie.util.postUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,11 +30,11 @@ class DetailBottomSheetViewModel @Inject constructor(
     init {
         combineUseCases()
         DetailBottomSheetArgs.fromSavedStateHandle(savedStateHandle).movie?.let { movie ->
-            _state.postValue(DetailBottomSheetState(movie = movie))
+            _state.postUpdate { it.copy(movie = movie) }
         }
 
         DetailBottomSheetArgs.fromSavedStateHandle(savedStateHandle).tvseries?.let { tvSeries ->
-            _state.postValue(DetailBottomSheetState(tvSeries = tvSeries))
+            _state.postUpdate { it.copy(tvSeries = tvSeries) }
         }
     }
 
@@ -51,14 +52,18 @@ class DetailBottomSheetViewModel @Inject constructor(
                     movieWatchListIds.contains(movie.id)
                 } ?: tvWatchListIds.contains(_state.value?.tvSeries?.id ?: 0)
             )
-            _state.postValue(newState)
+            _state.postUpdate {
+                it.copy(
+                    doesAddFavorite = newState.doesAddFavorite,
+                    doesAddWatchList = newState.doesAddWatchList
+                )
+            }
         }
     }
 
-    private fun getMovie(): Movie? = state.value?.movie
+    private fun getMovie(): Movie? = _state.value?.movie
 
-
-    private fun getTvSeries(): TvSeries? = state.value?.tvSeries
+    private fun getTvSeries(): TvSeries? = _state.value?.tvSeries
 
 
     fun onEvent(event: DetailBottomSheetEvent) {
@@ -99,26 +104,41 @@ class DetailBottomSheetViewModel @Inject constructor(
 
     private fun toggleMovieForFavoriteList(movie: Movie) {
         viewModelScope.launch {
+            // Toggle the movie's favorite status and wait for completion
             localDatabaseUseCases.toggleMovieForFavoriteListUseCase(
-                movie = movie, doesAddFavoriteList = state.value?.doesAddFavorite == true
+                movie = movie, doesAddFavoriteList = state.value?.doesAddFavorite ?: false
             )
+
+            // Once toggle is done, execute additional functionality, like adding to favorites.
+            val favoriteMovieIds = localDatabaseUseCases.getFavoriteMovieIdsUseCase()
+            _state.postUpdate { it.copy(doesAddFavorite = favoriteMovieIds.contains(it.movie?.id)) }
         }
     }
 
     private fun toggleMovieForWatchList(movie: Movie) {
         viewModelScope.launch {
+            // Toggle the movie's watch list status and wait for completion
             localDatabaseUseCases.toggleMovieForWatchListUseCase(
-                movie = movie, doesAddWatchList = state.value?.doesAddWatchList == true
+                movie = movie, doesAddWatchList = state.value?.doesAddWatchList ?: false
             )
+
+            // Once toggle is done, execute additional functionality, like adding to watch list.
+            val movieWatchListIds = localDatabaseUseCases.getFavoriteMovieIdsUseCase()
+            _state.postUpdate { it.copy(doesAddWatchList = movieWatchListIds.contains(it.movie?.id)) }
         }
     }
 
     private fun toggleTvSeriesForFavoriteList(tvSeries: TvSeries) {
         viewModelScope.launch {
+            // Toggle the movie's watch list status and wait for completion
             localDatabaseUseCases.toggleTvSeriesForFavoriteListUseCase(
                 tvSeries = tvSeries,
-                doesAddFavoriteList = state.value?.doesAddFavorite == true
+                doesAddFavoriteList = state.value?.doesAddFavorite ?: false
             )
+
+            // Once toggle is done, execute additional functionality, like adding to favorite list.
+            val favoriteTvIds = localDatabaseUseCases.getFavoriteTvSeriesIdsUseCase()
+            _state.postUpdate { it.copy(doesAddFavorite = favoriteTvIds.contains(it.tvSeries?.id)) }
         }
     }
 
@@ -126,8 +146,11 @@ class DetailBottomSheetViewModel @Inject constructor(
         viewModelScope.launch {
             localDatabaseUseCases.toggleTvSeriesForWatchListItemUseCase(
                 tvSeries = tvSeries,
-                doesAddWatchList = state.value?.doesAddWatchList == true
+                doesAddWatchList = state.value?.doesAddWatchList ?: false
             )
+
+            val tvWatchListIds = localDatabaseUseCases.getTvSeriesWatchListItemIdsUseCase()
+            _state.postUpdate { it.copy(doesAddWatchList = tvWatchListIds.contains(it.tvSeries?.id)) }
         }
     }
 

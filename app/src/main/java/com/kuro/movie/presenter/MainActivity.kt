@@ -72,10 +72,7 @@ class MainActivity : AppCompatActivity(), NavigationFlow {
             R.id.exploreFragment -> true
             R.id.settingsFragment -> true
             R.id.upComingFragment -> true
-            /*  R.id.exploreFragment -> true
-              R.id.upComingFragment -> true
-              R.id.myListFragment -> true
-              R.id.settingsFragment -> true*/
+            R.id.myLibraryFragment -> true
             else -> false
         }
     }

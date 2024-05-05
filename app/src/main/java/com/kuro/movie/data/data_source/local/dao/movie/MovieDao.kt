@@ -3,6 +3,7 @@ package com.kuro.movie.data.data_source.local.dao.movie
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.kuro.movie.data.model.entity.movie.FavoriteMovie
 import com.kuro.movie.data.model.entity.movie.MovieWatchListItem
@@ -13,10 +14,10 @@ import io.reactivex.Flowable
 @Dao
 interface MovieDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMovieToFavoriteList(favoriteMovie: FavoriteMovie)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMovieToWatchListItem(movieWatchListItem: MovieWatchListItem)
 
     @Delete

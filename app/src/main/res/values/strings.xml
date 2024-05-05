@@ -35,7 +35,7 @@
     <!-- Bottom Navigation Name -->
     <string name="bottom_nav_home">Home</string>
     <string name="bottom_nav_explore">Explore</string>
-    <string name="bottom_nav_my_list">My List</string>
+    <string name="bottom_nav_my_library">My Library</string>
     <string name="bottom_nav_upcoming">Upcoming</string>
     <string name="settings">Settings</string>
 
@@ -123,4 +123,8 @@
     <string name="upcoming_movie_set_big_context">Hey there! Just a friendly reminder about the movie you were looking forward to. We\'re thrilled to let you know that %s is now showing in released!</string>
     <string name="upcoming_movie_release_basic">%s Now Showing! Grab Your Friends and Enjoy the Show!</string>
     <string name="upcoming_movie_release_title">Upcoming Movie</string>
+
+    <!-- My Library -->
+    <string name="not_movies_in_your_list" translatable="false">No movies in your list.</string>
+    <string name="not_tv_in_your_list" translatable="false">No tv series in your list.</string>
 </resources>

@@ -11,6 +11,7 @@ class ToggleMovieForFavoriteListUseCase @Inject constructor(
         movie: Movie,
         doesAddFavoriteList: Boolean,
     ) {
+        print("Movie: $movie and doesAddFavoriteList: $doesAddFavoriteList")
         if (doesAddFavoriteList) {
             repository.deleteMovieFromFavoriteList(
                 movie = movie

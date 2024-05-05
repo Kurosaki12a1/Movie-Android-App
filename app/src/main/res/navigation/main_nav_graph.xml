@@ -18,7 +18,7 @@
 
     <include app:graph="@navigation/explore_flow" />
 
-    <include app:graph="@navigation/my_list_flow" />
+    <include app:graph="@navigation/my_library_flow" />
 
     <include app:graph="@navigation/splash_flow" />
 

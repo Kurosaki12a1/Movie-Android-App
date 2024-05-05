@@ -3,6 +3,7 @@ package com.kuro.movie.data.data_source.local.dao.tvseries
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.kuro.movie.data.model.entity.tvseries.FavoriteTvSeries
 import com.kuro.movie.data.model.entity.tvseries.TvSeriesWatchListItem
@@ -13,10 +14,10 @@ import io.reactivex.Flowable
 @Dao
 interface TvSeriesDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTvSeriesToFavoriteList(favoriteTvSeries: FavoriteTvSeries)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTvSeriesToWatchListItem(tvSeriesWatchListItem: TvSeriesWatchListItem)
 
     @Delete

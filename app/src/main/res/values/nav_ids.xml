@@ -7,7 +7,7 @@
     <item name="person_detail_flow" type="id" />
     <item name="upcoming_flow" type="id" />
     <item name="explore_flow" type="id" />
-    <item name="my_list_flow" type="id" />
+    <item name="my_library_flow" type="id" />
     <item name="splash_flow" type="id" />
     <item name="setting_flow" type="id" />
 </resources>

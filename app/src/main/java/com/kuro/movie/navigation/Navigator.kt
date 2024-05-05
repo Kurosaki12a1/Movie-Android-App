@@ -57,6 +57,7 @@ class Navigator {
             ProfileFragmentDirections.actionProfileFragmentToChangePassword()
         )
 
+
         else -> {
             // TODO
         }

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/my_library_flow"
+    app:startDestination="@id/myLibraryFragment">
+    <fragment
+        android:id="@+id/myLibraryFragment"
+        android:name="com.kuro.movie.presenter.library.MyLibraryFragment"
+        android:label="MyLibraryFragment"
+        tools:layout="@layout/fragment_my_library">
+    </fragment>
+</navigation>
