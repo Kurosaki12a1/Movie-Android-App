@@ -22,6 +22,10 @@ class MyLibraryViewModel @Inject constructor(
     val state: LiveData<MyLibraryState>
         get() = mutableState
 
+    init {
+        fetchData()
+    }
+
     fun fetchData() {
         viewModelScope.launch {
             mutableState.update { it.copy(isLoading = true) }
@@ -59,6 +63,7 @@ class MyLibraryViewModel @Inject constructor(
                 mutableState.update { it.copy(chipType = event.chipType) }
             }
         }
+        fetchData()
     }
 
     private fun updateListMovieAndLoading(movieList: List<Movie>) {

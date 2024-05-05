@@ -25,11 +25,6 @@ class MyLibraryFragment : BaseFragment<FragmentMyLibraryBinding>(
         setUpObservers()
     }
 
-    override fun onStart() {
-        super.onStart()
-        viewModel.fetchData()
-    }
-
     private fun setUpView() {
         binding.listTypeChipGroup.setOnCheckedStateChangeListener { group, _ ->
             val chipType =

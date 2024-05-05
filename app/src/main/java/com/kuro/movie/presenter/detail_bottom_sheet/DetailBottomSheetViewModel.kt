@@ -123,7 +123,7 @@ class DetailBottomSheetViewModel @Inject constructor(
             )
 
             // Once toggle is done, execute additional functionality, like adding to watch list.
-            val movieWatchListIds = localDatabaseUseCases.getFavoriteMovieIdsUseCase()
+            val movieWatchListIds = localDatabaseUseCases.getMovieWatchListItemIdsUseCase()
             _state.postUpdate { it.copy(doesAddWatchList = movieWatchListIds.contains(it.movie?.id)) }
         }
     }
