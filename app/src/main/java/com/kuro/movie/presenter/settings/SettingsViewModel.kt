@@ -5,8 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.kuro.movie.core.BaseViewModel
-import com.kuro.movie.domain.usecase.auth.ChangePasswordUseCase
-import com.kuro.movie.domain.usecase.auth.DeleteAccountUseCase
 import com.kuro.movie.domain.usecase.database.LocalDatabaseUseCases
 import com.kuro.movie.domain.usecase.firebase.GetFavoriteMoviesFromLocalDatabaseThenUpdateToFirebaseUseCase
 import com.kuro.movie.domain.usecase.firebase.GetFavoriteTvSeriesFromLocalDatabaseThenUpdateToFirebase
@@ -14,6 +12,7 @@ import com.kuro.movie.domain.usecase.firebase.GetMovieWatchListFromLocalDatabase
 import com.kuro.movie.domain.usecase.firebase.GetTvSeriesWatchFromLocalDatabaseThenUpdateToFirebase
 import com.kuro.movie.domain.usecase.settings.SettingsUseCase
 import com.kuro.movie.util.Resource
+import com.kuro.movie.util.postUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -25,8 +24,6 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val auth: FirebaseAuth,
     private val settingsUseCase: SettingsUseCase,
-    private val changePasswordUseCase: ChangePasswordUseCase,
-    private val deleteAccountUseCase: DeleteAccountUseCase,
     private val localDatabaseUseCases: LocalDatabaseUseCases,
     private val getFavoriteMoviesFromLocalDatabaseThenUpdateToFirebaseUseCase: GetFavoriteMoviesFromLocalDatabaseThenUpdateToFirebaseUseCase,
     private val getMovieWatchListFromLocalDatabaseThenUpdateToFirebase: GetMovieWatchListFromLocalDatabaseThenUpdateToFirebase,
@@ -44,22 +41,22 @@ class SettingsViewModel @Inject constructor(
 
     private fun initState() {
         val isUserSignIn = auth.currentUser != null
-        _mutableState.postValue(
-            _mutableState.value?.copy(
+        _mutableState.postUpdate {
+            it.copy(
                 isSignedIn = isUserSignIn,
                 userProfile = auth.currentUser
             )
-        )
+        }
     }
 
     fun updateUIMode(uiMode: Int) {
         settingsUseCase.updateUIModeUseCase(uiMode)
-        _mutableState.postValue(_mutableState.value?.copy(uiMode = uiMode))
+        _mutableState.postUpdate { it.copy(uiMode = uiMode) }
     }
 
     fun logOut() {
         viewModelScope.launch {
-            _mutableState.postValue(_mutableState.value?.copy(isLoading = true))
+            _mutableState.postUpdate { it.copy(isLoading = true) }
             getMovieFavoriteFromLocalDatabaseThenUpdateFirebase()
             getMovieWatchListItemFromLocalDatabaseThenUpdateFirebase()
             getTvSeriesFavoriteFromLocalDatabaseThenUpdateFirebase()
@@ -69,13 +66,13 @@ class SettingsViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 localDatabaseUseCases.clearAllDatabaseUseCase()
             }
-            _mutableState.postValue(_mutableState.value?.copy(isLoading = false))
+            _mutableState.postUpdate { it.copy(isLoading = false) }
         }
     }
 
     private fun signOut() {
         auth.signOut()
-        _mutableState.postValue(_mutableState.value?.copy(isSignedIn = false))
+        _mutableState.postUpdate { it.copy(isLoading = false) }
         sendMessage("Successfully log out")
     }
 

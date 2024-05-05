@@ -5,6 +5,7 @@ import com.kuro.movie.BuildConfig
 import com.kuro.movie.data.data_source.remote.ExploreAPI
 import com.kuro.movie.data.data_source.remote.GenreAPI
 import com.kuro.movie.data.data_source.remote.HomeAPI
+import com.kuro.movie.data.data_source.remote.UpComingAPI
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -91,4 +92,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideExploreAPI(retrofit: Retrofit): ExploreAPI = retrofit.create(ExploreAPI::class.java)
+
+    @Provides
+    @Singleton
+    fun provideUpComingAPI(retrofit: Retrofit): UpComingAPI = retrofit.create(UpComingAPI::class.java)
 }

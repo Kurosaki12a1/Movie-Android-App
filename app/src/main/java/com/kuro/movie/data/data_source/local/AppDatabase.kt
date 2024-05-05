@@ -9,7 +9,7 @@ import com.kuro.movie.data.data_source.local.dao.tvseries.TvSeriesDao
 import com.kuro.movie.data.model.entity.converter.ListIntConverter
 import com.kuro.movie.data.model.entity.movie.FavoriteMovie
 import com.kuro.movie.data.model.entity.movie.MovieWatchListItem
-import com.kuro.movie.data.model.entity.movie.UpcomingRemindEntity
+import com.kuro.movie.data.model.entity.movie.UpComingRemindEntity
 import com.kuro.movie.data.model.entity.tvseries.FavoriteTvSeries
 import com.kuro.movie.data.model.entity.tvseries.TvSeriesWatchListItem
 
@@ -17,7 +17,7 @@ import com.kuro.movie.data.model.entity.tvseries.TvSeriesWatchListItem
     entities = [
         FavoriteMovie::class, MovieWatchListItem::class,
         FavoriteTvSeries::class, TvSeriesWatchListItem::class,
-        UpcomingRemindEntity::class],
+        UpComingRemindEntity::class],
     exportSchema = false,
     version = 1
 )

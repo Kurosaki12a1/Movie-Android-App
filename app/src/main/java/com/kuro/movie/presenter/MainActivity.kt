@@ -12,12 +12,12 @@ import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.snackbar.Snackbar
-import dagger.hilt.android.AndroidEntryPoint
 import com.kuro.movie.R
 import com.kuro.movie.databinding.ActivityMainBinding
 import com.kuro.movie.navigation.NavigateFlow
 import com.kuro.movie.navigation.NavigationFlow
 import com.kuro.movie.navigation.Navigator
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity(), NavigationFlow {
             R.id.homeFragment -> true
             R.id.exploreFragment -> true
             R.id.settingsFragment -> true
+            R.id.upComingFragment -> true
             /*  R.id.exploreFragment -> true
               R.id.upComingFragment -> true
               R.id.myListFragment -> true

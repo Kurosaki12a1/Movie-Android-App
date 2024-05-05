@@ -3,6 +3,7 @@ package com.kuro.movie.data.mapper
 import com.kuro.movie.data.model.Movie
 import com.kuro.movie.data.model.entity.movie.FavoriteMovie
 import com.kuro.movie.data.model.entity.movie.MovieWatchListItem
+import com.kuro.movie.domain.model.UpComingMovie
 import com.kuro.movie.domain.response.MovieResponse
 import com.kuro.movie.util.Utils
 import com.kuro.movie.extension.orZero
@@ -18,6 +19,13 @@ fun MovieResponse.toMovie(): Movie {
         voteAverage = voteAverage.orZero(),
         formattedVoteCount = Utils.formatVoteCount(voteCount),
         fullReleaseDate = releaseDate
+    )
+}
+
+fun MovieResponse.toUpComingMovie(): UpComingMovie {
+    return UpComingMovie(
+        movie = this.toMovie(),
+        isAddedToRemind = false
     )
 }
 

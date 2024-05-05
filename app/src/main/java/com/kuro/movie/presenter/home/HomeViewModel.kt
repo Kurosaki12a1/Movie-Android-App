@@ -14,6 +14,7 @@ import com.kuro.movie.domain.usecase.movie.GetPopularMoviesUseCase
 import com.kuro.movie.domain.usecase.movie.GetTopRatedMoviesUseCase
 import com.kuro.movie.domain.usecase.tvseries.GetPopularTvSeriesUseCase
 import com.kuro.movie.domain.usecase.tvseries.GetTopRatedTvSeriesUseCase
+import com.kuro.movie.util.postUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -62,11 +63,12 @@ class HomeViewModel @Inject constructor(
     private var topRatedTvSeriesDisposable: Disposable? = null
 
     fun clickSeeAllText(text: String?) {
-        val newState = _homeState.value?.copy(
-            isShowsSeeAllPage = text != null,
-            seeAllPageToolBarText = text?: ""
-        )
-        _homeState.postValue(newState)
+        _homeState.postUpdate {
+            it.copy(
+                isShowsSeeAllPage = text != null,
+                seeAllPageToolBarText = text ?: ""
+            )
+        }
     }
 
     fun fetchData() {

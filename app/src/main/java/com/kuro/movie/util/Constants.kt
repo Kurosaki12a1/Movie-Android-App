@@ -37,5 +37,5 @@ object Constants {
     const val BATCH_SIZE = 10
 
     const val DISCOVER_DATE_QUERY_FOR_TV = "first_air_date"
-
+    const val PACKAGE_NAME = "com.kuro.movie"
 }

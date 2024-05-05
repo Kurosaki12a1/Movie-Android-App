@@ -7,6 +7,7 @@ import com.kuro.movie.domain.repository.GenreRepository
 import com.kuro.movie.domain.repository.HomeMovieRepository
 import com.kuro.movie.domain.repository.HomeTvRepository
 import com.kuro.movie.domain.repository.SharedPreferenceRepository
+import com.kuro.movie.domain.repository.UpComingRepository
 import com.kuro.movie.domain.repository.data_source.local.LocalDatabaseRepository
 import com.kuro.movie.domain.repository.data_source.local.MovieLocalRepository
 import com.kuro.movie.domain.repository.data_source.local.TvSeriesLocalRepository
@@ -68,6 +69,7 @@ import com.kuro.movie.domain.usecase.tvseries.ToggleTvSeriesForFavoriteListUseCa
 import com.kuro.movie.domain.usecase.tvseries.ToggleTvSeriesForWatchListItemUseCase
 import com.kuro.movie.domain.usecase.ui_mode.GetUIModeUseCase
 import com.kuro.movie.domain.usecase.ui_mode.UpdateUIModeUseCase
+import com.kuro.movie.domain.usecase.up_coming.GetUpcomingMovieUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -494,4 +496,10 @@ object UseCaseModule {
         discoverMovieUseCase,
         multiSearchUseCase
     )
+
+    @Provides
+    fun provideGetUpcomingMovieUseCase(
+        repository: UpComingRepository,
+        movieGenreListUseCase: GetMovieGenreListUseCase,
+        ) : GetUpcomingMovieUseCase = GetUpcomingMovieUseCase(repository, movieGenreListUseCase)
 }

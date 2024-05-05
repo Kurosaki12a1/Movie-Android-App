@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import com.kuro.movie.util.Constants.UPCOMING_REMIND_TABLE_NAME
 
 @Entity(tableName = UPCOMING_REMIND_TABLE_NAME)
-data class UpcomingRemindEntity(
+data class UpComingRemindEntity(
     @PrimaryKey(autoGenerate = false) val movieId: Int,
     val movieTitle: String,
     val movieReleaseDate: String,

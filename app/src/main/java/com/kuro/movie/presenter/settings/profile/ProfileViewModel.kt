@@ -15,6 +15,7 @@ import com.kuro.movie.domain.usecase.firebase.GetMovieWatchListFromLocalDatabase
 import com.kuro.movie.domain.usecase.firebase.GetTvSeriesWatchFromLocalDatabaseThenUpdateToFirebase
 import com.kuro.movie.util.Constants
 import com.kuro.movie.util.Resource
+import com.kuro.movie.util.postUpdate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -50,13 +51,13 @@ class ProfileViewModel @Inject constructor(
 
     private fun initState() {
         val isUserSignIn = auth.currentUser != null
-        _mutableState.postValue(
-            _mutableState.value?.copy(
+        _mutableState.postUpdate {
+            it.copy(
                 isSignedIn = isUserSignIn,
                 userProfile = auth.currentUser,
                 isFirebaseAccount = auth.currentUser?.providerId == Constants.PROVIDER_FIREBASE_ACCOUNT
             )
-        )
+        }
     }
 
     fun deleteAccount() {
@@ -72,11 +73,15 @@ class ProfileViewModel @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    _mutableState.postValue(_mutableState.value?.copy(isLoading = false))
+                    _mutableState.postUpdate {
+                        it.copy(isLoading = false)
+                    }
                     _deleteAccountState.postValue(true)
                     sendMessage("Delete account successful")
                 }, {
-                    _mutableState.postValue(_mutableState.value?.copy(isLoading = false))
+                    _mutableState.postUpdate {
+                        it.copy(isLoading = false)
+                    }
                     handleError(it)
                     if (it is FirebaseAuthRecentLoginRequiredException) {
                         logOut()
@@ -97,13 +102,13 @@ class ProfileViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 localDatabaseUseCases.clearAllDatabaseUseCase()
             }
-            _mutableState.postValue(_mutableState.value?.copy(isLoading = false))
+            _mutableState.postUpdate { it.copy(isLoading = false) }
         }
     }
 
     private fun signOut() {
         auth.signOut()
-        _mutableState.postValue(_mutableState.value?.copy(isSignedIn = false))
+        _mutableState.postUpdate { it.copy(isLoading = false) }
         sendMessage("Successfully log out")
     }
 
