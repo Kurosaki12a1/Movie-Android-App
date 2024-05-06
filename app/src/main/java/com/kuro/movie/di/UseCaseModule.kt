@@ -12,6 +12,8 @@ import com.kuro.movie.domain.repository.data_source.local.LocalDatabaseRepositor
 import com.kuro.movie.domain.repository.data_source.local.MovieLocalRepository
 import com.kuro.movie.domain.repository.data_source.local.TvSeriesLocalRepository
 import com.kuro.movie.domain.repository.data_source.remote.HomeMovieRemoteRepository
+import com.kuro.movie.domain.repository.detail.MovieDetailRepository
+import com.kuro.movie.domain.repository.detail.TvDetailRepository
 import com.kuro.movie.domain.repository.firebase.FirebaseCoreMovieRepository
 import com.kuro.movie.domain.repository.firebase.FirebaseCoreRepository
 import com.kuro.movie.domain.repository.firebase.FirebaseCoreTvSeriesRepository
@@ -27,6 +29,13 @@ import com.kuro.movie.domain.usecase.auth.login.SignInWithEmailAndPasswordUseCas
 import com.kuro.movie.domain.usecase.auth.signup.CreateUserWithEmailAndPasswordUseCase
 import com.kuro.movie.domain.usecase.database.ClearAllDatabaseUseCase
 import com.kuro.movie.domain.usecase.database.LocalDatabaseUseCases
+import com.kuro.movie.domain.usecase.detail.DetailUseCase
+import com.kuro.movie.domain.usecase.detail.movie.GetMovieDetailUseCase
+import com.kuro.movie.domain.usecase.detail.movie.GetMovieRecommendationUseCase
+import com.kuro.movie.domain.usecase.detail.movie.GetMovieVideosUseCase
+import com.kuro.movie.domain.usecase.detail.tv.GetTvDetailUseCase
+import com.kuro.movie.domain.usecase.detail.tv.GetTvRecommendationUseCase
+import com.kuro.movie.domain.usecase.detail.tv.GetTvVideosUseCase
 import com.kuro.movie.domain.usecase.firebase.AddMovieToFavoriteListInFirebaseUseCase
 import com.kuro.movie.domain.usecase.firebase.AddMovieToWatchListInFirebaseUseCase
 import com.kuro.movie.domain.usecase.firebase.AddTvSeriesToFavoriteListInFirebaseUseCase
@@ -483,6 +492,7 @@ object UseCaseModule {
     ): MultiSearchUseCase = MultiSearchUseCase(repository)
 
     @Provides
+    @Singleton
     fun provideExploreUseCase(
         tvGenreListUseCase: GetTvGenreListUseCase,
         movieGenreListUseCase: GetMovieGenreListUseCase,
@@ -498,8 +508,80 @@ object UseCaseModule {
     )
 
     @Provides
+    @Singleton
     fun provideGetUpcomingMovieUseCase(
         repository: UpComingRepository,
         movieGenreListUseCase: GetMovieGenreListUseCase,
-        ) : GetUpcomingMovieUseCase = GetUpcomingMovieUseCase(repository, movieGenreListUseCase)
+    ): GetUpcomingMovieUseCase = GetUpcomingMovieUseCase(repository, movieGenreListUseCase)
+
+    @Provides
+    @Singleton
+    fun provideGetMovieDetailUseCase(
+        movieDetailRepository: MovieDetailRepository,
+        getFavoriteMovieIdsUseCase: GetFavoriteMovieIdsUseCase,
+        getWatchListMovieIdsUseCase: GetMovieWatchListItemIdsUseCase
+    ): GetMovieDetailUseCase = GetMovieDetailUseCase(
+        movieDetailRepository,
+        getFavoriteMovieIdsUseCase,
+        getWatchListMovieIdsUseCase
+    )
+
+    @Provides
+    @Singleton
+    fun provideGetMovieRecommendationUseCase(
+        movieDetailRepository: MovieDetailRepository,
+        getMovieGenreListUseCase: GetMovieGenreListUseCase
+    ): GetMovieRecommendationUseCase =
+        GetMovieRecommendationUseCase(movieDetailRepository, getMovieGenreListUseCase)
+
+    @Provides
+    @Singleton
+    fun provideGetMovieVideosUseCase(
+        movieDetailRepository: MovieDetailRepository
+    ): GetMovieVideosUseCase = GetMovieVideosUseCase(movieDetailRepository)
+
+    @Provides
+    @Singleton
+    fun provideGetTvDetailUseCase(
+        tvDetailRepository: TvDetailRepository,
+        getFavoriteTvSeriesIdsUseCase: GetFavoriteTvSeriesIdsUseCase,
+        getWatchListTvSeriesIdsUseCase: GetTvSeriesWatchListItemIdsUseCase
+    ): GetTvDetailUseCase = GetTvDetailUseCase(
+        tvDetailRepository,
+        getFavoriteTvSeriesIdsUseCase,
+        getWatchListTvSeriesIdsUseCase
+    )
+
+    @Provides
+    @Singleton
+    fun provideGetTvRecommendationUseCase(
+        tvDetailRepository: TvDetailRepository,
+        getTvGenreListUseCase: GetTvGenreListUseCase
+    ): GetTvRecommendationUseCase = GetTvRecommendationUseCase(
+        tvDetailRepository,
+        getTvGenreListUseCase
+    )
+
+    @Provides
+    @Singleton
+    fun provideGetTvVideosUseCase(tvDetailRepository: TvDetailRepository): GetTvVideosUseCase =
+        GetTvVideosUseCase(tvDetailRepository)
+
+    @Provides
+    @Singleton
+    fun provideDetailUseCase(
+        movieDetailUseCase: GetMovieDetailUseCase,
+        tvDetailUseCase: GetTvDetailUseCase,
+        getMovieRecommendationUseCase: GetMovieRecommendationUseCase,
+        getTvRecommendationUseCase: GetTvRecommendationUseCase,
+        getMovieVideosUseCase: GetMovieVideosUseCase,
+        getTvVideosUseCase: GetTvVideosUseCase
+    ): DetailUseCase = DetailUseCase(
+        movieDetailUseCase,
+        tvDetailUseCase,
+        getMovieRecommendationUseCase,
+        getTvRecommendationUseCase,
+        getMovieVideosUseCase,
+        getTvVideosUseCase
+    )
 }

@@ -2,6 +2,7 @@ package com.kuro.movie.di
 
 import android.content.Context
 import com.kuro.movie.BuildConfig
+import com.kuro.movie.data.data_source.remote.DetailAPI
 import com.kuro.movie.data.data_source.remote.ExploreAPI
 import com.kuro.movie.data.data_source.remote.GenreAPI
 import com.kuro.movie.data.data_source.remote.HomeAPI
@@ -95,5 +96,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideUpComingAPI(retrofit: Retrofit): UpComingAPI = retrofit.create(UpComingAPI::class.java)
+    fun provideUpComingAPI(retrofit: Retrofit): UpComingAPI =
+        retrofit.create(UpComingAPI::class.java)
+
+    @Provides
+    @Singleton
+    fun provideDetailAPI(retrofit: Retrofit): DetailAPI = retrofit.create(DetailAPI::class.java)
 }

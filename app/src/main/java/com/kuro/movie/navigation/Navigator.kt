@@ -37,6 +37,7 @@ class Navigator {
         is NavigateFlow.ForgetPasswordFlow -> navController.navigateWithAnimation(
             LoginFragmentDirections.actionLoginFragmentToForgetPasswordFragment(navigateFlow.email)
         )
+
         // This does not need animation
         is NavigateFlow.BottomSheetDetailFlow -> navController.navigate(
             MainNavGraphDirections.actionGlobalDetailBottomSheetFlow(
@@ -57,30 +58,17 @@ class Navigator {
             ProfileFragmentDirections.actionProfileFragmentToChangePassword()
         )
 
+        is NavigateFlow.DetailFlow -> navController.navigateWithAnimation(
+            MainNavGraphDirections.actionGlobalDetailFlow(
+                navigateFlow.movieId,
+                navigateFlow.tvSeriesId
+            )
+        )
 
-        else -> {
-            // TODO
-        }
-        /* is NavigateFlow.BottomSheetDetailFlow -> navController.navigate(
-
-             MainNavGraphDirections.actionGlobalDetailBottomSheetFlow(
-                 navigateFlow.movie,
-                 navigateFlow.tvSeries
-             )
-         )
-
-         is NavigateFlow.DetailFlow -> navController.navigate(
-             MainNavGraphDirections.actionGlobalDetailFlow(
-                 navigateFlow.movieId,
-                 navigateFlow.tvSeriesId
-             )
-         )
-
-         is NavigateFlow.PersonDetailFlow -> navController.navigate(
-             MainNavGraphDirections.actionGlobalPersonDetailFlow(
-                 navigateFlow.personId
-             )
-         )*/
-
+        is NavigateFlow.PersonDetailFlow -> navController.navigate(
+            MainNavGraphDirections.actionGlobalPersonDetailFlow(
+                navigateFlow.personId
+            )
+        )
     }
 }

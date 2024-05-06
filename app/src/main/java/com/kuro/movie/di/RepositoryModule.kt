@@ -7,6 +7,7 @@ import com.kuro.movie.data.data_source.local.AppDatabase
 import com.kuro.movie.data.data_source.local.dao.movie.MovieDao
 import com.kuro.movie.data.data_source.local.dao.movie.UpComingDao
 import com.kuro.movie.data.data_source.local.dao.tvseries.TvSeriesDao
+import com.kuro.movie.data.data_source.remote.DetailAPI
 import com.kuro.movie.data.data_source.remote.ExploreAPI
 import com.kuro.movie.data.data_source.remote.GenreAPI
 import com.kuro.movie.data.data_source.remote.HomeAPI
@@ -28,7 +29,11 @@ import com.kuro.movie.data.repository.data_source.remote.ExploreMultiSearchRepos
 import com.kuro.movie.data.repository.data_source.remote.ExploreTvRemoteRepositoryImpl
 import com.kuro.movie.data.repository.data_source.remote.HomeMovieRemoteRepositoryImpl
 import com.kuro.movie.data.repository.data_source.remote.HomeTvSeriesRemoteRepositoryImpl
+import com.kuro.movie.data.repository.data_source.remote.MovieDetailRemoteRepositoryImpl
+import com.kuro.movie.data.repository.data_source.remote.TvDetailRemoteRepositoryImpl
 import com.kuro.movie.data.repository.data_source.remote.UpComingMovieRemoteRepositoryImpl
+import com.kuro.movie.data.repository.detail.MovieDetailRepositoryImpl
+import com.kuro.movie.data.repository.detail.TvDetailRepositoryImpl
 import com.kuro.movie.data.repository.firebase.FirebaseCoreMovieRepositoryImpl
 import com.kuro.movie.data.repository.firebase.FirebaseCoreRepositoryImpl
 import com.kuro.movie.data.repository.firebase.FirebaseCoreTvSeriesRepositoryImpl
@@ -50,7 +55,11 @@ import com.kuro.movie.domain.repository.data_source.remote.ExploreMultiSearchRem
 import com.kuro.movie.domain.repository.data_source.remote.ExploreTvRemoteRepository
 import com.kuro.movie.domain.repository.data_source.remote.HomeMovieRemoteRepository
 import com.kuro.movie.domain.repository.data_source.remote.HomeTvSeriesRemoteRepository
+import com.kuro.movie.domain.repository.data_source.remote.MovieDetailRemoteRepository
+import com.kuro.movie.domain.repository.data_source.remote.TvDetailRemoteRepository
 import com.kuro.movie.domain.repository.data_source.remote.UpComingMovieRemoteRepository
+import com.kuro.movie.domain.repository.detail.MovieDetailRepository
+import com.kuro.movie.domain.repository.detail.TvDetailRepository
 import com.kuro.movie.domain.repository.firebase.FirebaseCoreMovieRepository
 import com.kuro.movie.domain.repository.firebase.FirebaseCoreRepository
 import com.kuro.movie.domain.repository.firebase.FirebaseCoreTvSeriesRepository
@@ -203,5 +212,29 @@ object RepositoryModule {
         upComingMovieRemoteRepository: UpComingMovieRemoteRepository,
         upComingDao: UpComingDao
     ): UpComingRepository =
-        UpComingRepositoryImpl(upComingMovieRemoteRepository, upComingDao )
+        UpComingRepositoryImpl(upComingMovieRemoteRepository, upComingDao)
+
+    @Provides
+    @Singleton
+    fun provideMovieDetailRemoteRepository(
+        detailAPI: DetailAPI
+    ): MovieDetailRemoteRepository = MovieDetailRemoteRepositoryImpl(detailAPI)
+
+    @Provides
+    @Singleton
+    fun provideMovieDetailRepository(
+        repository: MovieDetailRemoteRepository
+    ): MovieDetailRepository = MovieDetailRepositoryImpl(repository)
+
+    @Provides
+    @Singleton
+    fun provideTvDetailRemoteRepository(
+        detailAPI: DetailAPI
+    ): TvDetailRemoteRepository = TvDetailRemoteRepositoryImpl(detailAPI)
+
+    @Provides
+    @Singleton
+    fun provideTvDetailRepository(
+        repository: TvDetailRemoteRepository
+    ): TvDetailRepository = TvDetailRepositoryImpl(repository)
 }

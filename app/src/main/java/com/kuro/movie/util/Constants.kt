@@ -37,5 +37,17 @@ object Constants {
     const val BATCH_SIZE = 10
 
     const val DISCOVER_DATE_QUERY_FOR_TV = "first_air_date"
-    const val PACKAGE_NAME = "com.kuro.movie"
+
+    const val DETAIL_DEFAULT_ID = 0
+
+    const val TYPE_TRAILER = "Trailer"
+    const val TYPE_TEASER = "Teaser"
+
+    const val TMDB_MOVIE_URL = "https://www.themoviedb.org/movie/"
+    const val TMDB_TV_URL = "https://www.themoviedb.org/tv/"
+
+    const val HOUR_KEY = "hour"
+    const val MINUTES_KEY = "minutes"
+
+    const val TV_SERIES_STATUS_ENDED = "Ended"
 }

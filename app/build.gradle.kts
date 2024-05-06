@@ -168,4 +168,7 @@ dependencies {
     // Leak Canary
     debugImplementation(libs.leakcanary.android)
 
+    // Youtube player
+    implementation(libs.android.youtube.player.core)
+
 }

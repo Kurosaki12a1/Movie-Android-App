@@ -47,5 +47,24 @@
             app:nullable="true" />
     </action>
 
+    <action
+        android:id="@+id/action_global_detailFlow"
+        app:destination="@id/detail_flow">
+        <argument
+            android:name="movieId"
+            app:argType="integer" />
+        <argument
+            android:name="tvId"
+            app:argType="integer" />
+    </action>
+
+    <action
+        android:id="@+id/action_global_personDetailFlow"
+        app:destination="@id/person_detail_flow">
+        <argument
+            android:name="personId"
+            app:argType="integer" />
+    </action>
+
 
 </navigation>
