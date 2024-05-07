@@ -17,7 +17,9 @@ import com.kuro.movie.databinding.ActivityMainBinding
 import com.kuro.movie.navigation.NavigateFlow
 import com.kuro.movie.navigation.NavigationFlow
 import com.kuro.movie.navigation.Navigator
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavigationFlow {
 
     private var navigator: Navigator? = null

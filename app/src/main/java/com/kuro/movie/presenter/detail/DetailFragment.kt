@@ -28,12 +28,10 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
 ) {
     private val viewModel: DetailViewModel by viewModels()
 
-    private val movieRecommendationAdapter: MovieAdapter by lazy { MovieAdapter() }
-    private val detailActorAdapter: DetailActorAdapter by lazy { DetailActorAdapter() }
-    private val tvRecommendationAdapter: TvSeriesAdapter by lazy { TvSeriesAdapter() }
-    private val videosAdapter: VideosAdapter by lazy {
-        VideosAdapter(viewLifecycleOwner.lifecycle)
-    }
+    private lateinit var movieRecommendationAdapter: MovieAdapter
+    private lateinit var detailActorAdapter: DetailActorAdapter
+    private lateinit var tvRecommendationAdapter: TvSeriesAdapter
+    private lateinit var videosAdapter: VideosAdapter
 
     private var bindingDetailHelper: BindingDetailHelper? = null
     private lateinit var detailStateObserver: Observer<DetailState>
@@ -41,10 +39,18 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
     private lateinit var videosObserver: Observer<Videos?>
 
     override fun onInitialize() {
+        setUpAdapters()
         setUpView()
         addOnBackPressedCallBack()
         setUpObservers()
         onObservers()
+    }
+    
+    private fun setUpAdapters() {
+         movieRecommendationAdapter =  MovieAdapter()
+         detailActorAdapter = DetailActorAdapter()
+         tvRecommendationAdapter =  TvSeriesAdapter()
+         videosAdapter = VideosAdapter(viewLifecycleOwner.lifecycle)
     }
 
     private fun setUpView() {
@@ -190,7 +196,13 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
         }
     }
 
+    private fun cleanUp() {
+        binding.recommendationRecyclerView.adapter = null
+        binding.videosRecyclerView.adapter = null
+    }
+
     override fun onDestroyView() {
+        cleanUp()
         super.onDestroyView()
         bindingDetailHelper = null
     }

@@ -72,7 +72,7 @@ class Navigator {
             )
         )
 
-        is NavigateFlow.PersonDetailFlow -> navController.get()?.navigate(
+        is NavigateFlow.PersonDetailFlow -> navController.get()?.navigateWithAnimation(
             MainNavGraphDirections.actionGlobalPersonDetailFlow(
                 navigateFlow.personId
             )
