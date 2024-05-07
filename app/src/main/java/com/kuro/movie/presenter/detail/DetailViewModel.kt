@@ -16,12 +16,13 @@ import com.kuro.movie.presenter.detail.event.DetailUIEvent
 import com.kuro.movie.util.Constants
 import com.kuro.movie.util.Constants.DETAIL_DEFAULT_ID
 import com.kuro.movie.util.Resource
-import com.kuro.movie.util.postUpdate
 import com.kuro.movie.util.update
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class DetailViewModel @Inject constructor(
     private val detailUseCase: DetailUseCase,
     private val localDatabaseUseCases: LocalDatabaseUseCases,
@@ -42,7 +43,7 @@ class DetailViewModel @Inject constructor(
         DetailFragmentArgs.fromSavedStateHandle(savedStateHandle)
             .movieId.let { id ->
                 if (id == DETAIL_DEFAULT_ID) return@let
-                _detailState.postUpdate {
+                _detailState.update {
                     it.copy(
                         movieId = id,
                         tvId = null
@@ -54,7 +55,7 @@ class DetailViewModel @Inject constructor(
         DetailFragmentArgs.fromSavedStateHandle(savedStateHandle)
             .tvId.let { id ->
                 if (id == DETAIL_DEFAULT_ID) return@let
-                _detailState.postUpdate {
+                _detailState.update {
                     it.copy(
                         movieId = null,
                         tvId = id
@@ -77,13 +78,17 @@ class DetailViewModel @Inject constructor(
             }
 
             is DetailEvent.ClickToDirectorName -> {
-                val action = NavigateFlow.PersonDetailFlow(event.directorId)
-                addConsumableViewEvent(DetailUIEvent.NavigateTo(action))
+                //TODO
+                /* val action = NavigateFlow.PersonDetailFlow(event.directorId)
+                 addConsumableViewEvent(DetailUIEvent.NavigateTo(action))
+             */
             }
 
+
             is DetailEvent.ClickActorName -> {
-                val action = NavigateFlow.PersonDetailFlow(event.actorId)
-                addConsumableViewEvent(DetailUIEvent.NavigateTo(action))
+                //TODO
+                /*       val action = NavigateFlow.PersonDetailFlow(event.actorId)
+                       addConsumableViewEvent(DetailUIEvent.NavigateTo(action))*/
             }
 
             is DetailEvent.ClickedAddWatchList -> {
@@ -136,14 +141,15 @@ class DetailViewModel @Inject constructor(
 
             is DetailEvent.SelectedTab -> {
                 _detailState.update { it.copy(selectedTab = event.selectedTab) }
-                if (detailState.value?.isSelectedTrailerTab() == true) {
-                    if (detailState.value?.isNotNullTvDetail() == true) {
+                if (_detailState.value?.isSelectedTrailerTab() == true) {
+                    if (_detailState.value?.isNotNullTvDetail() == true) {
                         getTvVideos(tvId = detailState.value!!.tvId!!)
                     } else {
-                        getMovieVideos(movieId = detailState.value!!.movieId!!)
+                        getMovieVideos(movieId = _detailState.value!!.movieId!!)
                     }
                 }
             }
+
 
             is DetailEvent.ClickRecommendationItemClick -> {
                 event.tvSeries?.let {
@@ -166,7 +172,7 @@ class DetailViewModel @Inject constructor(
 
     private fun getMovieVideos(movieId: Int) {
         viewModelScope.launch {
-            _detailState.postUpdate { it.copy(isLoading = true) }
+            _detailState.update { it.copy(isLoading = true) }
             val resource = async {
                 detailUseCase.getMovieVideosUseCase(
                     movieId = movieId,
@@ -175,17 +181,17 @@ class DetailViewModel @Inject constructor(
             }
             when (val results = resource.await()) {
                 is Resource.Success -> {
-                    _detailState.postUpdate { it.copy(isLoading = false) }
+                    _detailState.update { it.copy(isLoading = false) }
                     _videos.postValue(results.value)
                 }
 
                 is Resource.Failure -> {
-                    _detailState.postUpdate { it.copy(isLoading = false) }
+                    _detailState.update { it.copy(isLoading = false) }
                     handleError(results.error)
                 }
 
                 is Resource.Loading -> {
-                    _detailState.postUpdate { it.copy(isLoading = true) }
+                    _detailState.update { it.copy(isLoading = true) }
                 }
             }
         }
@@ -193,7 +199,7 @@ class DetailViewModel @Inject constructor(
 
     private fun getTvVideos(tvId: Int) {
         viewModelScope.launch {
-            _detailState.postUpdate { it.copy(isLoading = true) }
+            _detailState.update { it.copy(isLoading = true) }
             val resource = async {
                 detailUseCase.getTvVideosUseCase(
                     tvId = tvId,
@@ -202,17 +208,17 @@ class DetailViewModel @Inject constructor(
             }
             when (val results = resource.await()) {
                 is Resource.Success -> {
-                    _detailState.postUpdate { it.copy(isLoading = false) }
+                    _detailState.update { it.copy(isLoading = false) }
                     _videos.postValue(results.value)
                 }
 
                 is Resource.Failure -> {
-                    _detailState.postUpdate { it.copy(isLoading = false) }
+                    _detailState.update { it.copy(isLoading = false) }
                     handleError(results.error)
                 }
 
                 is Resource.Loading -> {
-                    _detailState.postUpdate { it.copy(isLoading = true) }
+                    _detailState.update { it.copy(isLoading = true) }
                 }
             }
         }
@@ -250,7 +256,7 @@ class DetailViewModel @Inject constructor(
 
     private fun getMovieDetail(movieId: Int) {
         viewModelScope.launch {
-            _detailState.postUpdate { it.copy(isLoading = true) }
+            _detailState.update { it.copy(isLoading = true) }
             val resource = async {
                 detailUseCase.movieDetailUseCase(
                     language = Constants.DEFAULT_LANGUAGE,
@@ -260,7 +266,7 @@ class DetailViewModel @Inject constructor(
             when (val results = resource.await()) {
                 is Resource.Success -> {
                     val movieDetail = results.value
-                    _detailState.postUpdate {
+                    _detailState.update {
                         it.copy(
                             movieDetail = movieDetail,
                             tvDetail = null,
@@ -274,12 +280,12 @@ class DetailViewModel @Inject constructor(
                 }
 
                 is Resource.Failure -> {
-                    _detailState.postUpdate { it.copy(isLoading = false) }
+                    _detailState.update { it.copy(isLoading = false) }
                     handleError(results.error)
                 }
 
                 is Resource.Loading -> {
-                    _detailState.postUpdate { it.copy(isLoading = true) }
+                    _detailState.update { it.copy(isLoading = true) }
                 }
             }
         }
@@ -287,7 +293,7 @@ class DetailViewModel @Inject constructor(
 
     private fun getTvDetail(tvId: Int) {
         viewModelScope.launch {
-            _detailState.postUpdate { it.copy(isLoading = true) }
+            _detailState.update { it.copy(isLoading = true) }
             val resource = async {
                 detailUseCase.tvDetailUseCase(
                     language = Constants.DEFAULT_LANGUAGE,
@@ -297,11 +303,11 @@ class DetailViewModel @Inject constructor(
             when (val results = resource.await()) {
                 is Resource.Success -> {
                     val tvDetail = results.value
-                    _detailState.postUpdate {
+                    _detailState.update {
                         it.copy(
                             movieDetail = null,
                             tvDetail = tvDetail,
-                            tvId = null,
+                            movieId = null,
                             isLoading = false,
                             doesAddFavorite = tvDetail.isFavorite,
                             doesAddWatchList = tvDetail.isWatchList
@@ -311,12 +317,12 @@ class DetailViewModel @Inject constructor(
                 }
 
                 is Resource.Failure -> {
-                    _detailState.postUpdate { it.copy(isLoading = false) }
+                    _detailState.update { it.copy(isLoading = false) }
                     handleError(results.error)
                 }
 
                 is Resource.Loading -> {
-                    _detailState.postUpdate { it.copy(isLoading = true) }
+                    _detailState.update { it.copy(isLoading = true) }
                 }
             }
         }
@@ -327,7 +333,7 @@ class DetailViewModel @Inject constructor(
             val movie = detailUseCase.getMovieRecommendationUseCase(
                 movieId = movieId, language = Constants.DEFAULT_LANGUAGE
             )
-            _detailState.postUpdate { it.copy(movieRecommendation = movie) }
+            _detailState.update { it.copy(movieRecommendation = movie) }
         }
     }
 
@@ -336,7 +342,7 @@ class DetailViewModel @Inject constructor(
             val tv = detailUseCase.getTvRecommendationUseCase(
                 tvId = tvId, language = Constants.DEFAULT_LANGUAGE
             )
-            _detailState.postUpdate { it.copy(tvRecommendation = tv) }
+            _detailState.update { it.copy(tvRecommendation = tv) }
         }
     }
 }

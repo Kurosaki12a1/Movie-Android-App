@@ -42,6 +42,10 @@ class VideosAdapter(
             })
         }
 
+        fun unBind(lifecycle: Lifecycle) {
+            lifecycle.removeObserver(binding.youtubePlayerView)
+        }
+
         companion object {
             fun from(parent: ViewGroup): VideoResultViewHolder {
                 val inflater = LayoutInflater.from(parent.context)
@@ -49,6 +53,11 @@ class VideosAdapter(
                 return VideoResultViewHolder(binding)
             }
         }
+    }
+
+    override fun onViewRecycled(holder: VideoResultViewHolder) {
+        super.onViewRecycled(holder)
+        holder.unBind(lifecycle)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoResultViewHolder {

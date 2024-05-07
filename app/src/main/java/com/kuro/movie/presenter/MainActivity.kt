@@ -17,14 +17,10 @@ import com.kuro.movie.databinding.ActivityMainBinding
 import com.kuro.movie.navigation.NavigateFlow
 import com.kuro.movie.navigation.NavigationFlow
 import com.kuro.movie.navigation.Navigator
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavigationFlow {
 
-    @Inject
-    lateinit var navigator: Navigator
+    private var navigator: Navigator? = null
 
     private lateinit var binding: ActivityMainBinding
 
@@ -41,11 +37,12 @@ class MainActivity : AppCompatActivity(), NavigationFlow {
     }
 
     private fun setUpNavController() {
+        navigator = Navigator()
         val navHost =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
 
         val navController = navHost.navController
-        navigator.setNavController(navController)
+        navigator?.setNavController(navController)
 
         binding.bottomBar.setupWithNavController(navController)
 
@@ -130,6 +127,11 @@ class MainActivity : AppCompatActivity(), NavigationFlow {
     }
 
     override fun navigateToFlow(flow: NavigateFlow) {
-        navigator.navigateToFlow(flow)
+        navigator?.navigateToFlow(flow)
+    }
+
+    override fun onDestroy() {
+        navigator = null
+        super.onDestroy()
     }
 }

@@ -8,8 +8,9 @@ import com.kuro.movie.core.BaseFragment
 import com.kuro.movie.databinding.FragmentHomeBinding
 import com.kuro.movie.extension.makeGone
 import com.kuro.movie.extension.makeVisible
+import com.kuro.movie.extension.onLoading
+import com.kuro.movie.extension.onNotLoading
 import com.kuro.movie.navigation.NavigateFlow
-import com.kuro.movie.navigation.NavigationFlow
 import com.kuro.movie.presenter.home.adapter.NowPlayingRecyclerAdapter
 import com.kuro.movie.presenter.home.adapter.PopularMoviesAdapter
 import com.kuro.movie.presenter.home.adapter.PopularTvSeriesAdapter
@@ -26,19 +27,28 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
 ) {
     private val homeViewModel: HomeViewModel by viewModels()
 
-    private val nowPlayingAdapter: NowPlayingRecyclerAdapter by lazy { NowPlayingRecyclerAdapter() }
-    private val popularMoviesAdapter: PopularMoviesAdapter by lazy { PopularMoviesAdapter() }
-    private val popularTvSeriesAdapter: PopularTvSeriesAdapter by lazy { PopularTvSeriesAdapter() }
-    private val topRatedMoviesAdapter: TopRatedMoviesAdapter by lazy { TopRatedMoviesAdapter() }
-    private val topRatedTvSeriesAdapter: TopRatedTvSeriesAdapter by lazy { TopRatedTvSeriesAdapter() }
+    private lateinit var nowPlayingAdapter: NowPlayingRecyclerAdapter
+    private lateinit var popularMoviesAdapter: PopularMoviesAdapter
+    private lateinit var popularTvSeriesAdapter: PopularTvSeriesAdapter
+    private lateinit var topRatedMoviesAdapter: TopRatedMoviesAdapter
+    private lateinit var topRatedTvSeriesAdapter: TopRatedTvSeriesAdapter
 
 
     override fun onInitialize() {
-        handlePagingLoadStates()
         addOnBackPressedCallBack { homeViewModel.clickSeeAllText(null) }
+        setUpAdapters()
         setupRecyclerAdapters()
+        handlePagingLoadStates()
         setUpView()
         setUpObservers()
+    }
+
+    private fun setUpAdapters() {
+        nowPlayingAdapter = NowPlayingRecyclerAdapter()
+        popularMoviesAdapter = PopularMoviesAdapter()
+        popularTvSeriesAdapter = PopularTvSeriesAdapter()
+        topRatedMoviesAdapter = TopRatedMoviesAdapter()
+        topRatedTvSeriesAdapter = TopRatedTvSeriesAdapter()
     }
 
     private fun setUpView() {
@@ -140,36 +150,36 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     private fun handlePagingLoadStates() {
         HandlePagingStateNowPlayingRecyclerAdapter(
             nowPlayingRecyclerAdapter = nowPlayingAdapter,
-            onLoading = binding.nowPlayingShimmerLayout::makeVisible,
-            onNotLoading = binding.nowPlayingShimmerLayout::makeGone,
+            onLoading = binding.nowPlayingShimmerLayout::onLoading,
+            onNotLoading = binding.nowPlayingShimmerLayout::onNotLoading,
             onError = { hideScrollViewAndShowErrorScreen() }
         )
 
         HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(
             pagingAdapter = popularMoviesAdapter,
-            onLoading = binding.popularMoviesShimmerLayout::makeVisible,
-            onNotLoading = binding.popularMoviesShimmerLayout::makeGone,
+            onLoading = binding.popularMoviesShimmerLayout::onLoading,
+            onNotLoading = binding.popularMoviesShimmerLayout::onNotLoading,
             onError = { hideScrollViewAndShowErrorScreen() }
         )
 
         HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(
             pagingAdapter = topRatedMoviesAdapter,
-            onLoading = binding.topRatedMoviesShimmerLayout::makeVisible,
-            onNotLoading = binding.topRatedMoviesShimmerLayout::makeGone,
+            onLoading = binding.topRatedMoviesShimmerLayout::onLoading,
+            onNotLoading = binding.topRatedMoviesShimmerLayout::onNotLoading,
             onError = { hideScrollViewAndShowErrorScreen() }
         )
 
         HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(
             pagingAdapter = popularTvSeriesAdapter,
-            onLoading = binding.popularTvSeriesShimmerLayout::makeVisible,
-            onNotLoading = binding.popularTvSeriesShimmerLayout::makeGone,
+            onLoading = binding.popularTvSeriesShimmerLayout::onLoading,
+            onNotLoading = binding.popularTvSeriesShimmerLayout::onNotLoading,
             onError = { hideScrollViewAndShowErrorScreen() }
         )
 
         HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(
             pagingAdapter = topRatedTvSeriesAdapter,
-            onLoading = binding.topRatedTvSeriesShimmerLayout::makeVisible,
-            onNotLoading = binding.topRatedTvSeriesShimmerLayout::makeGone,
+            onLoading = binding.topRatedTvSeriesShimmerLayout::onLoading,
+            onNotLoading = binding.topRatedTvSeriesShimmerLayout::onNotLoading,
             onError = { hideScrollViewAndShowErrorScreen() }
         )
     }
@@ -281,5 +291,21 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
 
     private fun navigateToDetailBottomSheet(navigateFlow: NavigateFlow.BottomSheetDetailFlow) {
         navigateToFlow(navigateFlow)
+    }
+
+    private fun cleanUp() {
+        binding.apply {
+            recyclerViewSeeAll.adapter = null
+            nowPlayingRecyclerView.adapter = null
+            popularMoviesRecyclerView.adapter = null
+            topRatedMoviesRecyclerView.adapter = null
+            popularTvSeriesRecyclerView.adapter = null
+            topRatedTvSeriesRecyclerView.adapter = null
+        }
+    }
+
+    override fun onDestroyView() {
+        cleanUp()
+        super.onDestroyView()
     }
 }

@@ -35,7 +35,7 @@ class BindingDetailHelper(
 
         setDirectorTextListener()
 
-        setTmdbImageOnClickListener()
+        setTMDBImageOnClickListener()
 
         addTabLayoutListener()
 
@@ -72,17 +72,17 @@ class BindingDetailHelper(
         )
     }
 
-    private fun setTmdbImageOnClickListener() {
+    private fun setTMDBImageOnClickListener() {
         val detailState = viewModel.detailState.value
         binding.imvTmdb.setOnClickListener {
-            val tmdbUrl = if (detailState?.tvId != null) {
+            val url = if (detailState?.tvId != null) {
                 "${Constants.TMDB_TV_URL}${detailState.tvId}"
             } else if (detailState?.movieId != null) {
                 "${Constants.TMDB_MOVIE_URL}${detailState.movieId}"
             } else {
                 ""
             }
-            viewModel.onEvent(DetailEvent.IntentToImdbWebSite(tmdbUrl))
+            viewModel.onEvent(DetailEvent.IntentToImdbWebSite(url))
         }
     }
 

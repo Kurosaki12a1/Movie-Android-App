@@ -3,6 +3,7 @@ package com.kuro.movie.extension
 import android.view.View
 import android.widget.ImageButton
 import androidx.core.view.isVisible
+import com.facebook.shimmer.ShimmerFrameLayout
 import com.kuro.movie.R
 
 fun View.makeVisible() {
@@ -12,6 +13,17 @@ fun View.makeVisible() {
 fun View.makeGone() {
     this.isVisible = false
 }
+
+fun ShimmerFrameLayout.onLoading(){
+    this.isVisible = true
+    this.startShimmer()
+}
+
+fun ShimmerFrameLayout.onNotLoading(){
+    this.isVisible = false
+    this.stopShimmer()
+}
+
 
 fun ImageButton.setAddFavoriteIconByFavoriteState(isFavorite: Boolean) {
     if (isFavorite) {

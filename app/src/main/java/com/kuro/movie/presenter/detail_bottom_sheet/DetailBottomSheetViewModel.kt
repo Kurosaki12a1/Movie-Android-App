@@ -74,7 +74,7 @@ class DetailBottomSheetViewModel @Inject constructor(
 
             is DetailBottomSheetEvent.NavigateToDetailFragment -> {
                 // TODO
-                //     navigateToDetailFragment(movieId = getMovie()?.id, tvId = getTvSeries()?.id)
+                navigateToDetailFragment(movieId = getMovie()?.id, tvId = getTvSeries()?.id)
             }
 
             is DetailBottomSheetEvent.Share -> {
