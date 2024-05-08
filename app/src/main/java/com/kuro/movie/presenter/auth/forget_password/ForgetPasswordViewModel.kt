@@ -39,7 +39,6 @@ class ForgetPasswordViewModel @Inject constructor(
         viewModelScope.launch {
             sendPasswordResetEmailUseCase(email)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     mutableState.value = Resource.Success(Unit)
                     sendMessage(Constants.MESSAGE_SEND_EMAIL_SUCCESSFUL)

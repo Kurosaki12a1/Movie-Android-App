@@ -27,11 +27,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
 ) {
     private val homeViewModel: HomeViewModel by viewModels()
 
-    private lateinit var nowPlayingAdapter: NowPlayingRecyclerAdapter
-    private lateinit var popularMoviesAdapter: PopularMoviesAdapter
-    private lateinit var popularTvSeriesAdapter: PopularTvSeriesAdapter
-    private lateinit var topRatedMoviesAdapter: TopRatedMoviesAdapter
-    private lateinit var topRatedTvSeriesAdapter: TopRatedTvSeriesAdapter
+    private var nowPlayingAdapter: NowPlayingRecyclerAdapter? = null
+    private var popularMoviesAdapter: PopularMoviesAdapter? = null
+    private var popularTvSeriesAdapter: PopularTvSeriesAdapter? = null
+    private var topRatedMoviesAdapter: TopRatedMoviesAdapter? = null
+    private var topRatedTvSeriesAdapter: TopRatedTvSeriesAdapter? = null
 
 
     override fun onInitialize() {
@@ -44,11 +44,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     }
 
     private fun setUpAdapters() {
-        nowPlayingAdapter = NowPlayingRecyclerAdapter()
-        popularMoviesAdapter = PopularMoviesAdapter()
-        popularTvSeriesAdapter = PopularTvSeriesAdapter()
-        topRatedMoviesAdapter = TopRatedMoviesAdapter()
-        topRatedTvSeriesAdapter = TopRatedTvSeriesAdapter()
+        if (nowPlayingAdapter == null) {
+            nowPlayingAdapter = NowPlayingRecyclerAdapter()
+            popularMoviesAdapter = PopularMoviesAdapter()
+            popularTvSeriesAdapter = PopularTvSeriesAdapter()
+            topRatedMoviesAdapter = TopRatedMoviesAdapter()
+            topRatedTvSeriesAdapter = TopRatedTvSeriesAdapter()
+        }
     }
 
     private fun setUpView() {
@@ -58,11 +60,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
 
         binding.errorScreen.btnError.setOnClickListener {
             hideErrorScreenAndShowScrollView()
-            nowPlayingAdapter.retry()
-            popularMoviesAdapter.retry()
-            popularTvSeriesAdapter.retry()
-            topRatedMoviesAdapter.retry()
-            topRatedTvSeriesAdapter.retry()
+            nowPlayingAdapter?.retry()
+            popularMoviesAdapter?.retry()
+            popularTvSeriesAdapter?.retry()
+            topRatedMoviesAdapter?.retry()
+            topRatedTvSeriesAdapter?.retry()
         }
 
         setAdaptersClickListener()
@@ -70,48 +72,43 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     }
 
     private fun setAdaptersClickListener() {
-        popularMoviesAdapter.setOnItemClickListener { movie ->
+        popularMoviesAdapter?.setOnItemClickListener { movie ->
             navigateToDetailBottomSheet(
                 NavigateFlow.BottomSheetDetailFlow(
-                    movie = movie,
-                    tvSeries = null
+                    movie = movie, tvSeries = null
                 )
             )
         }
 
-        topRatedMoviesAdapter.setOnItemClickListener { movie ->
+        topRatedMoviesAdapter?.setOnItemClickListener { movie ->
             navigateToDetailBottomSheet(
                 NavigateFlow.BottomSheetDetailFlow(
-                    movie = movie,
-                    tvSeries = null
+                    movie = movie, tvSeries = null
                 )
             )
         }
 
-        nowPlayingAdapter.setOnClickListener { movie ->
+         nowPlayingAdapter?.setOnClickListener { movie ->
             navigateToDetailBottomSheet(
                 NavigateFlow.BottomSheetDetailFlow(
-                    movie = movie,
-                    tvSeries = null
+                    movie = movie, tvSeries = null
                 )
             )
 
         }
 
-        popularTvSeriesAdapter.setOnItemClickListener { tvSeries ->
+        popularTvSeriesAdapter?.setOnItemClickListener { tvSeries ->
             navigateToDetailBottomSheet(
                 NavigateFlow.BottomSheetDetailFlow(
-                    movie = null,
-                    tvSeries = tvSeries
+                    movie = null, tvSeries = tvSeries
                 )
             )
         }
 
-        topRatedTvSeriesAdapter.setOnItemClickListener { tvSeries ->
+        topRatedTvSeriesAdapter?.setOnItemClickListener { tvSeries ->
             navigateToDetailBottomSheet(
                 NavigateFlow.BottomSheetDetailFlow(
-                    movie = null,
-                    tvSeries = tvSeries
+                    movie = null, tvSeries = tvSeries
                 )
             )
         }
@@ -148,71 +145,59 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     }
 
     private fun handlePagingLoadStates() {
-        HandlePagingStateNowPlayingRecyclerAdapter(
-            nowPlayingRecyclerAdapter = nowPlayingAdapter,
+        HandlePagingStateNowPlayingRecyclerAdapter(nowPlayingRecyclerAdapter = nowPlayingAdapter!!,
             onLoading = binding.nowPlayingShimmerLayout::onLoading,
             onNotLoading = binding.nowPlayingShimmerLayout::onNotLoading,
-            onError = { hideScrollViewAndShowErrorScreen() }
-        )
+            onError = { hideScrollViewAndShowErrorScreen() })
 
-        HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(
-            pagingAdapter = popularMoviesAdapter,
+        HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(pagingAdapter = popularMoviesAdapter!!,
             onLoading = binding.popularMoviesShimmerLayout::onLoading,
             onNotLoading = binding.popularMoviesShimmerLayout::onNotLoading,
-            onError = { hideScrollViewAndShowErrorScreen() }
-        )
+            onError = { hideScrollViewAndShowErrorScreen() })
 
-        HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(
-            pagingAdapter = topRatedMoviesAdapter,
+        HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(pagingAdapter = topRatedMoviesAdapter!!,
             onLoading = binding.topRatedMoviesShimmerLayout::onLoading,
             onNotLoading = binding.topRatedMoviesShimmerLayout::onNotLoading,
-            onError = { hideScrollViewAndShowErrorScreen() }
-        )
+            onError = { hideScrollViewAndShowErrorScreen() })
 
-        HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(
-            pagingAdapter = popularTvSeriesAdapter,
+        HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(pagingAdapter = popularTvSeriesAdapter!!,
             onLoading = binding.popularTvSeriesShimmerLayout::onLoading,
             onNotLoading = binding.popularTvSeriesShimmerLayout::onNotLoading,
-            onError = { hideScrollViewAndShowErrorScreen() }
-        )
+            onError = { hideScrollViewAndShowErrorScreen() })
 
-        HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(
-            pagingAdapter = topRatedTvSeriesAdapter,
+        HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(pagingAdapter = topRatedTvSeriesAdapter!!,
             onLoading = binding.topRatedTvSeriesShimmerLayout::onLoading,
             onNotLoading = binding.topRatedTvSeriesShimmerLayout::onNotLoading,
-            onError = { hideScrollViewAndShowErrorScreen() }
-        )
+            onError = { hideScrollViewAndShowErrorScreen() })
     }
 
     override fun onStart() {
         super.onStart()
-        homeViewModel.fetchData()
         if (homeViewModel.homeState.value?.isShowsSeeAllPage == true) {
             val context = requireContext()
-            val adapter =
-                when (homeViewModel.homeState.value?.seeAllPageToolBarText) {
-                    context.getString(R.string.now_playing) -> {
-                        nowPlayingAdapter
-                    }
-
-                    context.getString(R.string.popular_movies) -> {
-                        popularMoviesAdapter
-                    }
-
-                    context.getString(R.string.popular_tv_series) -> {
-                        popularTvSeriesAdapter
-                    }
-
-                    context.getString(R.string.top_rated_movies) -> {
-                        topRatedMoviesAdapter
-                    }
-
-                    context.getString(R.string.top_rated_tv_series) -> {
-                        topRatedTvSeriesAdapter
-                    }
-
-                    else -> nowPlayingAdapter
+            val adapter = when (homeViewModel.homeState.value?.seeAllPageToolBarText) {
+                context.getString(R.string.now_playing) -> {
+                    nowPlayingAdapter
                 }
+
+                context.getString(R.string.popular_movies) -> {
+                    popularMoviesAdapter
+                }
+
+                context.getString(R.string.popular_tv_series) -> {
+                    popularTvSeriesAdapter
+                }
+
+                context.getString(R.string.top_rated_movies) -> {
+                    topRatedMoviesAdapter
+                }
+
+                context.getString(R.string.top_rated_tv_series) -> {
+                    topRatedTvSeriesAdapter
+                }
+
+                else -> nowPlayingAdapter
+            }
             binding.recyclerViewSeeAll.adapter = adapter
         }
     }
@@ -231,19 +216,19 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
         }
 
         observerLiveData(homeViewModel.nowPlayingMovie) {
-            nowPlayingAdapter.submitData(it)
+            nowPlayingAdapter?.submitData(it)
         }
         observerLiveData(homeViewModel.popularMovie) {
-            popularMoviesAdapter.submitData(it)
+            popularMoviesAdapter?.submitData(it)
         }
         observerLiveData(homeViewModel.topRatedMovie) {
-            topRatedMoviesAdapter.submitData(it)
+            topRatedMoviesAdapter?.submitData(it)
         }
         observerLiveData(homeViewModel.popularTvSeries) {
-            popularTvSeriesAdapter.submitData(it)
+            popularTvSeriesAdapter?.submitData(it)
         }
         observerLiveData(homeViewModel.topRatedTvSeries) {
-            topRatedTvSeriesAdapter.submitData(it)
+            topRatedTvSeriesAdapter?.submitData(it)
         }
     }
 
@@ -294,14 +279,11 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
     }
 
     private fun cleanUp() {
-        binding.apply {
-            recyclerViewSeeAll.adapter = null
-            nowPlayingRecyclerView.adapter = null
-            popularMoviesRecyclerView.adapter = null
-            topRatedMoviesRecyclerView.adapter = null
-            popularTvSeriesRecyclerView.adapter = null
-            topRatedTvSeriesRecyclerView.adapter = null
-        }
+        nowPlayingAdapter = null
+        popularMoviesAdapter = null
+        popularTvSeriesAdapter = null
+        topRatedMoviesAdapter = null
+        topRatedTvSeriesAdapter = null
     }
 
     override fun onDestroyView() {

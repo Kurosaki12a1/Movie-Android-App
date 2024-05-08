@@ -133,6 +133,7 @@ class MainActivity : AppCompatActivity(), NavigationFlow {
     }
 
     override fun onDestroy() {
+        navigator?.cleanUp()
         navigator = null
         super.onDestroy()
     }

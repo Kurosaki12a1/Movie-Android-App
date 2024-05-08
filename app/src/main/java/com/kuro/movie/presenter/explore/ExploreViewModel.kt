@@ -91,7 +91,6 @@ class ExploreViewModel @Inject constructor(
     private fun collectNetworkState() {
         observeNetwork.observe()
             .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 _networkState.postValue(it)
             }, {
@@ -113,7 +112,6 @@ class ExploreViewModel @Inject constructor(
             exploreUseCases.multiSearchUseCase(query, Constants.DEFAULT_LANGUAGE)
                 .cachedIn(viewModelScope)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     if (query.isNotEmpty()) {
                         _multiSearch.postValue(it)
@@ -133,7 +131,6 @@ class ExploreViewModel @Inject constructor(
                 filterBottomState = _filterBottomSheetState.value!!
             ).cachedIn(viewModelScope)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     _discoverMovie.postValue(it)
                 }, {
@@ -151,7 +148,6 @@ class ExploreViewModel @Inject constructor(
                 filterBottomState = _filterBottomSheetState.value!!
             ).cachedIn(viewModelScope)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     _discoverTv.postValue(it)
                 }, {

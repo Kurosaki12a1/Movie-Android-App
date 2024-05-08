@@ -33,9 +33,9 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
     inflater = FragmentExploreBinding::inflate
 ) {
     private val viewModel: ExploreViewModel by activityViewModels()
-    private val searchRecyclerAdapter: SearchRecyclerAdapter by lazy { SearchRecyclerAdapter() }
-    private val movieFilterAdapter: FilterMoviesAdapter by lazy { FilterMoviesAdapter() }
-    private val tvFilterAdapter: FilterTvSeriesAdapter by lazy { FilterTvSeriesAdapter() }
+    private var searchRecyclerAdapter: SearchRecyclerAdapter? = null
+    private var movieFilterAdapter: FilterMoviesAdapter? = null
+    private var tvFilterAdapter: FilterTvSeriesAdapter? = null
     private var searchJob: Job? = null
 
     private val queryObserver = Observer<String> { query ->
@@ -49,7 +49,7 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
             hideTvAndSearchAdapters()
             cancelTvAndSearchJobs()
             binding.recyclerDiscoverMovie.makeVisible()
-            movieFilterAdapter.submitData(movieData)
+            movieFilterAdapter?.submitData(movieData)
         }
     }
 
@@ -58,7 +58,7 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
             cancelMovieAndSearchJobs()
             hideMoviesAndSearchAdapter()
             binding.recyclerDiscoverTv.makeVisible()
-            tvFilterAdapter.submitData(tvData)
+            tvFilterAdapter?.submitData(tvData)
         }
     }
 
@@ -67,14 +67,21 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
             cancelTvAndMovieJobs()
             hideTvAndMovieAdapters()
             binding.recyclerSearch.makeVisible()
-            searchRecyclerAdapter.submitData(searchData)
+            searchRecyclerAdapter?.submitData(searchData)
         }
     }
 
     override fun onInitialize() {
+        setUpAdapters()
         observeConnectivityStatus()
         setUpView()
         handlePagingLoadStates()
+    }
+
+    private fun setUpAdapters() {
+        searchRecyclerAdapter = SearchRecyclerAdapter()
+        movieFilterAdapter = FilterMoviesAdapter()
+        tvFilterAdapter = FilterTvSeriesAdapter()
     }
 
     private fun setUpView() {
@@ -154,7 +161,7 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
 
     private fun searchRecyclerAdapterListeners() {
         setupSearchRecyclerAdapterListener()
-        movieFilterAdapter.setOnItemClickListener { movie ->
+        movieFilterAdapter?.setOnItemClickListener { movie ->
             navigateToFlow(
                 NavigateFlow.BottomSheetDetailFlow(
                     movie = movie,
@@ -162,7 +169,7 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
                 )
             )
         }
-        tvFilterAdapter.setOnItemClickListener { tvSeries ->
+        tvFilterAdapter?.setOnItemClickListener { tvSeries ->
             navigateToFlow(
                 NavigateFlow.BottomSheetDetailFlow(
                     movie = null,
@@ -173,7 +180,7 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
     }
 
     private fun setupSearchRecyclerAdapterListener() {
-        searchRecyclerAdapter.setOnTvSearchClickListener { tvSeries ->
+        searchRecyclerAdapter?.setOnTvSearchClickListener { tvSeries ->
             navigateToFlow(
                 NavigateFlow.BottomSheetDetailFlow(
                     movie = null,
@@ -181,7 +188,7 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
                 )
             )
         }
-        searchRecyclerAdapter.setOnMovieSearchClickListener { movie ->
+        searchRecyclerAdapter?.setOnMovieSearchClickListener { movie ->
             navigateToFlow(
                 NavigateFlow.BottomSheetDetailFlow(
                     movie = movie,
@@ -189,7 +196,7 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
                 )
             )
         }
-        searchRecyclerAdapter.setOnPersonSearchClickListener { person ->
+        searchRecyclerAdapter?.setOnPersonSearchClickListener { person ->
             navigateToFlow(NavigateFlow.PersonDetailFlow(person.id))
         }
     }
@@ -210,7 +217,7 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
 
     private fun handlePagingLoadStates() {
         HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(
-            pagingAdapter = tvFilterAdapter,
+            pagingAdapter = tvFilterAdapter!!,
             onLoading = {
                 binding.filterShimmerLayout.makeVisible()
                 binding.recyclerDiscoverTv.makeGone()
@@ -223,7 +230,7 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
         )
 
         HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(
-            pagingAdapter = movieFilterAdapter,
+            pagingAdapter = movieFilterAdapter!!,
             onLoading = {
                 binding.filterShimmerLayout.makeVisible()
                 binding.recyclerDiscoverMovie.makeGone()
@@ -236,7 +243,7 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
         )
 
         HandlePagingStateSearchAdapter(
-            searchPagingAdapter = searchRecyclerAdapter,
+            searchPagingAdapter = searchRecyclerAdapter!!,
             onLoading = {
                 binding.filterShimmerLayout.makeVisible()
                 binding.recyclerSearch.makeGone()
@@ -250,7 +257,8 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
     }
 
     private fun isAdaptersEmpty(): Boolean {
-        return movieFilterAdapter.isEmpty() || tvFilterAdapter.isEmpty() || searchRecyclerAdapter.itemCount <= 0
+        return movieFilterAdapter?.isEmpty() == true || tvFilterAdapter?.isEmpty() == true
+                || searchRecyclerAdapter?.itemCount!! <= 0
     }
 
     private fun showErrorScreenAndHideDetailScreen() {
@@ -291,6 +299,13 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
     private fun hideTvAndMovieAdapters() {
         binding.recyclerDiscoverTv.makeGone()
         binding.recyclerDiscoverMovie.makeGone()
+    }
+
+    override fun onDestroyView() {
+        searchRecyclerAdapter = null
+        movieFilterAdapter = null
+        tvFilterAdapter = null
+        super.onDestroyView()
     }
 
 }

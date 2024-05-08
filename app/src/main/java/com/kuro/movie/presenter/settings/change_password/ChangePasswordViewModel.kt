@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.kuro.movie.core.BaseViewModel
 import com.kuro.movie.domain.usecase.auth.ChangePasswordUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,7 +28,6 @@ class ChangePasswordViewModel @Inject constructor(
         viewModelScope.launch {
             changePasswordUseCase.invoke(oldPassword, newPassword, reEnterPassword)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     _state.postValue(_state.value?.copy(isLoading = false))
                     _state.postValue(_state.value?.copy(isChangeSuccess = true))

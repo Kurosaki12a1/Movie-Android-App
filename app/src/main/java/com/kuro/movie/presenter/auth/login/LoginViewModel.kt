@@ -45,7 +45,6 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             signInWithEmailAndPasswordUseCase(email, password)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ onLoginSuccess() }, { error ->
                     mutableState.value = Resource.Failure(error)
                     handleError(error)
@@ -60,7 +59,6 @@ class LoginViewModel @Inject constructor(
             if (task.isSuccessful) {
                 signInWithCredentialUseCase(task)
                     .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ onLoginSuccess() },
                         { error ->
                         mutableState.value = Resource.failure(error)

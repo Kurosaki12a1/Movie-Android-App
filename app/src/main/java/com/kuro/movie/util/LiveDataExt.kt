@@ -9,11 +9,12 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 fun <T> Fragment.observerLiveData(
     liveData: LiveData<T>,
-    action: suspend (T) -> Unit
+    action: suspend CoroutineScope.(T) -> Unit
 ) {
     return liveData.observe(viewLifecycleOwner) {
         viewLifecycleOwner.lifecycleScope.launch {

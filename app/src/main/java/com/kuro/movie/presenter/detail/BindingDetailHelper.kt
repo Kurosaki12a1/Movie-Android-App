@@ -20,11 +20,10 @@ class BindingDetailHelper(
     private val viewModel: DetailViewModel,
     private val detailActorAdapter: DetailActorAdapter,
 ) {
-    private val settingAdapterHelper: SettingAdapterHelper by lazy {
-        SettingAdapterHelper()
-    }
+    private var settingAdapterHelper: SettingAdapterHelper? = null
 
     init {
+        settingAdapterHelper = SettingAdapterHelper()
         toolBarTextVisibilityByScrollPositionOfNestedScrollView(
             nestedScrollView = binding.nestedScrollView,
             position = 1500,
@@ -41,7 +40,11 @@ class BindingDetailHelper(
 
         setClickListeners()
 
-        settingAdapterHelper.setupAdapters()
+        settingAdapterHelper?.setupAdapters()
+    }
+
+    fun cleanUp() {
+        settingAdapterHelper = null
     }
 
     private fun setClickListeners() {

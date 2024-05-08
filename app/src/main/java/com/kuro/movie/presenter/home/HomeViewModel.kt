@@ -2,7 +2,6 @@ package com.kuro.movie.presenter.home
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.rxjava2.cachedIn
@@ -14,10 +13,8 @@ import com.kuro.movie.domain.usecase.movie.GetPopularMoviesUseCase
 import com.kuro.movie.domain.usecase.movie.GetTopRatedMoviesUseCase
 import com.kuro.movie.domain.usecase.tvseries.GetPopularTvSeriesUseCase
 import com.kuro.movie.domain.usecase.tvseries.GetTopRatedTvSeriesUseCase
-import com.kuro.movie.util.postUpdate
 import com.kuro.movie.util.update
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -63,6 +60,10 @@ class HomeViewModel @Inject constructor(
     private var popularTvSeriesDisposable: Disposable? = null
     private var topRatedTvSeriesDisposable: Disposable? = null
 
+    init {
+        fetchData()
+    }
+
     fun clickSeeAllText(text: String?) {
         _homeState.update {
             it.copy(
@@ -72,7 +73,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun fetchData() {
+    private fun fetchData() {
         getNowPlayingMovies()
         getPopularMovies()
         getTopRatedMovies()
@@ -86,7 +87,6 @@ class HomeViewModel @Inject constructor(
 
             nowPlayingDisposable = getNowPlayingMoviesUseCase().cachedIn(viewModelScope)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     _nowPlayingMovie.postValue(it)
                 }, { error ->
@@ -101,7 +101,7 @@ class HomeViewModel @Inject constructor(
 
             popularMovieDisposable = getPopularMoviesUseCase().cachedIn(viewModelScope)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
                 .subscribe({
                     _popularMovie.postValue(it)
                 }, { error ->
@@ -116,7 +116,7 @@ class HomeViewModel @Inject constructor(
 
             topRatedMovieDisposable = getTopRatedMoviesUseCase().cachedIn(viewModelScope)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
                 .subscribe({
                     _topRatedMovie.postValue(it)
                 }, { error ->
@@ -131,7 +131,7 @@ class HomeViewModel @Inject constructor(
 
             popularTvSeriesDisposable = getPopularTvSeriesUseCase().cachedIn(viewModelScope)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
                 .subscribe({
                     _popularTvSeries.postValue(it)
                 }, { error ->
@@ -146,7 +146,7 @@ class HomeViewModel @Inject constructor(
 
             topRatedTvSeriesDisposable = getTopRatedTvSeriesUseCase().cachedIn(viewModelScope)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
                 .subscribe({
                     _topRatedTvSeries.postValue(it)
                 }, { error ->

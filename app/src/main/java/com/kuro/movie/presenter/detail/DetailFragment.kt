@@ -28,15 +28,15 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
 ) {
     private val viewModel: DetailViewModel by viewModels()
 
-    private lateinit var movieRecommendationAdapter: MovieAdapter
-    private lateinit var detailActorAdapter: DetailActorAdapter
-    private lateinit var tvRecommendationAdapter: TvSeriesAdapter
-    private lateinit var videosAdapter: VideosAdapter
+    private var movieRecommendationAdapter: MovieAdapter? = null
+    private var detailActorAdapter: DetailActorAdapter? = null
+    private var tvRecommendationAdapter: TvSeriesAdapter? = null
+    private var videosAdapter: VideosAdapter? = null
 
     private var bindingDetailHelper: BindingDetailHelper? = null
-    private lateinit var detailStateObserver: Observer<DetailState>
-    private lateinit var consumableEventsObserver: Observer<List<DetailUIEvent>>
-    private lateinit var videosObserver: Observer<Videos?>
+    private var detailStateObserver: Observer<DetailState>? = null
+    private var consumableEventsObserver: Observer<List<DetailUIEvent>>? = null
+    private var videosObserver: Observer<Videos?>? = null
 
     override fun onInitialize() {
         setUpAdapters()
@@ -45,12 +45,12 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
         setUpObservers()
         onObservers()
     }
-    
+
     private fun setUpAdapters() {
-         movieRecommendationAdapter =  MovieAdapter()
-         detailActorAdapter = DetailActorAdapter()
-         tvRecommendationAdapter =  TvSeriesAdapter()
-         videosAdapter = VideosAdapter(viewLifecycleOwner.lifecycle)
+        movieRecommendationAdapter = MovieAdapter()
+        detailActorAdapter = DetailActorAdapter()
+        tvRecommendationAdapter = TvSeriesAdapter()
+        videosAdapter = VideosAdapter(viewLifecycleOwner.lifecycle)
     }
 
     private fun setUpView() {
@@ -58,7 +58,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
             binding = binding,
             context = requireContext(),
             viewModel = viewModel,
-            detailActorAdapter = detailActorAdapter
+            detailActorAdapter = detailActorAdapter!!
         )
 
         binding.recommendationRecyclerView.adapter = movieRecommendationAdapter
@@ -69,13 +69,13 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
         }
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.detailState.removeObserver(detailStateObserver)
-            viewModel.consumableViewEvents.removeObserver(consumableEventsObserver)
+            viewModel.detailState.removeObserver(detailStateObserver!!)
+            viewModel.consumableViewEvents.removeObserver(consumableEventsObserver!!)
             onObservers()
             binding.swipeRefreshLayout.isRefreshing = false
         }
 
-        movieRecommendationAdapter.setOnclickListener { movie ->
+        movieRecommendationAdapter?.setOnclickListener { movie ->
             viewModel.onEvent(
                 DetailEvent.ClickRecommendationItemClick(
                     movie = movie
@@ -83,7 +83,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
             )
         }
 
-        tvRecommendationAdapter.setOnclickListener { tvSeries ->
+        tvRecommendationAdapter?.setOnclickListener { tvSeries ->
             viewModel.onEvent(
                 DetailEvent.ClickRecommendationItemClick(
                     tvSeries = tvSeries
@@ -95,8 +95,8 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
     }
 
     private fun onObservers() {
-        viewModel.detailState.observe(viewLifecycleOwner, detailStateObserver)
-        viewModel.consumableViewEvents.observe(viewLifecycleOwner, consumableEventsObserver)
+        viewModel.detailState.observe(viewLifecycleOwner, detailStateObserver!!)
+        viewModel.consumableViewEvents.observe(viewLifecycleOwner, consumableEventsObserver!!)
     }
 
     private fun setUpObservers() {
@@ -112,9 +112,9 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
             if (detailState.isSelectedTrailerTab()) {
                 binding.recommendationRecyclerView.makeGone()
                 binding.videosRecyclerView.makeVisible()
-                viewModel.videos.observe(viewLifecycleOwner, videosObserver)
+                viewModel.videos.observe(viewLifecycleOwner, videosObserver!!)
             } else {
-                viewModel.videos.removeObserver(videosObserver)
+                viewModel.videos.removeObserver(videosObserver!!)
                 binding.txtVideoInfo.makeGone()
                 binding.videosRecyclerView.makeGone()
                 binding.recommendationRecyclerView.makeVisible()
@@ -135,11 +135,11 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
             }
 
             detailState.movieRecommendation?.let { movieRecommendation ->
-                movieRecommendationAdapter.submitList(movieRecommendation)
+                movieRecommendationAdapter?.submitList(movieRecommendation)
             }
 
             detailState.tvRecommendation?.let {
-                tvRecommendationAdapter.submitList(it)
+                tvRecommendationAdapter?.submitList(it)
             }
 
             binding.btnFavoriteList.setAddFavoriteIconByFavoriteState(isFavorite = detailState.doesAddFavorite)
@@ -181,7 +181,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
             if (videos == null) return@Observer
             binding.videosRecyclerView.isVisible = videos.result.isNotEmpty()
             binding.txtVideoInfo.isVisible = videos.result.isEmpty()
-            videosAdapter.submitList(videos.result)
+            videosAdapter?.submitList(videos.result)
         }
 
     }
@@ -197,13 +197,20 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
     }
 
     private fun cleanUp() {
-        binding.recommendationRecyclerView.adapter = null
-        binding.videosRecyclerView.adapter = null
+        bindingDetailHelper?.cleanUp()
+        movieRecommendationAdapter = null
+        detailActorAdapter = null
+        tvRecommendationAdapter = null
+        videosAdapter = null
+
+        bindingDetailHelper = null
+        detailStateObserver = null
+        consumableEventsObserver = null
+        videosObserver = null
     }
 
     override fun onDestroyView() {
         cleanUp()
         super.onDestroyView()
-        bindingDetailHelper = null
     }
 }

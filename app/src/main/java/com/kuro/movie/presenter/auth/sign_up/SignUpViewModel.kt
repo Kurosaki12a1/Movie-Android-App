@@ -26,7 +26,6 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             createUserWithEmailAndPasswordUseCase(email, password)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     mutableState.postValue(Resource.success(Unit))
                 }, { error ->
