@@ -111,6 +111,10 @@ class ExploreFragment : BaseFragment<FragmentExploreBinding>(
     }
 
     private fun setupAdapters() {
+        binding.recyclerSearch.setHasFixedSize(true)
+        binding.recyclerDiscoverTv.setHasFixedSize(true)
+        binding.recyclerDiscoverMovie.setHasFixedSize(true)
+
         binding.recyclerSearch.adapter = searchRecyclerAdapter
         binding.recyclerDiscoverMovie.adapter = movieFilterAdapter
         binding.recyclerDiscoverTv.adapter = tvFilterAdapter

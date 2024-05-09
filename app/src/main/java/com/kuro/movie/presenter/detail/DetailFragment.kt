@@ -61,6 +61,9 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
             detailActorAdapter = detailActorAdapter!!
         )
 
+        binding.recommendationRecyclerView.setHasFixedSize(true)
+        binding.videosRecyclerView.setHasFixedSize(true)
+
         binding.recommendationRecyclerView.adapter = movieRecommendationAdapter
         binding.videosRecyclerView.adapter = videosAdapter
 

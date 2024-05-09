@@ -1,0 +1,66 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/extra_large_padding">
+
+    <!--region nowPlaying -->
+    <TextView
+        android:id="@+id/tvTitle"
+        style="@style/Kuro.Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/now_playing"
+        app:layout_constraintEnd_toStartOf="@+id/tvSeeAll"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvSeeAll"
+        style="@style/rippleText"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/large_padding"
+        android:paddingVertical="@dimen/medium_padding"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tvTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tvTitle"
+        tools:ignore="TouchTargetSizeCheck" />
+
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/nowPlayingShimmerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/now_playing_row_backdrop_size"
+        android:layout_marginTop="@dimen/medium_margin"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle">
+
+        <include layout="@layout/now_playing_row_shimmer_item" />
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <com.jackandphantom.carouselrecyclerview.CarouselRecyclerview
+        android:id="@+id/nowPlayingRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/now_playing_row_backdrop_size"
+        android:layout_marginTop="@dimen/medium_margin"
+        android:contentDescription="@string/now_playing"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+        tools:itemCount="2"
+        tools:listitem="@layout/now_playing_row">
+
+    </com.jackandphantom.carouselrecyclerview.CarouselRecyclerview>
+</androidx.constraintlayout.widget.ConstraintLayout>

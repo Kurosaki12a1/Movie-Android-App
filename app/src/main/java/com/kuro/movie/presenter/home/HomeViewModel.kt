@@ -13,7 +13,6 @@ import com.kuro.movie.domain.usecase.movie.GetPopularMoviesUseCase
 import com.kuro.movie.domain.usecase.movie.GetTopRatedMoviesUseCase
 import com.kuro.movie.domain.usecase.tvseries.GetPopularTvSeriesUseCase
 import com.kuro.movie.domain.usecase.tvseries.GetTopRatedTvSeriesUseCase
-import com.kuro.movie.util.update
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -30,10 +29,6 @@ class HomeViewModel @Inject constructor(
     val getPopularTvSeriesUseCase: GetPopularTvSeriesUseCase,
     val getTopRatedTvSeriesUseCase: GetTopRatedTvSeriesUseCase
 ) : BaseViewModel() {
-    private val _homeState = MutableLiveData(HomeState())
-    val homeState: LiveData<HomeState>
-        get() = _homeState
-
     private val _nowPlayingMovie = MutableLiveData<PagingData<Movie>>()
     val nowPlayingMovie: LiveData<PagingData<Movie>>
         get() = _nowPlayingMovie
@@ -64,16 +59,7 @@ class HomeViewModel @Inject constructor(
         fetchData()
     }
 
-    fun clickSeeAllText(text: String?) {
-        _homeState.update {
-            it.copy(
-                isShowsSeeAllPage = text != null,
-                seeAllPageToolBarText = text ?: ""
-            )
-        }
-    }
-
-    private fun fetchData() {
+    fun fetchData() {
         getNowPlayingMovies()
         getPopularMovies()
         getTopRatedMovies()

@@ -50,4 +50,11 @@ object Constants {
     const val MINUTES_KEY = "minutes"
 
     const val TV_SERIES_STATUS_ENDED = "Ended"
+
+    // CATEGORY POSITION
+    const val NOW_PLAYING = 0
+    const val POPULAR_MOVIE = 1
+    const val POPULAR_TV_SERIES = 2
+    const val TOP_RATED_MOVIE = 3
+    const val TOP_RATED_TV_SERIES = 4
 }

@@ -5,6 +5,7 @@ import com.kuro.movie.MainNavGraphDirections
 import com.kuro.movie.R
 import com.kuro.movie.extension.navigateWithAnimation
 import com.kuro.movie.presenter.auth.login.LoginFragmentDirections
+import com.kuro.movie.presenter.home.HomeFragmentDirections
 import com.kuro.movie.presenter.settings.SettingsFragmentDirections
 import com.kuro.movie.presenter.settings.profile.ProfileFragmentDirections
 
@@ -24,6 +25,13 @@ class Navigator {
         is NavigateFlow.HomeFlow -> navController?.navigateWithAnimation(MainNavGraphDirections.actionGlobalHomeFlow())
 
         is NavigateFlow.AuthFlow -> navController?.navigateWithAnimation(MainNavGraphDirections.actionGlobalAuthFlow())
+
+        is NavigateFlow.SeeAllFlow -> navController?.navigateWithAnimation(
+            HomeFragmentDirections.actionHomeFragmentToSeeAllFragment(
+                navigateFlow.categoryPosition,
+                navigateFlow.title
+            )
+        )
 
         is NavigateFlow.AuthFlowFromProfile -> {
             // Attempt to pop the back stack to the 'auth_flow' destination.

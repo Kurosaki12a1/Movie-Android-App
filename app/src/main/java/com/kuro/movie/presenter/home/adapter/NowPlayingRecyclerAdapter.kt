@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.kuro.movie.R
 import com.kuro.movie.core.DiffUtilCallBack
 import com.kuro.movie.data.model.Movie
@@ -29,23 +31,26 @@ class NowPlayingRecyclerAdapter :
                 movie.voteAverage.toString(),
                 movie.formattedVoteCount
             )
-            binding.backdropImage.load(
-                ImageUtil.getImage(
-                    imageUrl = movie.posterPath,
-                    imageSize = ImageSize.W500.path
+
+            val requestOptions = RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+
+            Glide.with(context)
+                .load(
+                    ImageUtil.getImage(
+                        imageUrl = movie.posterPath,
+                        imageSize = ImageSize.W500.path
+                    )
                 )
-            )
+                .apply(requestOptions)
+                .into(binding.backdropImage)
 
             binding.genresText.text = movie.genresBySeparatedByComma
-
 
             binding.root.setOnClickListener {
                 onItemClickListener.invoke(movie)
             }
-
         }
-
-
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {

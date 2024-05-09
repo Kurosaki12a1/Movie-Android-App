@@ -10,6 +10,32 @@
         android:name="com.kuro.movie.presenter.home.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_seeAllFragment"
+            app:destination="@id/seeAllFragment">
+            <argument
+                android:name="homeCategory"
+                android:defaultValue="0"
+                app:argType="integer" />
+            <argument
+                android:name="title"
+                android:defaultValue=""
+                app:argType="string" />
+        </action>
+    </fragment>
 
+    <fragment
+        android:id="@+id/seeAllFragment"
+        android:name="com.kuro.movie.presenter.see_all.SeeAllFragment"
+        android:label="SeeAllFragment"
+        tools:layout="@layout/fragment_see_all">
+        <argument
+            android:name="homeCategory"
+            android:defaultValue="0"
+            app:argType="integer" />
+        <argument
+            android:name="title"
+            android:defaultValue=""
+            app:argType="string" />
     </fragment>
 </navigation>
