@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.RecyclerView
@@ -204,9 +205,9 @@ class DetailAdapter(
             listener: DetailAdapterListener? = null
         ) {
             if (movieDetail != null) {
-                bindMovieDetails(movieDetail)
+                bindMovieDetails(movieDetail, listener)
             } else if (tvDetail != null) {
-                bindTvDetails(tvDetail)
+                bindTvDetails(tvDetail, listener)
             } else {
                 return
             }
@@ -226,7 +227,10 @@ class DetailAdapter(
             )
         }
 
-        private fun bindMovieDetails(movieDetail: MovieDetail) {
+        private fun bindMovieDetails(
+            movieDetail: MovieDetail,
+            listener: DetailAdapterListener?
+        ) {
             removeDirectorsInLayout()
             bindDetailInfoSection(
                 voteAverage = movieDetail.voteAverage,
@@ -244,9 +248,17 @@ class DetailAdapter(
             binding.txtReleaseDate.text = movieDetail.releaseDate
             binding.txtRuntime.makeVisible()
             binding.imvClockIcon.makeVisible()
+
+            binding.imvTmdb.setOnClickListener {
+                val url = "${Constants.TMDB_MOVIE_URL}${movieDetail.id}"
+                listener?.onTMDBClick(url)
+            }
         }
 
-        private fun bindTvDetails(tvDetail: TvDetail) {
+        private fun bindTvDetails(
+            tvDetail: TvDetail,
+            listener: DetailAdapterListener?
+        ) {
             removeDirectorsInLayout()
             bindDetailInfoSection(
                 voteAverage = tvDetail.voteAverage,
@@ -261,6 +273,11 @@ class DetailAdapter(
             showSeasonText(season = tvDetail.numberOfSeasons)
             binding.txtRuntime.visibility = View.GONE
             binding.imvClockIcon.visibility = View.GONE
+
+            binding.imvTmdb.setOnClickListener {
+                val url = "${Constants.TMDB_TV_URL}${tvDetail.id}"
+                listener?.onTMDBClick(url)
+            }
         }
 
 
@@ -420,12 +437,15 @@ class DetailAdapter(
             binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab?) {
                     if (tab?.position == Constants.TAB_TRAILER) {
-                        if (!isVideoLoadingDone) {
-                            binding.videosShimmerLayout.makeVisible()
+                        if (videos != null) {
+                            binding.videosRecyclerView.isVisible = videos.result.isNotEmpty()
+                            binding.txtVideoInfo.isVisible = videos.result.isEmpty()
+                            if (!isVideoLoadingDone) {
+                                binding.videosShimmerLayout.makeVisible()
+                            }
                         }
                         binding.recommendationShimmerLayout.makeGone()
                         binding.recommendationRecyclerView.makeGone()
-                        binding.videosRecyclerView.makeVisible()
                     } else {
                         if (!isRecommendationLoadingDone) {
                             binding.recommendationShimmerLayout.makeVisible()
@@ -557,6 +577,7 @@ interface DetailAdapterListener {
     fun onActorTextListener(actorId: Int)
     fun onDirectorClick(directorId: Int)
     fun onRecommendationClick(movie: Movie? = null, tvSeries: TvSeries? = null)
+    fun onTMDBClick(url: String)
     fun onClickFavorite()
     fun onClickWatchList()
 }

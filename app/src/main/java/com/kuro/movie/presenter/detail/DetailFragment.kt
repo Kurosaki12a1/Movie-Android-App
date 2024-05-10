@@ -51,19 +51,27 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
         )
         detailAdapter?.setListener(object : DetailAdapterListener {
             override fun onActorTextListener(actorId: Int) {
-
+                viewModel.onEvent(DetailEvent.ClickActorName(actorId = actorId))
             }
 
             override fun onDirectorClick(directorId: Int) {
+                viewModel.onEvent(DetailEvent.ClickToDirectorName(directorId = directorId))
             }
 
             override fun onRecommendationClick(movie: Movie?, tvSeries: TvSeries?) {
+                if (movie != null) {
+                    viewModel.onEvent(DetailEvent.ClickRecommendationItemClick(movie = movie))
+                } else if (tvSeries != null) {
+                    viewModel.onEvent(DetailEvent.ClickRecommendationItemClick(tvSeries = tvSeries))
+                }
+            }
 
+            override fun onTMDBClick(url: String) {
+                viewModel.onEvent(DetailEvent.IntentToImdbWebSite(url = url))
             }
 
             override fun onClickFavorite() {
                 viewModel.onEvent(DetailEvent.ClickedAddFavoriteList)
-
             }
 
             override fun onClickWatchList() {

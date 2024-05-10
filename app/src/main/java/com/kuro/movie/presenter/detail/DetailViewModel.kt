@@ -139,17 +139,6 @@ class DetailViewModel @Inject constructor(
                 )
             }
 
-            is DetailEvent.SelectedTab -> {
-               /* _detailState.update { it.copy(selectedTab = event.selectedTab) }
-                if (_detailState.value?.isSelectedTrailerTab() == true) {
-                    if (_detailState.value?.isNotNullTvDetail() == true) {
-                        getTvVideos(tvId = detailState.value!!.tvId!!)
-                    } else {
-                        getMovieVideos(movieId = _detailState.value!!.movieId!!)
-                    }
-                }*/
-            }
-
 
             is DetailEvent.ClickRecommendationItemClick -> {
                 event.tvSeries?.let {

@@ -8,7 +8,6 @@ import com.kuro.movie.domain.model.TvDetail
 data class DetailState(
     val isLoading: Boolean = false,
     val videosLoading: Boolean = false,
-    val recommendationLoading: Boolean = false,
     val movieRecommendation: List<Movie>? = null,
     val tvRecommendation: List<TvSeries>? = null,
     val movieDetail: MovieDetail? = null,
