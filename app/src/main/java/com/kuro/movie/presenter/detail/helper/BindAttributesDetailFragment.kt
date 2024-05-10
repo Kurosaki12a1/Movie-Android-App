@@ -1,3 +1,4 @@
+/*
 package com.kuro.movie.presenter.detail.helper
 
 import android.content.Context
@@ -102,4 +103,4 @@ open class BindAttributesDetailFragment(
     protected fun bindReleaseDate(releaseDate: String) {
         binding.txtReleaseDate.text = releaseDate
     }
-}
+}*/

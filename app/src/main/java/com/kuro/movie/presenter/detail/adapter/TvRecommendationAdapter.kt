@@ -1,39 +1,24 @@
 package com.kuro.movie.presenter.detail.adapter
 
-import android.content.Context
-import coil.load
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
-import com.kuro.movie.R
-import com.kuro.movie.core.BaseMovieAndTvRecyclerAdapter
+import com.kuro.movie.core.CenteredGridAdapter
 import com.kuro.movie.data.model.TvSeries
-import com.kuro.movie.databinding.MovieRowBinding
-import com.kuro.movie.util.ImageSize
-import com.kuro.movie.util.ImageUtil
 
-class TvRecommendationAdapter : BaseMovieAndTvRecyclerAdapter<TvSeries>() {
+class TvRecommendationAdapter : CenteredGridAdapter<TvSeries>() {
 
-    override fun onBindViewHold(binding: MovieRowBinding, position: Int, context: Context) {
+    override fun onBindViewHolder(holder: BaseListViewHolder, position: Int) {
         val tvSeries = getItem(position)
+        holder.bind(
+            context = holder.itemView.context,
+            posterPath = tvSeries.posterPath,
+            movieTvName = tvSeries.name,
+            voteAverage = tvSeries.voteAverage.toString(),
+            voteCountByString = tvSeries.formattedVoteCount,
+            releaseDate = tvSeries.firstAirDate,
+            genreByOne = tvSeries.genreByOne
+        )
 
-        if (tvSeries != null) {
-            val requestOptions = RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-
-            Glide.with(binding.ivPoster.context)
-                .load(
-                    ImageUtil.getImage(
-                        imageSize = ImageSize.W185.path,
-                        imageUrl = tvSeries.posterPath
-                    )
-                )
-                .apply(requestOptions)
-                .into(binding.ivPoster)
-
-            binding.root.setOnClickListener {
-                this.itemClickListener(tvSeries)
-            }
+        holder.itemView.setOnClickListener {
+            itemClickListener(tvSeries)
         }
     }
 }

@@ -1,3 +1,4 @@
+/*
 package com.kuro.movie.presenter.detail.helper
 
 import android.content.Context
@@ -71,4 +72,4 @@ class BindTvDetail(
         binding.txtRuntime.visibility = View.GONE
         binding.imvClockIcon.visibility = View.GONE
     }
-}
+}*/

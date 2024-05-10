@@ -265,3 +265,9 @@ class HomeAdapter(private val lifecycle: LifecycleCoroutineScope) :
     }
 
 }
+
+interface HomeAdapterListener {
+    fun onError()
+    fun onItemClick(movie: Movie? = null, tvSeries: TvSeries? = null, categoryPosition: Int)
+    fun onSeeAllClick(title: String, categoryPosition: Int)
+}

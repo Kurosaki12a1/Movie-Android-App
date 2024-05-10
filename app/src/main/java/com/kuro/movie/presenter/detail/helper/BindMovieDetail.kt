@@ -1,3 +1,4 @@
+/*
 package com.kuro.movie.presenter.detail.helper
 
 import android.content.Context
@@ -73,4 +74,4 @@ class BindMovieDetail(
 
         directorTextInflater.createDirectorText(crews = crews)
     }
-}
+}*/

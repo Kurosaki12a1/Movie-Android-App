@@ -5,14 +5,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil.ItemCallback
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import coil.load
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.kuro.movie.R
 import com.kuro.movie.databinding.ActorRowBinding
 import com.kuro.movie.domain.model.Cast
-import com.kuro.movie.util.ImageSize
 import com.kuro.movie.util.ImageUtil
 
 class DetailActorAdapter :

@@ -140,14 +140,14 @@ class DetailViewModel @Inject constructor(
             }
 
             is DetailEvent.SelectedTab -> {
-                _detailState.update { it.copy(selectedTab = event.selectedTab) }
+               /* _detailState.update { it.copy(selectedTab = event.selectedTab) }
                 if (_detailState.value?.isSelectedTrailerTab() == true) {
                     if (_detailState.value?.isNotNullTvDetail() == true) {
                         getTvVideos(tvId = detailState.value!!.tvId!!)
                     } else {
                         getMovieVideos(movieId = _detailState.value!!.movieId!!)
                     }
-                }
+                }*/
             }
 
 
@@ -277,6 +277,7 @@ class DetailViewModel @Inject constructor(
                         )
                     }
                     getMovieRecommendations(movieId = movieId)
+                    getMovieVideos(movieId = movieId)
                 }
 
                 is Resource.Failure -> {
@@ -314,6 +315,8 @@ class DetailViewModel @Inject constructor(
                         )
                     }
                     getTvRecommendations(tvId = tvId)
+                    getTvVideos(tvId = tvId)
+
                 }
 
                 is Resource.Failure -> {

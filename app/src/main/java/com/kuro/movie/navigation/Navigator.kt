@@ -73,7 +73,7 @@ class Navigator {
             ProfileFragmentDirections.actionProfileFragmentToChangePassword()
         )
 
-        is NavigateFlow.DetailFlow -> navController?.navigate(
+        is NavigateFlow.DetailFlow -> navController?.navigateWithAnimation(
             MainNavGraphDirections.actionGlobalDetailFlow(
                 navigateFlow.movieId,
                 navigateFlow.tvSeriesId
