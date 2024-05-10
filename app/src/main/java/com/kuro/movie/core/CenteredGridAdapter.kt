@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.kuro.movie.R
 import com.kuro.movie.databinding.MovieRecommendationRowBinding
@@ -21,6 +20,10 @@ abstract class CenteredGridAdapter<T : Any> :
     class BaseListViewHolder(
         private val binding: MovieRecommendationRowBinding
     ) : RecyclerView.ViewHolder(binding.root) {
+
+        private val requestOptions = RequestOptions()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+
         fun bind(
             context: Context,
             posterPath: String?,
@@ -30,9 +33,6 @@ abstract class CenteredGridAdapter<T : Any> :
             releaseDate: String?,
             genreByOne: String
         ) {
-            val requestOptions = RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-
             Glide.with(binding.ivPoster.context)
                 .load(
                     ImageUtil.getImage(

@@ -47,38 +47,38 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
     private fun setUpAdapter() {
         detailAdapter = DetailAdapter(
             lifecycleScope = viewLifecycleOwner.lifecycleScope,
-            lifecycle = lifecycle
-        )
-        detailAdapter?.setListener(object : DetailAdapterListener {
-            override fun onActorTextListener(actorId: Int) {
-                viewModel.onEvent(DetailEvent.ClickActorName(actorId = actorId))
-            }
-
-            override fun onDirectorClick(directorId: Int) {
-                viewModel.onEvent(DetailEvent.ClickToDirectorName(directorId = directorId))
-            }
-
-            override fun onRecommendationClick(movie: Movie?, tvSeries: TvSeries?) {
-                if (movie != null) {
-                    viewModel.onEvent(DetailEvent.ClickRecommendationItemClick(movie = movie))
-                } else if (tvSeries != null) {
-                    viewModel.onEvent(DetailEvent.ClickRecommendationItemClick(tvSeries = tvSeries))
+            lifecycle = lifecycle,
+            object : DetailAdapterListener {
+                override fun onActorTextListener(actorId: Int) {
+                    viewModel.onEvent(DetailEvent.ClickActorName(actorId = actorId))
                 }
-            }
 
-            override fun onTMDBClick(url: String) {
-                viewModel.onEvent(DetailEvent.IntentToImdbWebSite(url = url))
-            }
+                override fun onDirectorClick(directorId: Int) {
+                    viewModel.onEvent(DetailEvent.ClickToDirectorName(directorId = directorId))
+                }
 
-            override fun onClickFavorite() {
-                viewModel.onEvent(DetailEvent.ClickedAddFavoriteList)
-            }
+                override fun onRecommendationClick(movie: Movie?, tvSeries: TvSeries?) {
+                    if (movie != null) {
+                        viewModel.onEvent(DetailEvent.ClickRecommendationItemClick(movie = movie))
+                    } else if (tvSeries != null) {
+                        viewModel.onEvent(DetailEvent.ClickRecommendationItemClick(tvSeries = tvSeries))
+                    }
+                }
 
-            override fun onClickWatchList() {
-                viewModel.onEvent(DetailEvent.ClickedAddWatchList)
-            }
+                override fun onTMDBClick(url: String) {
+                    viewModel.onEvent(DetailEvent.IntentToImdbWebSite(url = url))
+                }
 
-        })
+                override fun onClickFavorite() {
+                    viewModel.onEvent(DetailEvent.ClickedAddFavoriteList)
+                }
+
+                override fun onClickWatchList() {
+                    viewModel.onEvent(DetailEvent.ClickedAddWatchList)
+                }
+
+            }
+        )
         binding.recyclerViewDetail.adapter = detailAdapter
     }
 
@@ -160,7 +160,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
 
             detailState.movieRecommendation?.let { movies ->
                 val items = detailAdapter?.items?.get(VIDEO)
-                items.let { value ->
+                items?.let { value ->
                     detailAdapter?.setData(
                         position = VIDEO,
                         data = (value as DetailModel.VideosTab).copy(movieRecommendation = movies)
@@ -170,7 +170,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
 
             detailState.tvRecommendation?.let { movies ->
                 val items = detailAdapter?.items?.get(VIDEO)
-                items.let { value ->
+                items?.let { value ->
                     detailAdapter?.setData(
                         position = VIDEO,
                         data = (value as DetailModel.VideosTab).copy(tvRecommendation = movies)
@@ -210,7 +210,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
         videosObserver = Observer { videos ->
             if (videos == null) return@Observer
             val items = detailAdapter?.items?.get(VIDEO)
-            items.let { value ->
+            items?.let { value ->
                 detailAdapter?.setData(
                     position = VIDEO,
                     data = (value as DetailModel.VideosTab).copy(videos = videos)

@@ -17,6 +17,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayout.Tab
 import com.kuro.movie.R
 import com.kuro.movie.data.model.Movie
 import com.kuro.movie.data.model.TvSeries
@@ -45,10 +46,9 @@ import kotlinx.coroutines.launch
 
 class DetailAdapter(
     private val lifecycleScope: LifecycleCoroutineScope,
-    private val lifecycle: Lifecycle
+    private val lifecycle: Lifecycle,
+    private var listener: DetailAdapterListener?
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    private var listener: DetailAdapterListener? = null
 
     val items: ArrayList<DetailModel> = arrayListOf(
         DetailModel.Poster(),
@@ -80,22 +80,22 @@ class DetailAdapter(
 
             R.layout.info_detail_item -> {
                 val binding = InfoDetailItemBinding.inflate(layoutInflater, parent, false)
-                InfoViewHolder(binding)
+                InfoViewHolder(binding, listener)
             }
 
             R.layout.watch_provider_detail_item -> {
                 val binding = WatchProviderDetailItemBinding.inflate(layoutInflater, parent, false)
-                WatchProviderHolder(binding)
+                WatchProviderHolder(binding, listener)
             }
 
             R.layout.actor_detail_item -> {
                 val binding = ActorDetailItemBinding.inflate(layoutInflater, parent, false)
-                ActorViewHolder(binding)
+                ActorViewHolder(binding, listener, lifecycleScope)
             }
 
             else -> {
                 val binding = VideoDetailItemBinding.inflate(layoutInflater, parent, false)
-                VideoViewHolder(binding)
+                VideoViewHolder(binding, listener, lifecycle, lifecycleScope)
             }
         }
     }
@@ -109,8 +109,7 @@ class DetailAdapter(
             is DetailModel.Info -> {
                 (holder as InfoViewHolder).bind(
                     movieDetail = item.movieDetail,
-                    tvDetail = item.tvDetail,
-                    listener = listener
+                    tvDetail = item.tvDetail
                 )
             }
 
@@ -118,17 +117,14 @@ class DetailAdapter(
                 (holder as WatchProviderHolder).bind(
                     doesAddFavorite = item.doesAddFavorite,
                     doesAddWatchList = item.doesAddWatchList,
-                    watchProviders = item.watchProviders,
-                    listener = listener
+                    watchProviders = item.watchProviders
                 )
             }
 
             is DetailModel.Actor -> {
                 (holder as ActorViewHolder).bind(
                     movieDetail = item.movieDetail,
-                    tvDetail = item.tvDetail,
-                    lifecycleScope = lifecycleScope,
-                    listener = listener
+                    tvDetail = item.tvDetail
                 )
             }
 
@@ -136,10 +132,7 @@ class DetailAdapter(
                 (holder as VideoViewHolder).bind(
                     movieRecommendation = item.movieRecommendation,
                     tvRecommendation = item.tvRecommendation,
-                    videos = item.videos,
-                    lifecycleScope = lifecycleScope,
-                    lifecycle = lifecycle,
-                    listener = listener
+                    videos = item.videos
                 )
             }
         }
@@ -147,11 +140,12 @@ class DetailAdapter(
 
     class PosterViewHolder(private val binding: PosterDetailItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(posterPath: String) {
-            val requestOptions = RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .transform(CenterCrop())
 
+        private val requestOptions = RequestOptions()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .transform(CenterCrop())
+
+        fun bind(posterPath: String) {
             Glide.with(binding.imvPoster.context)
                 .load(ImageUtil.getImage(imageUrl = posterPath))
                 .apply(requestOptions)
@@ -182,7 +176,10 @@ class DetailAdapter(
         }
     }
 
-    class InfoViewHolder(private val binding: InfoDetailItemBinding) :
+    class InfoViewHolder(
+        private val binding: InfoDetailItemBinding,
+        private val listener: DetailAdapterListener?
+    ) :
         RecyclerView.ViewHolder(binding.root) {
 
         private val creatorTextInflater by lazy {
@@ -199,15 +196,11 @@ class DetailAdapter(
             )
         }
 
-        fun bind(
-            movieDetail: MovieDetail? = null,
-            tvDetail: TvDetail? = null,
-            listener: DetailAdapterListener? = null
-        ) {
+        fun bind(movieDetail: MovieDetail? = null, tvDetail: TvDetail? = null) {
             if (movieDetail != null) {
-                bindMovieDetails(movieDetail, listener)
+                bindMovieDetails(movieDetail)
             } else if (tvDetail != null) {
-                bindTvDetails(tvDetail, listener)
+                bindTvDetails(tvDetail)
             } else {
                 return
             }
@@ -227,10 +220,7 @@ class DetailAdapter(
             )
         }
 
-        private fun bindMovieDetails(
-            movieDetail: MovieDetail,
-            listener: DetailAdapterListener?
-        ) {
+        private fun bindMovieDetails(movieDetail: MovieDetail) {
             removeDirectorsInLayout()
             bindDetailInfoSection(
                 voteAverage = movieDetail.voteAverage,
@@ -255,10 +245,7 @@ class DetailAdapter(
             }
         }
 
-        private fun bindTvDetails(
-            tvDetail: TvDetail,
-            listener: DetailAdapterListener?
-        ) {
+        private fun bindTvDetails(tvDetail: TvDetail) {
             removeDirectorsInLayout()
             bindDetailInfoSection(
                 voteAverage = tvDetail.voteAverage,
@@ -353,7 +340,10 @@ class DetailAdapter(
         }
     }
 
-    class WatchProviderHolder(private val binding: WatchProviderDetailItemBinding) :
+    class WatchProviderHolder(
+        private val binding: WatchProviderDetailItemBinding,
+        private val listener: DetailAdapterListener?,
+    ) :
         RecyclerView.ViewHolder(binding.root) {
         private val watchProvidersHelper: BindWatchProvidersHelper by lazy {
             BindWatchProvidersHelper(
@@ -361,12 +351,7 @@ class DetailAdapter(
             )
         }
 
-        fun bind(
-            doesAddFavorite: Boolean = false,
-            doesAddWatchList: Boolean = false,
-            watchProviders: WatchProviderItem? = null,
-            listener: DetailAdapterListener? = null
-        ) {
+        init {
             binding.btnFavoriteList.setOnClickListener {
                 listener?.onClickFavorite()
             }
@@ -374,7 +359,13 @@ class DetailAdapter(
             binding.btnWatchList.setOnClickListener {
                 listener?.onClickWatchList()
             }
+        }
 
+        fun bind(
+            doesAddFavorite: Boolean = false,
+            doesAddWatchList: Boolean = false,
+            watchProviders: WatchProviderItem? = null
+        ) {
             binding.btnFavoriteList.setAddFavoriteIconByFavoriteState(isFavorite = doesAddFavorite)
             binding.btnWatchList.setWatchListIconByWatchState(isAddedWatchList = doesAddWatchList)
 
@@ -400,111 +391,122 @@ class DetailAdapter(
     }
 
 
-    class ActorViewHolder(private val binding: ActorDetailItemBinding) :
+    class ActorViewHolder(
+        binding: ActorDetailItemBinding,
+        private val listener: DetailAdapterListener?,
+        private val lifecycleScope: LifecycleCoroutineScope
+    ) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(
-            movieDetail: MovieDetail? = null,
-            tvDetail: TvDetail? = null,
-            lifecycleScope: LifecycleCoroutineScope,
-            listener: DetailAdapterListener? = null
-        ) {
-            val adapter = DetailActorAdapter()
+        private val adapter = DetailActorAdapter()
+
+        init {
             binding.recyclerViewActor.setHasFixedSize(true)
             binding.recyclerViewActor.adapter = adapter
 
-            val cast = movieDetail?.credit?.cast ?: tvDetail?.credit?.cast ?: arrayListOf()
-            lifecycleScope.launch { adapter.submitList(cast) }
             adapter.setActorTextListener { actorId ->
                 listener?.onActorTextListener(actorId)
             }
         }
+
+        fun bind(
+            movieDetail: MovieDetail? = null,
+            tvDetail: TvDetail? = null
+        ) {
+            val cast = movieDetail?.credit?.cast ?: tvDetail?.credit?.cast ?: arrayListOf()
+            lifecycleScope.launch { adapter.submitList(cast) }
+        }
     }
 
-    class VideoViewHolder(private val binding: VideoDetailItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class VideoViewHolder(
+        private val binding: VideoDetailItemBinding,
+        private val listener: DetailAdapterListener?,
+        lifecycle: Lifecycle,
+        private val lifecycleScope: LifecycleCoroutineScope
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         private var isRecommendationLoadingDone = false
         private var isVideoLoadingDone = false
+        private var isNoVideo = false
+
+        private val movieRecommendationAdapter = MovieRecommendationAdapter()
+        private val tvRecommendationAdapter = TvRecommendationAdapter()
+        private val videosAdapter = VideosAdapter(lifecycle = lifecycle)
+
+        init {
+            binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: Tab?) {
+                    handleTabSelection(tab?.position ?: Constants.TAB_RECOMMENDATION)
+                }
+
+                override fun onTabUnselected(p0: Tab?) {}
+
+                override fun onTabReselected(p0: Tab?) {}
+            })
+
+            setUpRecyclerViews()
+            setUpListeners()
+        }
+
+        private fun setUpRecyclerViews() {
+            binding.recommendationRecyclerView.setHasFixedSize(true)
+            binding.recommendationRecyclerView.setItemViewCacheSize(10)
+
+            binding.videosRecyclerView.setHasFixedSize(true)
+            binding.videosRecyclerView.adapter = videosAdapter
+        }
+
+        private fun setUpListeners() {
+            movieRecommendationAdapter.setOnclickListener {
+                listener?.onRecommendationClick(movie = it)
+            }
+
+            tvRecommendationAdapter.setOnclickListener {
+                listener?.onRecommendationClick(tvSeries = it)
+            }
+        }
 
         fun bind(
             movieRecommendation: List<Movie>? = null,
             tvRecommendation: List<TvSeries>? = null,
-            videos: Videos? = null,
-            lifecycleScope: LifecycleCoroutineScope,
-            lifecycle: Lifecycle,
-            listener: DetailAdapterListener?
+            videos: Videos? = null
         ) {
-            binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                override fun onTabSelected(tab: TabLayout.Tab?) {
-                    if (tab?.position == Constants.TAB_TRAILER) {
-                        if (videos != null) {
-                            binding.videosRecyclerView.isVisible = videos.result.isNotEmpty()
-                            binding.txtVideoInfo.isVisible = videos.result.isEmpty()
-                            if (!isVideoLoadingDone) {
-                                binding.videosShimmerLayout.makeVisible()
-                            }
-                        }
-                        binding.recommendationShimmerLayout.makeGone()
-                        binding.recommendationRecyclerView.makeGone()
-                    } else {
-                        if (!isRecommendationLoadingDone) {
-                            binding.recommendationShimmerLayout.makeVisible()
-                        }
-                        binding.videosShimmerLayout.makeGone()
-                        binding.recommendationRecyclerView.makeVisible()
-                        binding.videosRecyclerView.makeGone()
-                    }
-                }
+            isNoVideo = videos?.result?.isEmpty() ?: true
+            handleTabSelection(binding.tabLayout.selectedTabPosition)
 
-                override fun onTabUnselected(p0: TabLayout.Tab?) {}
+            if (movieRecommendation != null) {
+                bindMovieRecommendations(movieRecommendation = movieRecommendation)
+            } else if (tvRecommendation != null) {
+                bindTvRecommendations(tvRecommendation = tvRecommendation)
+            }
 
-                override fun onTabReselected(p0: TabLayout.Tab?) {}
-            })
+            if (videos != null) {
+                bindVideos(videos = videos)
+            }
+        }
 
-            if (binding.tabLayout.selectedTabPosition == Constants.TAB_RECOMMENDATION) {
-                if (!isRecommendationLoadingDone) {
-                    binding.recommendationShimmerLayout.makeVisible()
-                }
-                binding.videosShimmerLayout.makeGone()
-                binding.recommendationRecyclerView.makeVisible()
-                binding.videosRecyclerView.makeGone()
-            } else {
+        private fun handleTabSelection(position: Int) {
+            if (position == Constants.TAB_TRAILER) {
+                binding.videosRecyclerView.isVisible = !isNoVideo
+                binding.txtVideoInfo.isVisible = isNoVideo
                 if (!isVideoLoadingDone) {
                     binding.videosShimmerLayout.makeVisible()
                 }
                 binding.recommendationShimmerLayout.makeGone()
                 binding.recommendationRecyclerView.makeGone()
-                binding.videosRecyclerView.makeVisible()
-            }
-
-            if (movieRecommendation != null) {
-                bindMovieRecommendations(
-                    movieRecommendation = movieRecommendation,
-                    lifecycleScope = lifecycleScope,
-                    listener = listener
-                )
-            } else if (tvRecommendation != null) {
-                bindTvRecommendations(
-                    tvRecommendation = tvRecommendation,
-                    lifecycleScope = lifecycleScope,
-                    listener = listener
-                )
-            }
-
-            if (videos != null) {
-                bindVideos(
-                    videos = videos,
-                    lifecycle = lifecycle,
-                )
+            } else {
+                if (!isRecommendationLoadingDone) {
+                    binding.recommendationShimmerLayout.makeVisible()
+                }
+                binding.txtVideoInfo.makeGone()
+                binding.recommendationRecyclerView.makeVisible()
+                binding.videosShimmerLayout.makeGone()
+                binding.videosRecyclerView.makeGone()
             }
         }
 
         private fun bindVideos(
-            videos: Videos,
-            lifecycle: Lifecycle
+            videos: Videos
         ) {
-            val videosAdapter = VideosAdapter(lifecycle = lifecycle)
-            binding.videosRecyclerView.adapter = videosAdapter
             videosAdapter.submitList(videos.result) {
                 isVideoLoadingDone = true
                 binding.videosShimmerLayout.stopShimmer()
@@ -513,15 +515,9 @@ class DetailAdapter(
         }
 
         private fun bindMovieRecommendations(
-            movieRecommendation: List<Movie>,
-            lifecycleScope: LifecycleCoroutineScope,
-            listener: DetailAdapterListener?
+            movieRecommendation: List<Movie>
         ) {
-            val movieRecommendationAdapter = MovieRecommendationAdapter()
-            binding.recommendationRecyclerView.setHasFixedSize(true)
-            binding.recommendationRecyclerView.setItemViewCacheSize(10)
             binding.recommendationRecyclerView.adapter = movieRecommendationAdapter
-
             lifecycleScope.launch {
                 movieRecommendationAdapter.submitList(movieRecommendation) {
                     isRecommendationLoadingDone = true
@@ -529,32 +525,18 @@ class DetailAdapter(
                     binding.recommendationShimmerLayout.makeGone()
                 }
             }
-
-            movieRecommendationAdapter.setOnclickListener {
-                listener?.onRecommendationClick(movie = it)
-            }
         }
 
         private fun bindTvRecommendations(
-            tvRecommendation: List<TvSeries>,
-            lifecycleScope: LifecycleCoroutineScope,
-            listener: DetailAdapterListener?
+            tvRecommendation: List<TvSeries>
         ) {
-            val tvRecommendationAdapter = TvRecommendationAdapter()
-            binding.recommendationRecyclerView.setHasFixedSize(true)
-            binding.recommendationRecyclerView.setItemViewCacheSize(10)
             binding.recommendationRecyclerView.adapter = tvRecommendationAdapter
-
             lifecycleScope.launch {
                 tvRecommendationAdapter.submitList(tvRecommendation) {
                     isRecommendationLoadingDone = true
                     binding.recommendationShimmerLayout.stopShimmer()
                     binding.recommendationShimmerLayout.makeGone()
                 }
-            }
-
-            tvRecommendationAdapter.setOnclickListener {
-                listener?.onRecommendationClick(tvSeries = it)
             }
         }
     }
@@ -566,10 +548,6 @@ class DetailAdapter(
                 notifyItemChanged(position)
             }
         }
-    }
-
-    fun setListener(listener: DetailAdapterListener) {
-        this.listener = listener
     }
 }
 
