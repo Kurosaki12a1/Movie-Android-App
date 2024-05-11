@@ -16,10 +16,13 @@ import com.kuro.movie.presenter.detail.event.DetailUIEvent
 import com.kuro.movie.util.Constants
 import com.kuro.movie.util.Constants.DETAIL_DEFAULT_ID
 import com.kuro.movie.util.Resource
+import com.kuro.movie.util.postUpdate
 import com.kuro.movie.util.update
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -136,7 +139,6 @@ class DetailViewModel @Inject constructor(
                 )
             }
 
-
             is DetailEvent.ClickRecommendationItemClick -> {
                 event.tvSeries?.let {
                     val action = NavigateFlow.BottomSheetDetailFlow(
@@ -157,54 +159,54 @@ class DetailViewModel @Inject constructor(
     }
 
     private fun getMovieVideos(movieId: Int) {
-        viewModelScope.launch {
-            _detailState.update { it.copy(isLoading = true) }
+        viewModelScope.launch(Dispatchers.IO) {
             val resource = async {
                 detailUseCase.getMovieVideosUseCase(
                     movieId = movieId,
                     language = Constants.DEFAULT_LANGUAGE
                 )
             }
-            when (val results = resource.await()) {
-                is Resource.Success -> {
-                    _detailState.update { it.copy(isLoading = false) }
-                    _videos.postValue(results.value)
-                }
+            withContext(Dispatchers.Main) {
+                when (val results = resource.await()) {
+                    is Resource.Success -> {
+                        _videos.postValue(results.value)
+                    }
 
-                is Resource.Failure -> {
-                    _detailState.update { it.copy(isLoading = false) }
-                    handleError(results.error)
-                }
+                    is Resource.Failure -> {
+                        _detailState.update { it.copy(isLoading = false) }
+                        handleError(results.error)
+                    }
 
-                is Resource.Loading -> {
-                    _detailState.update { it.copy(isLoading = true) }
+                    is Resource.Loading -> {
+
+                    }
                 }
             }
         }
     }
 
     private fun getTvVideos(tvId: Int) {
-        viewModelScope.launch {
-            _detailState.update { it.copy(isLoading = true) }
+        viewModelScope.launch(Dispatchers.IO) {
             val resource = async {
                 detailUseCase.getTvVideosUseCase(
                     tvId = tvId,
                     language = Constants.DEFAULT_LANGUAGE
                 )
             }
-            when (val results = resource.await()) {
-                is Resource.Success -> {
-                    _detailState.update { it.copy(isLoading = false) }
-                    _videos.postValue(results.value)
-                }
+            withContext(Dispatchers.Main) {
+                when (val results = resource.await()) {
+                    is Resource.Success -> {
+                        _videos.postValue(results.value)
+                    }
 
-                is Resource.Failure -> {
-                    _detailState.update { it.copy(isLoading = false) }
-                    handleError(results.error)
-                }
+                    is Resource.Failure -> {
+                        _detailState.update { it.copy(isLoading = false) }
+                        handleError(results.error)
+                    }
 
-                is Resource.Loading -> {
-                    _detailState.update { it.copy(isLoading = true) }
+                    is Resource.Loading -> {
+
+                    }
                 }
             }
         }
@@ -214,7 +216,7 @@ class DetailViewModel @Inject constructor(
         onAddTvSeries: suspend () -> Unit,
         onAddMovie: suspend () -> Unit
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             if (detailState.value?.isNotNullTvDetail() == true) {
                 onAddTvSeries()
             } else {
@@ -227,7 +229,7 @@ class DetailViewModel @Inject constructor(
         onAddTvSeries: suspend () -> Unit,
         onAddMovie: suspend () -> Unit
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             if (detailState.value?.isNotNullTvDetail() == true) {
                 onAddTvSeries()
             } else {
@@ -241,97 +243,113 @@ class DetailViewModel @Inject constructor(
     }
 
     private fun getMovieDetail(movieId: Int) {
-        viewModelScope.launch {
-            _detailState.update { it.copy(isLoading = true) }
+        _detailState.update { it.copy(isLoading = true) }
+        viewModelScope.launch(Dispatchers.IO) {
             val resource = async {
                 detailUseCase.movieDetailUseCase(
                     language = Constants.DEFAULT_LANGUAGE,
                     movieId = movieId
                 )
             }
-            when (val results = resource.await()) {
-                is Resource.Success -> {
-                    val movieDetail = results.value
-                    _detailState.update {
-                        it.copy(
-                            movieDetail = movieDetail,
-                            tvDetail = null,
-                            tvId = null,
-                            isLoading = false,
-                            doesAddFavorite = movieDetail.isFavorite,
-                            doesAddWatchList = movieDetail.isWatchList
-                        )
+            withContext(Dispatchers.Main) {
+                when (val results = resource.await()) {
+                    is Resource.Success -> {
+                        val movieDetail = results.value
+                        val recommendationJob = async {
+                            getMovieRecommendations(movieId = movieId)
+                        }
+                        val videosJob = async {
+                            getMovieVideos(movieId = movieId)
+                        }
+                        recommendationJob.await()
+                        videosJob.await()
+
+                        _detailState.update {
+                            it.copy(
+                                movieDetail = movieDetail,
+                                tvDetail = null,
+                                tvId = null,
+                                isLoading = false,
+                                doesAddFavorite = movieDetail.isFavorite,
+                                doesAddWatchList = movieDetail.isWatchList
+                            )
+                        }
                     }
-                    getMovieRecommendations(movieId = movieId)
-                    getMovieVideos(movieId = movieId)
-                }
 
-                is Resource.Failure -> {
-                    _detailState.update { it.copy(isLoading = false) }
-                    handleError(results.error)
-                }
+                    is Resource.Failure -> {
+                        _detailState.update { it.copy(isLoading = false) }
+                        handleError(results.error)
+                    }
 
-                is Resource.Loading -> {
-                    _detailState.update { it.copy(isLoading = true) }
+                    is Resource.Loading -> {}
                 }
             }
         }
     }
 
     private fun getTvDetail(tvId: Int) {
-        viewModelScope.launch {
-            _detailState.update { it.copy(isLoading = true) }
+        _detailState.update { it.copy(isLoading = true) }
+        viewModelScope.launch(Dispatchers.IO) {
             val resource = async {
                 detailUseCase.tvDetailUseCase(
                     language = Constants.DEFAULT_LANGUAGE,
                     tvId = tvId
                 )
             }
-            when (val results = resource.await()) {
-                is Resource.Success -> {
-                    val tvDetail = results.value
-                    _detailState.update {
-                        it.copy(
-                            movieDetail = null,
-                            tvDetail = tvDetail,
-                            movieId = null,
-                            isLoading = false,
-                            doesAddFavorite = tvDetail.isFavorite,
-                            doesAddWatchList = tvDetail.isWatchList
-                        )
+            withContext(Dispatchers.Main) {
+                when (val results = resource.await()) {
+                    is Resource.Success -> {
+                        val tvDetail = results.value
+                        val recommendationJob = async {
+                            getTvRecommendations(tvId = tvId)
+                        }
+                        val videoJob = async {
+                            getTvVideos(tvId = tvId)
+                        }
+
+                        recommendationJob.await()
+                        videoJob.await()
+
+                        _detailState.update {
+                            it.copy(
+                                movieDetail = null,
+                                tvDetail = tvDetail,
+                                isLoading = false,
+                                movieId = null,
+                                doesAddFavorite = tvDetail.isFavorite,
+                                doesAddWatchList = tvDetail.isWatchList
+                            )
+                        }
                     }
-                    getTvRecommendations(tvId = tvId)
-                    getTvVideos(tvId = tvId)
 
-                }
+                    is Resource.Failure -> {
+                        _detailState.update { it.copy(isLoading = false) }
+                        handleError(results.error)
+                    }
 
-                is Resource.Failure -> {
-                    _detailState.update { it.copy(isLoading = false) }
-                    handleError(results.error)
-                }
-
-                is Resource.Loading -> {
-                    _detailState.update { it.copy(isLoading = true) }
+                    is Resource.Loading -> {}
                 }
             }
         }
     }
 
     private fun getMovieRecommendations(movieId: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val movie = detailUseCase.getMovieRecommendationUseCase(
                 movieId = movieId, language = Constants.DEFAULT_LANGUAGE
             )
-            _detailState.update { it.copy(movieRecommendation = movie) }
+            // Get only 10 items
+            _detailState.postUpdate { it.copy(movieRecommendation = movie.take(10)) }
         }
     }
 
     private fun getTvRecommendations(tvId: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val tv = detailUseCase.getTvRecommendationUseCase(
                 tvId = tvId, language = Constants.DEFAULT_LANGUAGE
             )
-            _detailState.update { it.copy(tvRecommendation = tv) }
+            // Get only 10 items
+            _detailState.postUpdate { it.copy(tvRecommendation = tv.take(10)) }
         }
     }
 }

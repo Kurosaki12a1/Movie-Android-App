@@ -23,4 +23,9 @@ class TvRecommendationAdapter : CenteredGridAdapter<TvSeries>() {
             itemClickListener(tvSeries)
         }
     }
+
+    override fun onViewRecycled(holder: BaseListViewHolder) {
+        holder.unBind()
+        super.onViewRecycled(holder)
+    }
 }

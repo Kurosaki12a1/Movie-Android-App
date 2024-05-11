@@ -8,12 +8,12 @@ import com.kuro.movie.core.BaseViewModel
 import com.kuro.movie.domain.usecase.person_detail.GetPersonDetailUseCase
 import com.kuro.movie.util.Constants
 import com.kuro.movie.util.Resource
-import com.kuro.movie.util.postUpdate
 import com.kuro.movie.util.update
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,30 +35,32 @@ class PersonDetailViewModel @Inject constructor(
 
     private fun getPersonDetail(personId: Int) {
         mutableState.update { it.copy(isLoading = true) }
-        viewModelScope.launch {
-            val resource = async(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val resource = async {
                 getPersonDetailUseCase(
                     personId = personId,
                     language = Constants.DEFAULT_LANGUAGE
                 )
             }
-            when (val result = resource.await()) {
-                is Resource.Success -> {
-                    mutableState.postUpdate {
-                        it.copy(
-                            isLoading = false,
-                            personDetail = result.value
-                        )
+            withContext(Dispatchers.Main) {
+                when (val result = resource.await()) {
+                    is Resource.Success -> {
+                        mutableState.update {
+                            it.copy(
+                                isLoading = false,
+                                personDetail = result.value
+                            )
+                        }
                     }
-                }
 
-                is Resource.Failure -> {
-                    mutableState.postUpdate { it.copy(isLoading = false) }
-                    handleError(result.error)
-                }
+                    is Resource.Failure -> {
+                        mutableState.update { it.copy(isLoading = false) }
+                        handleError(result.error)
+                    }
 
-                is Resource.Loading -> {
-                    mutableState.postUpdate { it.copy(isLoading = true) }
+                    is Resource.Loading -> {
+                        mutableState.update { it.copy(isLoading = true) }
+                    }
                 }
             }
         }

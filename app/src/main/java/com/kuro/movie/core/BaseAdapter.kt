@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.kuro.movie.R
 import com.kuro.movie.databinding.MovieRowBinding
 import com.kuro.movie.util.ImageSize
@@ -18,6 +20,10 @@ abstract class BaseAdapter<T : Any> :
     class BaseListViewHolder(
         private val binding: MovieRowBinding
     ) : RecyclerView.ViewHolder(binding.root) {
+
+        private val requestOptions = RequestOptions()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+
         fun bind(
             context: Context,
             posterPath: String?,
@@ -27,12 +33,16 @@ abstract class BaseAdapter<T : Any> :
             releaseDate: String?,
             genreByOne: String
         ) {
-            binding.ivPoster.load(
-                ImageUtil.getImage(
-                    imageSize = ImageSize.W185.path,
-                    imageUrl = posterPath
+            Glide.with(binding.ivPoster.context)
+                .load(
+                    ImageUtil.getImage(
+                        imageSize = ImageSize.W185.path,
+                        imageUrl = posterPath
+                    )
                 )
-            )
+                .apply(requestOptions)
+                .into(binding.ivPoster)
+
             binding.tvMovieTvName.text = movieTvName
 
             binding.voteAverage.text = context.getString(
@@ -46,6 +56,11 @@ abstract class BaseAdapter<T : Any> :
                     context.getString(R.string.release_date_genre, releaseDate, genreByOne)
             }
         }
+
+        fun unBind() {
+            Glide.with(binding.root.context)
+                .clear(binding.ivPoster)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseListViewHolder {
@@ -54,6 +69,11 @@ abstract class BaseAdapter<T : Any> :
         return BaseListViewHolder(
             binding = binding
         )
+    }
+
+    override fun onViewRecycled(holder: BaseListViewHolder) {
+        super.onViewRecycled(holder)
+        holder.unBind()
     }
 
 

@@ -2,6 +2,8 @@ package com.kuro.movie.presenter.detail
 
 import android.content.Intent
 import android.net.Uri
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -41,7 +43,6 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
         setUpAdapter()
         setUpView()
         setUpObservers()
-        onObservers()
     }
 
     private fun setUpAdapter() {
@@ -94,6 +95,20 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
         viewModel.videos.observe(viewLifecycleOwner, videosObserver!!)
     }
 
+    override fun onCreateAnimation(transit: Int, enter: Boolean, nextAnim: Int): Animation? {
+        val anim = AnimationUtils.loadAnimation(requireActivity(), nextAnim)
+        anim.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation?) {}
+
+            override fun onAnimationEnd(animation: Animation?) {
+                onObservers()
+            }
+
+            override fun onAnimationRepeat(animation: Animation?) {}
+        })
+        return anim
+    }
+
     private fun setUpObservers() {
         viewModel.snackBarMessage.observe(viewLifecycleOwner) {
             if (!it.isNullOrEmpty()) {
@@ -103,7 +118,6 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
 
         detailStateObserver = Observer { detailState ->
             binding.progressBar.isVisible = detailState.isLoading
-
             detailState.tvDetail?.let { detail ->
                 binding.txtToolBarTitle.text = detail.name
                 detailAdapter?.setData(
@@ -231,6 +245,8 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(
     }
 
     override fun onDestroyView() {
+        viewModel.detailState.removeObserver(detailStateObserver!!)
+        viewModel.consumableViewEvents.removeObserver(consumableEventsObserver!!)
         detailAdapter = null
         detailStateObserver = null
         videosObserver = null

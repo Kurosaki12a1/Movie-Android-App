@@ -7,7 +7,9 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.kuro.movie.R
 import com.kuro.movie.databinding.ActorMovieRowBinding
 import com.kuro.movie.domain.model.CastForPerson
@@ -24,26 +26,41 @@ abstract class PersonMovieBaseAdapter<T : Any> :
         private val binding: ActorMovieRowBinding,
         private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
+
+        private val requestOptions = RequestOptions()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+
         fun bindCrew(crew: CrewForPerson) {
             binding.title.text = context.getString(R.string.department)
             binding.txtDetail.text = context.getString(R.string.director)
             bindTxtCategory(mediaType = crew.mediaType)
-            binding.ivPoster.load(
-                ImageUtil.getImage(
-                    imageUrl = crew.posterPath
+            Glide.with(binding.ivPoster.context)
+                .load(
+                    ImageUtil.getImage(
+                        imageUrl = crew.posterPath
+                    )
                 )
-            )
+                .apply(requestOptions)
+                .into(binding.ivPoster)
         }
 
         fun bindCast(cast: CastForPerson) {
             binding.title.text = context.getString(R.string.character)
             binding.txtDetail.text = cast.character
             bindTxtCategory(mediaType = cast.mediaType)
-            binding.ivPoster.load(
-                ImageUtil.getImage(
-                    imageUrl = cast.posterPath
+            Glide.with(binding.ivPoster.context)
+                .load(
+                    ImageUtil.getImage(
+                        imageUrl = cast.posterPath
+                    )
                 )
-            )
+                .apply(requestOptions)
+                .into(binding.ivPoster)
+        }
+
+        fun unBind() {
+            Glide.with(binding.root.context)
+                .clear(binding.ivPoster)
         }
 
         private fun bindTxtCategory(mediaType: String) {
@@ -76,6 +93,11 @@ abstract class PersonMovieBaseAdapter<T : Any> :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PersonMovieViewHolder {
         return PersonMovieViewHolder.from(parent = parent)
+    }
+
+    override fun onViewRecycled(holder: PersonMovieViewHolder) {
+        holder.unBind()
+        super.onViewRecycled(holder)
     }
 
     fun setOnClickListener(listener: (type: T) -> Unit) {

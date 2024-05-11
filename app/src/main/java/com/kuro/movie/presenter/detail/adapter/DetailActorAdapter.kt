@@ -43,7 +43,6 @@ class DetailActorAdapter :
             binding.root.setOnClickListener {
                 onItemClickListener(cast.id)
             }
-
         }
 
         companion object {

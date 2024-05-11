@@ -26,6 +26,8 @@ abstract class CenteredGridAdapter<T : Any> :
 
         private val requestOptions = RequestOptions()
             .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .placeholder(R.drawable.image_place_holder)
+            .error(R.drawable.image_error)
 
         fun bind(
             context: Context,
@@ -53,10 +55,20 @@ abstract class CenteredGridAdapter<T : Any> :
 
             bindTxtCategory(context, mediaType)
 
+            binding.voteAverage.text = context.getString(
+                R.string.voteAverage,
+                voteAverage,
+                voteCountByString
+            )
+
             releaseDate?.let {
                 binding.tvReleaseDateGenre.text =
                     context.getString(R.string.release_date_genre, releaseDate, genreByOne)
             }
+        }
+
+        fun unBind() {
+            Glide.with(binding.root.context).clear(binding.ivPoster)
         }
 
         private fun bindTxtCategory(context: Context, mediaType: String) {

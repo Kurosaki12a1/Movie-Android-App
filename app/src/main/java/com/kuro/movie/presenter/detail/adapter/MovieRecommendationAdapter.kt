@@ -20,4 +20,9 @@ class MovieRecommendationAdapter : CenteredGridAdapter<Movie>() {
 
         holder.itemView.setOnClickListener { itemClickListener(movie) }
     }
+
+    override fun onViewRecycled(holder: BaseListViewHolder) {
+        holder.unBind()
+        super.onViewRecycled(holder)
+    }
 }
