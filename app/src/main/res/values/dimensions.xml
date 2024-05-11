@@ -26,6 +26,10 @@
 
     <dimen name="movie_row_width">165dp</dimen>
     <dimen name="movie_row_image_width">165dp</dimen>
+
+    <dimen name="movie_recommendation_row_width">185dp</dimen>
+    <dimen name="movie_recommendation_image_width">185dp</dimen>
+
     <dimen name="movie_row_image_min_height">320dp</dimen>
     <dimen name="movie_row_height">300dp</dimen>
     <dimen name="movie_row_image_height">200dp</dimen>

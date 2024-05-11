@@ -7,7 +7,7 @@
     android:background="@color/white">
 
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="@dimen/movie_row_width"
+        android:layout_width="@dimen/movie_recommendation_row_width"
         android:layout_height="@dimen/movie_row_height"
         android:layout_gravity="center"
         android:layout_margin="@dimen/medium_margin"
@@ -38,11 +38,12 @@
 
             <ImageView
                 android:id="@+id/ivPoster"
-                android:layout_width="@dimen/movie_row_image_width"
+                android:layout_width="@dimen/movie_recommendation_image_width"
                 android:layout_height="@dimen/movie_row_image_height"
                 android:importantForAccessibility="no"
                 android:scaleType="centerCrop"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

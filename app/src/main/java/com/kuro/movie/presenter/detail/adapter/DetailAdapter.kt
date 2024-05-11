@@ -427,6 +427,7 @@ class DetailAdapter(
         private var isRecommendationLoadingDone = false
         private var isVideoLoadingDone = false
         private var isNoVideo = false
+        private var isMovie = false
 
         private val movieRecommendationAdapter = MovieRecommendationAdapter()
         private val tvRecommendationAdapter = TvRecommendationAdapter()
@@ -452,7 +453,6 @@ class DetailAdapter(
             binding.recommendationRecyclerView.setItemViewCacheSize(10)
 
             binding.videosRecyclerView.setHasFixedSize(true)
-            binding.videosRecyclerView.adapter = videosAdapter
         }
 
         private fun setUpListeners() {
@@ -470,6 +470,7 @@ class DetailAdapter(
             tvRecommendation: List<TvSeries>? = null,
             videos: Videos? = null
         ) {
+            isMovie = movieRecommendation?.isNotEmpty() ?: false
             isNoVideo = videos?.result?.isEmpty() ?: true
             handleTabSelection(binding.tabLayout.selectedTabPosition)
 
@@ -493,6 +494,9 @@ class DetailAdapter(
                 }
                 binding.recommendationShimmerLayout.makeGone()
                 binding.recommendationRecyclerView.makeGone()
+
+                binding.recommendationRecyclerView.adapter = null
+                binding.videosRecyclerView.adapter = videosAdapter
             } else {
                 if (!isRecommendationLoadingDone) {
                     binding.recommendationShimmerLayout.makeVisible()
@@ -501,6 +505,10 @@ class DetailAdapter(
                 binding.recommendationRecyclerView.makeVisible()
                 binding.videosShimmerLayout.makeGone()
                 binding.videosRecyclerView.makeGone()
+
+                binding.recommendationRecyclerView.adapter =
+                    if (isMovie) movieRecommendationAdapter else tvRecommendationAdapter
+                binding.videosRecyclerView.adapter = null
             }
         }
 

@@ -17,7 +17,6 @@ class VideosAdapter(
 ) : ListAdapter<VideoResult, VideosAdapter.VideoResultViewHolder>(
     videoItemCallback
 ) {
-
     class VideoResultViewHolder(
         private val binding: YoutubePlayerViewBinding
     ) : ViewHolder(binding.root) {
