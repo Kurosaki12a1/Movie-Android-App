@@ -1,29 +1,31 @@
 package com.kuro.movie.presenter.detail.adapter
 
-import android.content.Context
-import coil.load
-import com.kuro.movie.core.BaseMovieAndTvRecyclerAdapter
+import com.kuro.movie.core.CenteredGridAdapter
 import com.kuro.movie.data.model.TvSeries
-import com.kuro.movie.databinding.MovieRowBinding
-import com.kuro.movie.util.ImageSize
-import com.kuro.movie.util.ImageUtil
+import com.kuro.movie.domain.model.MediaType
 
-class TvRecommendationAdapter : BaseMovieAndTvRecyclerAdapter<TvSeries>() {
+class TvRecommendationAdapter : CenteredGridAdapter<TvSeries>() {
 
-    override fun onBindViewHold(binding: MovieRowBinding, position: Int, context: Context) {
+    override fun onBindViewHolder(holder: BaseListViewHolder, position: Int) {
         val tvSeries = getItem(position)
+        holder.bind(
+            context = holder.itemView.context,
+            posterPath = tvSeries.posterPath,
+            movieTvName = tvSeries.name,
+            voteAverage = tvSeries.voteAverage.toString(),
+            voteCountByString = tvSeries.formattedVoteCount,
+            releaseDate = tvSeries.firstAirDate,
+            genreByOne = tvSeries.genreByOne,
+            mediaType = MediaType.TV_SERIES.value
+        )
 
-        if (tvSeries != null) {
-            binding.ivPoster.load(
-                ImageUtil.getImage(
-                    imageSize = ImageSize.W185.path,
-                    imageUrl = tvSeries.posterPath
-                )
-            )
-
-            binding.root.setOnClickListener {
-                this.itemClickListener(tvSeries)
-            }
+        holder.itemView.setOnClickListener {
+            itemClickListener(tvSeries)
         }
+    }
+
+    override fun onViewRecycled(holder: BaseListViewHolder) {
+        holder.unBind()
+        super.onViewRecycled(holder)
     }
 }

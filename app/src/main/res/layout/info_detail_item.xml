@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="102dp" />
+
+    <ImageView
+        android:id="@+id/imvTmdb"
+        android:layout_width="@dimen/iconSizeExtraLarge"
+        android:layout_height="0dp"
+        android:background="#0d253f"
+        android:contentDescription="@string/go_movies_tmdb_site"
+        android:padding="@dimen/small_padding"
+        android:src="@drawable/tmdb_logo"
+        app:layout_constraintBottom_toBottomOf="@+id/txtReleaseDate"
+        app:layout_constraintEnd_toEndOf="@+id/txt_film_name"
+        app:layout_constraintHorizontal_bias="0.521"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/txt_film_name"
+        app:layout_constraintVertical_bias="0.0"
+        tools:visibility="visible" />
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/txt_film_name"
+        style="@style/Kuro.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/medium_margin"
+        android:layout_marginEnd="@dimen/medium_margin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Spider-Man: No Way Home" />
+
+    <!--region detailInfoSection-->
+    <RatingBar
+        android:id="@+id/ratingBar"
+        style="@style/RatingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/medium_margin"
+        android:layout_marginTop="@dimen/small_margin"
+        app:layout_constraintStart_toStartOf="@+id/txt_film_name"
+        app:layout_constraintTop_toBottomOf="@+id/txt_film_name"
+        tools:rating="4.35" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/txtVoteAverage_Count"
+        style="@style/Kuro.Subtitle1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/medium_margin"
+        app:layout_constraintBottom_toBottomOf="@+id/ratingBar"
+        app:layout_constraintStart_toEndOf="@+id/ratingBar"
+        app:layout_constraintTop_toTopOf="@+id/ratingBar"
+        tools:text="4.35 (1.19 k reviews)" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/txtGenres"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/medium_margin"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/ratingBar"
+        app:layout_constraintTop_toBottomOf="@+id/txtVoteAverage_Count"
+        app:lineHeight="20dp"
+        tools:text="Action, Adventure, Science, Fiction" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/txtReleaseDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/medium_margin"
+        app:layout_constraintStart_toStartOf="@+id/txtGenres"
+        app:layout_constraintTop_toBottomOf="@+id/txtGenres"
+        tools:text="2021-12-15" />
+
+    <!--region if it is tvSeries show these-->
+    <ImageView
+        android:id="@+id/imvCircle"
+        android:layout_width="@dimen/iconSizeExtraSmall"
+        android:layout_height="@dimen/iconSizeExtraSmall"
+        android:layout_marginStart="@dimen/small_margin"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_circle"
+        app:layout_constraintBottom_toBottomOf="@+id/txtReleaseDate"
+        app:layout_constraintStart_toEndOf="@+id/txtReleaseDate"
+        app:layout_constraintTop_toTopOf="@+id/txtReleaseDate"
+        app:tint="@color/dark_red_variant" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/txtSeason"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/small_margin"
+        android:letterSpacing="0.05"
+        android:textStyle="bold"
+        app:layout_constraintBaseline_toBaselineOf="@+id/txtReleaseDate"
+        app:layout_constraintStart_toEndOf="@+id/imvCircle"
+        tools:text="9 Seasons" />
+    <!--endregion if it is tvSeries show these-->
+
+    <ImageView
+        android:id="@+id/imvClockIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/medium_margin"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_watch"
+        app:layout_constraintStart_toStartOf="@+id/txtReleaseDate"
+        app:layout_constraintTop_toBottomOf="@+id/txtReleaseDate"
+        app:tint="@color/dark_red_variant" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/txtRuntime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/medium_margin"
+        android:textColor="@color/dark_red_variant"
+        app:layout_constraintBottom_toBottomOf="@+id/imvClockIcon"
+        app:layout_constraintStart_toEndOf="@+id/imvClockIcon"
+        app:layout_constraintTop_toTopOf="@+id/imvClockIcon"
+        tools:text="2:28" />
+
+    <LinearLayout
+        android:id="@+id/creatorDirectorLinearLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/medium_margin"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toStartOf="@+id/imvClockIcon"
+        app:layout_constraintTop_toBottomOf="@id/txtRuntime">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/txtDirectorOrCreatorName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/small_margin"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Director: Jon Watts" />
+    </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/titleOverview"
+        style="@style/Kuro.Title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/overview"
+        app:layout_constraintEnd_toEndOf="@+id/imvTmdb"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/creatorDirectorLinearLayout" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/txtOverview"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/medium_padding"
+        android:paddingEnd="0dp"
+        app:layout_constraintEnd_toEndOf="@+id/titleOverview"
+        app:layout_constraintStart_toStartOf="@+id/titleOverview"
+        app:layout_constraintTop_toBottomOf="@id/titleOverview"
+        tools:text="Peter Parker is unmasked and no longer able to separate his normal life from the high-stakes of being a super-hero. When he asks for help from Doctor Strange the stakes become even more dangerous, forcing him to discover what it truly means to be Spider-Man." />
+    <!--endregion overview-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

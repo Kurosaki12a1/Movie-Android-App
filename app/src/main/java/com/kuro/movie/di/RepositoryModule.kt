@@ -11,6 +11,7 @@ import com.kuro.movie.data.data_source.remote.DetailAPI
 import com.kuro.movie.data.data_source.remote.ExploreAPI
 import com.kuro.movie.data.data_source.remote.GenreAPI
 import com.kuro.movie.data.data_source.remote.HomeAPI
+import com.kuro.movie.data.data_source.remote.PersonAPI
 import com.kuro.movie.data.data_source.remote.UpComingAPI
 import com.kuro.movie.data.preferences.AppPreferences
 import com.kuro.movie.data.repository.AuthRepositoryImpl
@@ -39,12 +40,15 @@ import com.kuro.movie.data.repository.firebase.FirebaseCoreRepositoryImpl
 import com.kuro.movie.data.repository.firebase.FirebaseCoreTvSeriesRepositoryImpl
 import com.kuro.movie.data.repository.firebase.FirebaseMovieRepositoryImpl
 import com.kuro.movie.data.repository.firebase.FirebaseTvSeriesRepositoryImpl
+import com.kuro.movie.data.repository.peson_detail.PersonRemoteDataSourceImpl
+import com.kuro.movie.data.repository.peson_detail.PersonRepositoryImpl
 import com.kuro.movie.domain.repository.AuthRepository
 import com.kuro.movie.domain.repository.ConnectivityObserver
 import com.kuro.movie.domain.repository.ExploreRepository
 import com.kuro.movie.domain.repository.GenreRepository
 import com.kuro.movie.domain.repository.HomeMovieRepository
 import com.kuro.movie.domain.repository.HomeTvRepository
+import com.kuro.movie.domain.repository.PersonRepository
 import com.kuro.movie.domain.repository.SharedPreferenceRepository
 import com.kuro.movie.domain.repository.UpComingRepository
 import com.kuro.movie.domain.repository.data_source.local.LocalDatabaseRepository
@@ -65,6 +69,7 @@ import com.kuro.movie.domain.repository.firebase.FirebaseCoreRepository
 import com.kuro.movie.domain.repository.firebase.FirebaseCoreTvSeriesRepository
 import com.kuro.movie.domain.repository.firebase.FirebaseMovieRepository
 import com.kuro.movie.domain.repository.firebase.FirebaseTvSeriesRepository
+import com.kuro.movie.domain.repository.person_detail.PersonRemoteDataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -237,4 +242,16 @@ object RepositoryModule {
     fun provideTvDetailRepository(
         repository: TvDetailRemoteRepository
     ): TvDetailRepository = TvDetailRepositoryImpl(repository)
+
+    @Provides
+    @Singleton
+    fun providePersonRemoteDataSource(
+        personAPI: PersonAPI
+    ): PersonRemoteDataSource = PersonRemoteDataSourceImpl(personAPI)
+
+    @Provides
+    @Singleton
+    fun providePersonRepository(
+        personRemoteDataSource: PersonRemoteDataSource
+    ): PersonRepository = PersonRepositoryImpl(personRemoteDataSource)
 }

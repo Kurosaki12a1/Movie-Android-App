@@ -5,7 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil.ItemCallback
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import coil.load
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.kuro.movie.R
 import com.kuro.movie.databinding.ActorRowBinding
 import com.kuro.movie.domain.model.Cast
@@ -22,20 +24,25 @@ class DetailActorAdapter :
     ) : ViewHolder(binding.root) {
 
         fun bind(cast: Cast) {
-            binding.imvProfilePhoto.load(
-                ImageUtil.getImage(
-                    imageUrl = cast.profilePath
+            val requestOptions = RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .placeholder(R.drawable.ic_person_white)
+
+            Glide.with(binding.imvProfilePhoto.context)
+                .load(
+                    ImageUtil.getImage(
+                        imageUrl = cast.profilePath,
+                    )
                 )
-            ) {
-                error(R.drawable.ic_person_white)
-            }
+                .apply(requestOptions)
+                .into(binding.imvProfilePhoto)
+
             binding.txtActorName.text = cast.name
             binding.txtCharacterName.text = cast.character
 
             binding.root.setOnClickListener {
                 onItemClickListener(cast.id)
             }
-
         }
 
         companion object {

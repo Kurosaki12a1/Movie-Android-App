@@ -49,9 +49,7 @@
 
     <action
         android:id="@+id/action_global_detailFlow"
-        app:destination="@id/detail_flow"
-        app:enterAnim="@anim/slide_out_left"
-        app:exitAnim="@anim/slide_in_right">
+        app:destination="@id/detail_flow">
         <argument
             android:name="movieId"
             app:argType="integer" />

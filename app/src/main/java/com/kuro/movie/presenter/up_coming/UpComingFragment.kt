@@ -15,9 +15,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class UpComingFragment : BaseFragment<FragmentUpComingBinding>(
     inflater = FragmentUpComingBinding::inflate
 ) {
-
     private val viewModel: UpComingViewModel by viewModels()
-    private val upComingMovieAdapter by lazy { UpComingMovieAdapter() }
+    private var upComingMovieAdapter : UpComingMovieAdapter? = null
 
     override fun onInitialize() {
         setUpViews()
@@ -26,9 +25,10 @@ class UpComingFragment : BaseFragment<FragmentUpComingBinding>(
     }
 
     private fun setUpViews() {
+        upComingMovieAdapter = UpComingMovieAdapter()
         binding.upComingRecyclerView.adapter = upComingMovieAdapter
 
-        upComingMovieAdapter.setOnInfoClickListener { upComingMovie ->
+        upComingMovieAdapter?.setOnInfoClickListener { upComingMovie ->
             val action = NavigateFlow.BottomSheetDetailFlow(
                 movie = upComingMovie.movie,
                 tvSeries = null
@@ -36,14 +36,14 @@ class UpComingFragment : BaseFragment<FragmentUpComingBinding>(
             navigateToFlow(action)
         }
 
-        upComingMovieAdapter.setOnRemindMeClickListener { upComingMovie ->
+        upComingMovieAdapter?.setOnRemindMeClickListener { upComingMovie ->
             viewModel.onEvent(UpComingEvent.OnClickRemindMe(upComingMovie))
         }
     }
 
     private fun setUpObservers() {
         observerLiveData(viewModel.upcomingMovies) {
-            upComingMovieAdapter.submitData(it)
+            upComingMovieAdapter?.submitData(it)
         }
 
         viewModel.state.observe(viewLifecycleOwner) { state ->
@@ -63,7 +63,7 @@ class UpComingFragment : BaseFragment<FragmentUpComingBinding>(
 
     private fun handlePagingLoadStates() {
         HandlePagingStateUpComingPagingAdapter(
-            upComingPagingAdapter = upComingMovieAdapter,
+            upComingPagingAdapter = upComingMovieAdapter!!,
             onLoading = {
                 viewModel.onEvent(UpComingEvent.Loading)
             },
@@ -74,5 +74,10 @@ class UpComingFragment : BaseFragment<FragmentUpComingBinding>(
                 viewModel.onEvent(UpComingEvent.NotLoading)
             }
         )
+    }
+
+    override fun onDestroyView() {
+        upComingMovieAdapter = null
+        super.onDestroyView()
     }
 }

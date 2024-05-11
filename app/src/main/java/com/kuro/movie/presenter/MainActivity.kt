@@ -4,16 +4,20 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.snackbar.Snackbar
 import com.kuro.movie.R
 import com.kuro.movie.databinding.ActivityMainBinding
+import com.kuro.movie.extension.makeGone
+import com.kuro.movie.extension.makeVisible
 import com.kuro.movie.navigation.NavigateFlow
 import com.kuro.movie.navigation.NavigationFlow
 import com.kuro.movie.navigation.Navigator
@@ -49,22 +53,63 @@ class MainActivity : AppCompatActivity(), NavigationFlow {
         binding.bottomBar.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            val isPreviousBackStackBottomBarDestinations =
-                isVisibleBottomBarOrNavRail(navController.previousBackStackEntry?.destination)
-            val isCurrentBackStackDetailBottomSheet =
-                destination.id == R.id.detail_bottom_sheet_flow
+            val previousDestination = navController.previousBackStackEntry?.destination
+            val isPreviousVisible = isBottomNavVisible(previousDestination)
+            val isCurrentDetailBottomSheet = destination.id == R.id.detailBottomSheet
 
-            val isVisibleBottomBarOrNavRailWhenOpenBottomDetail =
-                isPreviousBackStackBottomBarDestinations && isCurrentBackStackDetailBottomSheet
+            val shouldShowBottomNav =
+                if (isCurrentDetailBottomSheet && isPreviousVisible) {
+                    true
+                } else {
+                    isBottomNavVisible(destination)
+                }
 
-            val isVisibleBottomBarOrNavigationRail = isVisibleBottomBarOrNavRail(destination)
+            if (shouldShowBottomNav) {
+                if (binding.bottomBar.visibility != View.VISIBLE) {
+                    val slideIn =
+                        AnimationUtils.loadAnimation(this, R.anim.slide_in_bottom).apply {
+                            setAnimationListener(object : Animation.AnimationListener {
+                                override fun onAnimationStart(animation: Animation?) {
+                                    binding.bottomBar.makeVisible()
+                                }
 
-            binding.bottomBar.isVisible =
-                isVisibleBottomBarOrNavigationRail || isVisibleBottomBarOrNavRailWhenOpenBottomDetail
+                                override fun onAnimationEnd(animation: Animation?) {
+                                }
+
+                                override fun onAnimationRepeat(animation: Animation?) {
+                                }
+
+                            })
+                        }
+                    binding.bottomBar.post {
+                        binding.bottomBar.startAnimation(slideIn)
+                    }
+                }
+            } else {
+                if (binding.bottomBar.visibility != View.GONE) {
+                    val slideOut =
+                        AnimationUtils.loadAnimation(this, R.anim.slide_out_bottom).apply {
+                            setAnimationListener(object : Animation.AnimationListener {
+                                override fun onAnimationStart(animation: Animation?) {
+                                }
+
+                                override fun onAnimationEnd(animation: Animation?) {
+                                    binding.bottomBar.makeGone()
+                                }
+
+                                override fun onAnimationRepeat(animation: Animation?) {
+                                }
+                            })
+                        }
+                    binding.bottomBar.post {
+                        binding.bottomBar.startAnimation(slideOut)
+                    }
+                }
+            }
         }
     }
 
-    private fun isVisibleBottomBarOrNavRail(destination: NavDestination?): Boolean {
+    private fun isBottomNavVisible(destination: NavDestination?): Boolean {
         if (destination == null) return false
         return when (destination.id) {
             R.id.homeFragment -> true

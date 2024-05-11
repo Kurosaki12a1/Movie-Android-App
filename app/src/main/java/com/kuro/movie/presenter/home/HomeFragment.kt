@@ -1,23 +1,22 @@
 package com.kuro.movie.presenter.home
 
-import android.view.animation.AnimationUtils
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.kuro.movie.R
 import com.kuro.movie.core.BaseFragment
+import com.kuro.movie.data.model.Movie
+import com.kuro.movie.data.model.TvSeries
 import com.kuro.movie.databinding.FragmentHomeBinding
 import com.kuro.movie.extension.makeGone
 import com.kuro.movie.extension.makeVisible
-import com.kuro.movie.extension.onLoading
-import com.kuro.movie.extension.onNotLoading
 import com.kuro.movie.navigation.NavigateFlow
-import com.kuro.movie.presenter.home.adapter.NowPlayingRecyclerAdapter
-import com.kuro.movie.presenter.home.adapter.PopularMoviesAdapter
-import com.kuro.movie.presenter.home.adapter.PopularTvSeriesAdapter
-import com.kuro.movie.presenter.home.adapter.TopRatedMoviesAdapter
-import com.kuro.movie.presenter.home.adapter.TopRatedTvSeriesAdapter
-import com.kuro.movie.presenter.home.adapter.paging_state.HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter
-import com.kuro.movie.presenter.home.adapter.paging_state.HandlePagingStateNowPlayingRecyclerAdapter
+import com.kuro.movie.presenter.home.adapter.HomeAdapter
+import com.kuro.movie.presenter.home.adapter.HomeAdapterListener
+import com.kuro.movie.util.Constants.NOW_PLAYING
+import com.kuro.movie.util.Constants.POPULAR_MOVIE
+import com.kuro.movie.util.Constants.POPULAR_TV_SERIES
+import com.kuro.movie.util.Constants.TOP_RATED_MOVIE
+import com.kuro.movie.util.Constants.TOP_RATED_TV_SERIES
 import com.kuro.movie.util.observerLiveData
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,267 +26,123 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(
 ) {
     private val homeViewModel: HomeViewModel by viewModels()
 
-    private var nowPlayingAdapter: NowPlayingRecyclerAdapter? = null
-    private var popularMoviesAdapter: PopularMoviesAdapter? = null
-    private var popularTvSeriesAdapter: PopularTvSeriesAdapter? = null
-    private var topRatedMoviesAdapter: TopRatedMoviesAdapter? = null
-    private var topRatedTvSeriesAdapter: TopRatedTvSeriesAdapter? = null
-
+    private var homeAdapter: HomeAdapter? = null
 
     override fun onInitialize() {
-        addOnBackPressedCallBack { homeViewModel.clickSeeAllText(null) }
+        addOnBackPressedCallBack { }
         setUpAdapters()
-        setupRecyclerAdapters()
-        handlePagingLoadStates()
         setUpView()
         setUpObservers()
     }
 
     private fun setUpAdapters() {
-        if (nowPlayingAdapter == null) {
-            nowPlayingAdapter = NowPlayingRecyclerAdapter()
-            popularMoviesAdapter = PopularMoviesAdapter()
-            popularTvSeriesAdapter = PopularTvSeriesAdapter()
-            topRatedMoviesAdapter = TopRatedMoviesAdapter()
-            topRatedTvSeriesAdapter = TopRatedTvSeriesAdapter()
-        }
+        homeAdapter = HomeAdapter(viewLifecycleOwner.lifecycleScope)
+        homeAdapter?.setListener(object : HomeAdapterListener {
+            override fun onError() {
+                hideScrollViewAndShowErrorScreen()
+            }
+
+            override fun onItemClick(movie: Movie?, tvSeries: TvSeries?, categoryPosition: Int) {
+                when (categoryPosition) {
+                    NOW_PLAYING -> {
+                        navigateToFlow(
+                            NavigateFlow.BottomSheetDetailFlow(movie = movie, tvSeries = null)
+                        )
+                    }
+
+                    POPULAR_MOVIE -> {
+                        navigateToFlow(
+                            NavigateFlow.BottomSheetDetailFlow(movie = movie, tvSeries = null)
+                        )
+                    }
+
+                    POPULAR_TV_SERIES -> {
+                        navigateToFlow(
+                            NavigateFlow.BottomSheetDetailFlow(movie = null, tvSeries = tvSeries)
+                        )
+                    }
+
+                    TOP_RATED_MOVIE -> {
+                        navigateToFlow(
+                            NavigateFlow.BottomSheetDetailFlow(movie = movie, tvSeries = null)
+                        )
+                    }
+
+                    TOP_RATED_TV_SERIES -> {
+                        navigateToFlow(
+                            NavigateFlow.BottomSheetDetailFlow(movie = null, tvSeries = tvSeries)
+                        )
+                    }
+                }
+            }
+
+            override fun onSeeAllClick(title: String, categoryPosition: Int) {
+                navigateToFlow(
+                    NavigateFlow.SeeAllFlow(
+                        title = title,
+                        categoryPosition = categoryPosition
+                    )
+                )
+            }
+        })
+        binding.homeRecyclerView.adapter = homeAdapter
     }
 
     private fun setUpView() {
-        binding.btnNavigateUp.setOnClickListener {
-            homeViewModel.clickSeeAllText(null)
-        }
-
         binding.errorScreen.btnError.setOnClickListener {
             hideErrorScreenAndShowScrollView()
-            nowPlayingAdapter?.retry()
-            popularMoviesAdapter?.retry()
-            popularTvSeriesAdapter?.retry()
-            topRatedMoviesAdapter?.retry()
-            topRatedTvSeriesAdapter?.retry()
-        }
-
-        setAdaptersClickListener()
-        setupListenerSeeAllClickEvents()
-    }
-
-    private fun setAdaptersClickListener() {
-        popularMoviesAdapter?.setOnItemClickListener { movie ->
-            navigateToDetailBottomSheet(
-                NavigateFlow.BottomSheetDetailFlow(
-                    movie = movie, tvSeries = null
-                )
-            )
-        }
-
-        topRatedMoviesAdapter?.setOnItemClickListener { movie ->
-            navigateToDetailBottomSheet(
-                NavigateFlow.BottomSheetDetailFlow(
-                    movie = movie, tvSeries = null
-                )
-            )
-        }
-
-         nowPlayingAdapter?.setOnClickListener { movie ->
-            navigateToDetailBottomSheet(
-                NavigateFlow.BottomSheetDetailFlow(
-                    movie = movie, tvSeries = null
-                )
-            )
-
-        }
-
-        popularTvSeriesAdapter?.setOnItemClickListener { tvSeries ->
-            navigateToDetailBottomSheet(
-                NavigateFlow.BottomSheetDetailFlow(
-                    movie = null, tvSeries = tvSeries
-                )
-            )
-        }
-
-        topRatedTvSeriesAdapter?.setOnItemClickListener { tvSeries ->
-            navigateToDetailBottomSheet(
-                NavigateFlow.BottomSheetDetailFlow(
-                    movie = null, tvSeries = tvSeries
-                )
-            )
-        }
-    }
-
-    private fun setupListenerSeeAllClickEvents() {
-        binding.apply {
-            nowPlayingSeeAll.setOnClickListener {
-                homeViewModel.clickSeeAllText(getString(R.string.now_playing))
-                recyclerViewSeeAll.adapter = nowPlayingAdapter
-            }
-
-            popularMoviesSeeAll.setOnClickListener {
-                homeViewModel.clickSeeAllText(getString(R.string.popular_movies))
-                recyclerViewSeeAll.adapter = popularMoviesAdapter
-            }
-
-            popularTvSeeAll.setOnClickListener {
-                homeViewModel.clickSeeAllText(getString(R.string.popular_tv_series))
-                recyclerViewSeeAll.adapter = popularTvSeriesAdapter
-            }
-
-            topRatedMoviesSeeAll.setOnClickListener {
-                homeViewModel.clickSeeAllText(getString(R.string.top_rated_movies))
-                recyclerViewSeeAll.adapter = topRatedMoviesAdapter
-            }
-
-            topRatedTvSeriesSeeAll.setOnClickListener {
-                homeViewModel.clickSeeAllText(getString(R.string.top_rated_tv_series))
-                recyclerViewSeeAll.adapter = topRatedTvSeriesAdapter
-            }
-        }
-
-    }
-
-    private fun handlePagingLoadStates() {
-        HandlePagingStateNowPlayingRecyclerAdapter(nowPlayingRecyclerAdapter = nowPlayingAdapter!!,
-            onLoading = binding.nowPlayingShimmerLayout::onLoading,
-            onNotLoading = binding.nowPlayingShimmerLayout::onNotLoading,
-            onError = { hideScrollViewAndShowErrorScreen() })
-
-        HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(pagingAdapter = popularMoviesAdapter!!,
-            onLoading = binding.popularMoviesShimmerLayout::onLoading,
-            onNotLoading = binding.popularMoviesShimmerLayout::onNotLoading,
-            onError = { hideScrollViewAndShowErrorScreen() })
-
-        HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(pagingAdapter = topRatedMoviesAdapter!!,
-            onLoading = binding.topRatedMoviesShimmerLayout::onLoading,
-            onNotLoading = binding.topRatedMoviesShimmerLayout::onNotLoading,
-            onError = { hideScrollViewAndShowErrorScreen() })
-
-        HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(pagingAdapter = popularTvSeriesAdapter!!,
-            onLoading = binding.popularTvSeriesShimmerLayout::onLoading,
-            onNotLoading = binding.popularTvSeriesShimmerLayout::onNotLoading,
-            onError = { hideScrollViewAndShowErrorScreen() })
-
-        HandlePagingLoadStateMovieAndTvBaseRecyclerAdapter(pagingAdapter = topRatedTvSeriesAdapter!!,
-            onLoading = binding.topRatedTvSeriesShimmerLayout::onLoading,
-            onNotLoading = binding.topRatedTvSeriesShimmerLayout::onNotLoading,
-            onError = { hideScrollViewAndShowErrorScreen() })
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if (homeViewModel.homeState.value?.isShowsSeeAllPage == true) {
-            val context = requireContext()
-            val adapter = when (homeViewModel.homeState.value?.seeAllPageToolBarText) {
-                context.getString(R.string.now_playing) -> {
-                    nowPlayingAdapter
-                }
-
-                context.getString(R.string.popular_movies) -> {
-                    popularMoviesAdapter
-                }
-
-                context.getString(R.string.popular_tv_series) -> {
-                    popularTvSeriesAdapter
-                }
-
-                context.getString(R.string.top_rated_movies) -> {
-                    topRatedMoviesAdapter
-                }
-
-                context.getString(R.string.top_rated_tv_series) -> {
-                    topRatedTvSeriesAdapter
-                }
-
-                else -> nowPlayingAdapter
-            }
-            binding.recyclerViewSeeAll.adapter = adapter
+            homeViewModel.fetchData()
         }
     }
 
     private fun setUpObservers() {
-        homeViewModel.homeState.observe(viewLifecycleOwner) { state ->
-            binding.apply {
-                seeAllPage.isVisible = state.isShowsSeeAllPage
-                scrollView.isVisible = !state.isShowsSeeAllPage
-                if (state.isShowsSeeAllPage) {
-                    showSeeAllPage(state.seeAllPageToolBarText)
-                } else {
-                    hideSeeAllPage()
-                }
-            }
-        }
-
         observerLiveData(homeViewModel.nowPlayingMovie) {
-            nowPlayingAdapter?.submitData(it)
+            homeAdapter?.setData(
+                position = NOW_PLAYING,
+                data = HomeModel.NowPlayingItem(it, getString(R.string.now_playing))
+            )
         }
         observerLiveData(homeViewModel.popularMovie) {
-            popularMoviesAdapter?.submitData(it)
+            homeAdapter?.setData(
+                position = POPULAR_MOVIE,
+                data = HomeModel.PopularMoviesItem(it, getString(R.string.popular_movies))
+            )
         }
         observerLiveData(homeViewModel.topRatedMovie) {
-            topRatedMoviesAdapter?.submitData(it)
+            homeAdapter?.setData(
+                position = TOP_RATED_MOVIE,
+                data = HomeModel.TopRatedMoviesItem(it, getString(R.string.top_rated_movies))
+            )
         }
         observerLiveData(homeViewModel.popularTvSeries) {
-            popularTvSeriesAdapter?.submitData(it)
+            homeAdapter?.setData(
+                position = POPULAR_TV_SERIES,
+                data = HomeModel.PopularTvSeriesItem(it, getString(R.string.popular_tv_series))
+            )
         }
         observerLiveData(homeViewModel.topRatedTvSeries) {
-            topRatedTvSeriesAdapter?.submitData(it)
-        }
-    }
-
-    private fun hideSeeAllPage() {
-        //   homeViewModel.clickSeeAllText(null)
-        binding.apply {
-            scrollView.animation =
-                AnimationUtils.loadAnimation(requireContext(), R.anim.slide_in_left)
-            recyclerViewSeeAll.removeAllViews()
-            seeAllPage.makeGone()
-            scrollView.makeVisible()
-        }
-    }
-
-    private fun setupRecyclerAdapters() {
-        binding.apply {
-            nowPlayingRecyclerView.adapter = nowPlayingAdapter
-            nowPlayingRecyclerView.setAlpha(true)
-            popularMoviesRecyclerView.adapter = popularMoviesAdapter
-            topRatedMoviesRecyclerView.adapter = topRatedMoviesAdapter
-            popularTvSeriesRecyclerView.adapter = popularTvSeriesAdapter
-            topRatedTvSeriesRecyclerView.adapter = topRatedTvSeriesAdapter
+            homeAdapter?.setData(
+                position = TOP_RATED_TV_SERIES,
+                data = HomeModel.TopRatedTvSeriesItem(
+                    it,
+                    getString(R.string.top_rated_tv_series)
+                )
+            )
         }
     }
 
     private fun hideScrollViewAndShowErrorScreen() {
-        binding.scrollView.makeGone()
+        binding.homeRecyclerView.makeGone()
         binding.errorScreen.errorScreen.makeVisible()
     }
 
     private fun hideErrorScreenAndShowScrollView() {
         binding.errorScreen.errorScreen.makeGone()
-        binding.scrollView.makeVisible()
-    }
-
-    private fun showSeeAllPage(text: String?) {
-        binding.apply {
-            seeAllPage.animation =
-                AnimationUtils.loadAnimation(requireContext(), R.anim.slide_in_left)
-            text?.let { toolbarText.text = it }
-            seeAllPage.makeVisible()
-            scrollView.makeGone()
-        }
-    }
-
-    private fun navigateToDetailBottomSheet(navigateFlow: NavigateFlow.BottomSheetDetailFlow) {
-        navigateToFlow(navigateFlow)
-    }
-
-    private fun cleanUp() {
-        nowPlayingAdapter = null
-        popularMoviesAdapter = null
-        popularTvSeriesAdapter = null
-        topRatedMoviesAdapter = null
-        topRatedTvSeriesAdapter = null
+        binding.homeRecyclerView.makeVisible()
     }
 
     override fun onDestroyView() {
-        cleanUp()
+        homeAdapter = null
         super.onDestroyView()
     }
 }
