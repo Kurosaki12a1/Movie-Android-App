@@ -17,8 +17,8 @@ class MyLibraryFragment : BaseFragment<FragmentMyLibraryBinding>(
 ) {
 
     private val viewModel: MyLibraryViewModel by viewModels()
-    private val movieAdapter: MovieAdapter by lazy { MovieAdapter() }
-    private val tvSeriesAdapter: TvSeriesAdapter by lazy { TvSeriesAdapter() }
+    private var movieAdapter: MovieAdapter? = null
+    private var tvSeriesAdapter: TvSeriesAdapter? = null
 
     override fun onInitialize() {
         setUpView()
@@ -26,6 +26,9 @@ class MyLibraryFragment : BaseFragment<FragmentMyLibraryBinding>(
     }
 
     private fun setUpView() {
+        movieAdapter = MovieAdapter()
+        tvSeriesAdapter = TvSeriesAdapter()
+
         binding.listTypeChipGroup.setOnCheckedStateChangeListener { group, _ ->
             val chipType =
                 if (group.checkedChipId == binding.movieChip.id) ChipType.MOVIE else ChipType.TV_SERIES
@@ -56,18 +59,18 @@ class MyLibraryFragment : BaseFragment<FragmentMyLibraryBinding>(
             binding.progressBar.isVisible = state.isLoading
             when (state.chipType) {
                 ChipType.MOVIE -> {
-                    movieAdapter.submitList(state.movieList)
+                    movieAdapter?.submitList(state.movieList)
                     binding.recyclerView.swapAdapter(movieAdapter, true)
 
-                    movieAdapter.setOnclickListener { movie ->
+                    movieAdapter?.setOnclickListener { movie ->
                         navigateToFlow(NavigateFlow.BottomSheetDetailFlow(movie, null))
                     }
                 }
 
                 ChipType.TV_SERIES -> {
-                    tvSeriesAdapter.submitList(state.tvSeriesList)
+                    tvSeriesAdapter?.submitList(state.tvSeriesList)
                     binding.recyclerView.swapAdapter(tvSeriesAdapter, true)
-                    tvSeriesAdapter.setOnclickListener { tvSeries ->
+                    tvSeriesAdapter?.setOnclickListener { tvSeries ->
                         navigateToFlow(NavigateFlow.BottomSheetDetailFlow(null, tvSeries))
                     }
                 }
@@ -81,5 +84,11 @@ class MyLibraryFragment : BaseFragment<FragmentMyLibraryBinding>(
                 Snackbar.make(binding.root, it, Snackbar.LENGTH_SHORT).show()
             }
         }
+    }
+
+    override fun onDestroyView() {
+        movieAdapter = null
+        tvSeriesAdapter = null
+        super.onDestroyView()
     }
 }

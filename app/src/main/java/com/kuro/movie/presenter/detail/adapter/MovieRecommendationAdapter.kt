@@ -2,6 +2,7 @@ package com.kuro.movie.presenter.detail.adapter
 
 import com.kuro.movie.core.CenteredGridAdapter
 import com.kuro.movie.data.model.Movie
+import com.kuro.movie.domain.model.MediaType
 
 class MovieRecommendationAdapter : CenteredGridAdapter<Movie>() {
     override fun onBindViewHolder(holder: BaseListViewHolder, position: Int) {
@@ -13,7 +14,8 @@ class MovieRecommendationAdapter : CenteredGridAdapter<Movie>() {
             voteAverage = movie.voteAverage.toString(),
             voteCountByString = movie.formattedVoteCount,
             releaseDate = movie.releaseDate,
-            genreByOne = movie.genreByOne
+            genreByOne = movie.genreByOne,
+            mediaType = MediaType.MOVIE.value
         )
 
         holder.itemView.setOnClickListener { itemClickListener(movie) }

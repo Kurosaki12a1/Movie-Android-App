@@ -2,6 +2,7 @@ package com.kuro.movie.presenter.detail.adapter
 
 import com.kuro.movie.core.CenteredGridAdapter
 import com.kuro.movie.data.model.TvSeries
+import com.kuro.movie.domain.model.MediaType
 
 class TvRecommendationAdapter : CenteredGridAdapter<TvSeries>() {
 
@@ -14,7 +15,8 @@ class TvRecommendationAdapter : CenteredGridAdapter<TvSeries>() {
             voteAverage = tvSeries.voteAverage.toString(),
             voteCountByString = tvSeries.formattedVoteCount,
             releaseDate = tvSeries.firstAirDate,
-            genreByOne = tvSeries.genreByOne
+            genreByOne = tvSeries.genreByOne,
+            mediaType = MediaType.TV_SERIES.value
         )
 
         holder.itemView.setOnClickListener {

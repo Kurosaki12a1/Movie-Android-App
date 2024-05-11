@@ -3,6 +3,7 @@ package com.kuro.movie.core
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -10,6 +11,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.kuro.movie.R
 import com.kuro.movie.databinding.MovieRecommendationRowBinding
+import com.kuro.movie.domain.model.MediaType
+import com.kuro.movie.extension.makeVisible
 import com.kuro.movie.util.ImageSize
 import com.kuro.movie.util.ImageUtil
 
@@ -31,7 +34,8 @@ abstract class CenteredGridAdapter<T : Any> :
             voteAverage: String,
             voteCountByString: String,
             releaseDate: String?,
-            genreByOne: String
+            genreByOne: String,
+            mediaType: String
         ) {
             Glide.with(binding.ivPoster.context)
                 .load(
@@ -45,15 +49,29 @@ abstract class CenteredGridAdapter<T : Any> :
 
             binding.tvMovieTvName.text = movieTvName
 
-            binding.voteAverage.text = context.getString(
-                R.string.voteAverage,
-                voteAverage,
-                voteCountByString
-            )
+            binding.txtCategory.makeVisible()
+
+            bindTxtCategory(context, mediaType)
 
             releaseDate?.let {
                 binding.tvReleaseDateGenre.text =
                     context.getString(R.string.release_date_genre, releaseDate, genreByOne)
+            }
+        }
+
+        private fun bindTxtCategory(context: Context, mediaType: String) {
+            when (mediaType) {
+                MediaType.MOVIE.value -> {
+                    binding.txtCategory.isVisible = true
+                    binding.txtCategory.text = context.getString(R.string.movie)
+                }
+
+                MediaType.TV_SERIES.value -> {
+                    binding.txtCategory.isVisible = true
+                    binding.txtCategory.text = context.getString(R.string.tv)
+                }
+
+                else -> binding.txtCategory.isVisible = false
             }
         }
     }

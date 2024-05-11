@@ -20,7 +20,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class SeeAllFragment : BaseFragment<FragmentSeeAllBinding>(
     inflater = FragmentSeeAllBinding::inflate
 ) {
-
     private val viewModel: SeeAllViewModel by viewModels()
     private var seeAllAdapter: PagingDataAdapter<*, *>? = null
     override fun onInitialize() {

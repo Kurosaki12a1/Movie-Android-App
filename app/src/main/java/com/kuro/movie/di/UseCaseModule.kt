@@ -6,6 +6,7 @@ import com.kuro.movie.domain.repository.ExploreRepository
 import com.kuro.movie.domain.repository.GenreRepository
 import com.kuro.movie.domain.repository.HomeMovieRepository
 import com.kuro.movie.domain.repository.HomeTvRepository
+import com.kuro.movie.domain.repository.PersonRepository
 import com.kuro.movie.domain.repository.SharedPreferenceRepository
 import com.kuro.movie.domain.repository.UpComingRepository
 import com.kuro.movie.domain.repository.data_source.local.LocalDatabaseRepository
@@ -63,6 +64,7 @@ import com.kuro.movie.domain.usecase.movie.GetTopRatedMovieUseCase
 import com.kuro.movie.domain.usecase.movie.GetTopRatedMoviesUseCase
 import com.kuro.movie.domain.usecase.movie.ToggleMovieForFavoriteListUseCase
 import com.kuro.movie.domain.usecase.movie.ToggleMovieForWatchListUseCase
+import com.kuro.movie.domain.usecase.person_detail.GetPersonDetailUseCase
 import com.kuro.movie.domain.usecase.settings.SettingsUseCase
 import com.kuro.movie.domain.usecase.tvseries.DiscoverTvUseCase
 import com.kuro.movie.domain.usecase.tvseries.GetFavoriteTvSeriesFromFirebaseThenUpdateLocalDatabaseUseCase
@@ -584,4 +586,10 @@ object UseCaseModule {
         getMovieVideosUseCase,
         getTvVideosUseCase
     )
+
+    @Provides
+    @Singleton
+    fun provideGetPersonDetailUseCase(
+        repository: PersonRepository
+    ): GetPersonDetailUseCase = GetPersonDetailUseCase(repository)
 }

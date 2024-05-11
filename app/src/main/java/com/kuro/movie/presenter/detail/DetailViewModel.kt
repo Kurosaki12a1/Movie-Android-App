@@ -78,17 +78,14 @@ class DetailViewModel @Inject constructor(
             }
 
             is DetailEvent.ClickToDirectorName -> {
-                //TODO
-                /* val action = NavigateFlow.PersonDetailFlow(event.directorId)
-                 addConsumableViewEvent(DetailUIEvent.NavigateTo(action))
-             */
+                val action = NavigateFlow.PersonDetailFlow(event.directorId)
+                addConsumableViewEvent(DetailUIEvent.NavigateTo(action))
             }
 
 
             is DetailEvent.ClickActorName -> {
-                //TODO
-                /*       val action = NavigateFlow.PersonDetailFlow(event.actorId)
-                       addConsumableViewEvent(DetailUIEvent.NavigateTo(action))*/
+                val action = NavigateFlow.PersonDetailFlow(event.actorId)
+                addConsumableViewEvent(DetailUIEvent.NavigateTo(action))
             }
 
             is DetailEvent.ClickedAddWatchList -> {
